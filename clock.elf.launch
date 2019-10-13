@@ -24,14 +24,14 @@
 <stringAttribute key="com.atollic.hardwaredebug.stlink.log_file" value="C:\Peter\Atollic\clock\Debug\st-link_gdbserver_log.txt"/>
 <booleanAttribute key="com.atollic.hardwaredebug.stlink.stlink_check_serial_number" value="false"/>
 <stringAttribute key="com.atollic.hardwaredebug.stlink.stlink_txt_serial_number" value=""/>
-<stringAttribute key="com.atollic.truestudio.swv.core.datatrace_0" value="Enabled=false:Address=0x0:Access=Read/Write:Size=Word:Function=Data Value"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.datatrace_0" value="Enabled=true:Address=0x40012c34:Access=Write:Size=Word:Function=Data Value"/>
 <stringAttribute key="com.atollic.truestudio.swv.core.datatrace_1" value="Enabled=false:Address=0x0:Access=Read/Write:Size=Word:Function=Data Value"/>
 <stringAttribute key="com.atollic.truestudio.swv.core.datatrace_2" value="Enabled=false:Address=0x0:Access=Read/Write:Size=Word:Function=Data Value"/>
 <stringAttribute key="com.atollic.truestudio.swv.core.datatrace_3" value="Enabled=false:Address=0x0:Access=Read/Write:Size=Word:Function=Data Value"/>
-<stringAttribute key="com.atollic.truestudio.swv.core.itmports" value="1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.itmports" value="1:0:0:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0"/>
 <stringAttribute key="com.atollic.truestudio.swv.core.itmports_priv" value="0:0:0:0"/>
 <stringAttribute key="com.atollic.truestudio.swv.core.pc_sample" value="0:16384"/>
-<stringAttribute key="com.atollic.truestudio.swv.core.timestamps" value="1:1"/>
+<stringAttribute key="com.atollic.truestudio.swv.core.timestamps" value="0:1"/>
 <stringAttribute key="com.atollic.truestudio.swv.core.trace_events" value="Cpi=0:Exc=0:Sleep=0:Lsu=0:Fold=0:Exetrc=0"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="${TOOLCHAIN_PATH}/arm-atollic-eabi-gdb"/>
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
@@ -48,5 +48,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;/&gt;&#13;&#10;"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.cdt.dsf.gdb.GdbProcessFactory"/>
-<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="buf,*buf,buf[0],pdata,pfd,*pfd,pf-&gt;data"/>
+<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="buf,*buf,buf[0],pdata,pfd,*pfd,pf-&gt;data,TIM1-&gt;CCR1,TIM1,&amp;TIM1"/>
 </launchConfiguration>

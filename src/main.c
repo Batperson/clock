@@ -9,17 +9,26 @@
 #include "system.h"
 #include "graphics.h"
 #include "fonts.h"
+#include "sound.h"
 #include "st7735.h"
+
+extern Wave sine;
 
 int main(void)
 {
-	printf("Weka RTC Alarm Clock v0.01\n");
+	printf("STM32F103 RTC Alarm Clock v0.01 by Weka Workshop\n");
 
 	InitClock();
 	InitSystem();
 	InitDisplay();
+	InitSound();
 
 	ClearScreen();
+
+	SelectSound(0, 255 , &sine);
+	SelectSound(1, 255 , &sine);
+	SoundOn(0, 44000);
+	//SoundOn(1, 52325);
 
 	while(1)
 	{

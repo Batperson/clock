@@ -76,55 +76,57 @@ InitStruct is[] =
 		{ 0x00, 0, 0, 	{ 0 } }
 };
 
-#define BL_PIN			GPIO_Pin_10
-#define DC_PIN			GPIO_Pin_11
-#define CS_PIN			GPIO_Pin_12
-#define RS_PIN			GPIO_Pin_14
+#define BL_PIN			GPIO_Pin_2
+#define DC_PIN			GPIO_Pin_6
+#define CS_PIN			GPIO_Pin_4
+#define RS_PIN			GPIO_Pin_3
+#define CL_PIN			GPIO_Pin_5
+#define SD_PIN			GPIO_Pin_7
 
 uint16_t ALWAYS_INLINE swap(uint16_t v) { return (v << 8) | (v >> 8); }
 
 void WriteBuffer(enum DataCmd dc, void* pdata, uint16_t len)
 {
-	GPIO_WriteBit(GPIOB, DC_PIN, dc);
-	GPIO_ResetBits(GPIOB, CS_PIN);
+	GPIO_WriteBit(GPIOA, DC_PIN, dc);
+	GPIO_ResetBits(GPIOA, CS_PIN);
 
-	//while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET)
+	//while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
 	//	;
 
 	uint8_t* pd = (uint8_t*)pdata;
 
 	while(len--)
 	{
-		SPI_I2S_SendData(SPI2, *pd++);
+		SPI_I2S_SendData(SPI1, *pd++);
 
-		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY) == SET)
+		while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET)
 			;
 	}
 
-	GPIO_SetBits(GPIOB, CS_PIN);
+	GPIO_SetBits(GPIOA, CS_PIN);
 }
 
 void WriteShortRepeat(enum DataCmd dc, uint16_t data, uint16_t len)
 {
-	SPI_DataSizeConfig(SPI2, SPI_DataSize_16b);
+	SPI_DataSizeConfig(SPI1, SPI_DataSize_16b);
 
-	GPIO_WriteBit(GPIOB, DC_PIN, dc);
-	GPIO_ResetBits(GPIOB, CS_PIN);
+	GPIO_WriteBit(GPIOA, DC_PIN, dc);
+	GPIO_ResetBits(GPIOA, CS_PIN);
 
-	//while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET)
+	//while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
 	//	;
 
 	while(len--)
 	{
-		SPI_I2S_SendData(SPI2, data);
+		SPI_I2S_SendData(SPI1, data);
 
-		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY) == SET)
+		while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET)
 			;
 	}
 
-	GPIO_SetBits(GPIOB, CS_PIN);
+	GPIO_SetBits(GPIOA, CS_PIN);
 
-	SPI_DataSizeConfig(SPI2, SPI_DataSize_8b);
+	SPI_DataSizeConfig(SPI1, SPI_DataSize_8b);
 }
 
 ALWAYS_INLINE void WriteByte(enum DataCmd dc, uint8_t data)
@@ -143,9 +145,9 @@ void InitDisplay()
 	SPI_InitTypeDef spi;
 	GPIO_InitTypeDef gpio;
 
-	// Enable SPI2
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOB, ENABLE);
+	// TODO: Change to SPI1 on PB3-5
+	// Enable SPI1
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
 
 	spi.SPI_Mode 				= SPI_Mode_Master;
 	spi.SPI_BaudRatePrescaler 	= SPI_BaudRatePrescaler_2;
@@ -157,17 +159,17 @@ void InitDisplay()
 	spi.SPI_FirstBit 			= SPI_FirstBit_MSB;
 	spi.SPI_NSS 				= SPI_NSS_Soft;
 
-	SPI_Init(SPI2, &spi);
+	SPI_Init(SPI1, &spi);
 
 	// NSS must be set to '1' due to NSS_Soft settings (otherwise it will be Multimaster mode).
-	SPI_NSSInternalSoftwareConfig(SPI2, SPI_NSSInternalSoft_Set);
-	SPI_Cmd(SPI2, ENABLE);
+	SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
+	SPI_Cmd(SPI1, ENABLE);
 
-	// SCK = PB13, MOSI (SDA) = PB15
+	// SCK = PA05, MOSI (SDA) = PA07
 	gpio.GPIO_Mode				= GPIO_Mode_AF_PP;
 	gpio.GPIO_Speed				= GPIO_Speed_50MHz;
-	gpio.GPIO_Pin				= GPIO_Pin_13 | GPIO_Pin_15;
-	GPIO_Init(GPIOB, &gpio);
+	gpio.GPIO_Pin				= CL_PIN | SD_PIN;
+	GPIO_Init(GPIOA, &gpio);
 
 	// CS  = PB12 (software slave select)
 	// RS  = PB14 (reset)
@@ -175,17 +177,17 @@ void InitDisplay()
 	// BL  = PB10 (backlight)
 	gpio.GPIO_Mode				= GPIO_Mode_Out_PP;
 	gpio.GPIO_Pin				= CS_PIN | DC_PIN | RS_PIN | BL_PIN;
-	GPIO_Init(GPIOB, &gpio);
+	GPIO_Init(GPIOA, &gpio);
 
 	// Reset sequence
-	GPIO_SetBits(GPIOB, CS_PIN);
-	GPIO_SetBits(GPIOB, RS_PIN);
+	GPIO_SetBits(GPIOA, CS_PIN);
+	GPIO_SetBits(GPIOA, RS_PIN);
 	sleep(10);
 
-	GPIO_ResetBits(GPIOB, RS_PIN);
+	GPIO_ResetBits(GPIOA, RS_PIN);
 	sleep(10);
 
-	GPIO_SetBits(GPIOB, RS_PIN);
+	GPIO_SetBits(GPIOA, RS_PIN);
 	sleep(10);
 
 	for(PInitStruct ps = is; ps->cmd != 0; ps++)
@@ -198,12 +200,14 @@ void InitDisplay()
 			sleep(ps->delay);
 	}
 
+	SetBacklight(On);
+
 	printf("Display initialized\n");
 }
 
 void SetBacklight(enum Mode bl)
 {
-	GPIO_WriteBit(GPIOB, BL_PIN, bl);
+	GPIO_WriteBit(GPIOA, BL_PIN, bl);
 }
 
 void SetSleepMode(enum Mode sl)
