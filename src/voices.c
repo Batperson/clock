@@ -6,7 +6,7 @@
 #include "stm32f10x.h"
 #include "sound.h"
 
-Wave sine =
+Voice sine =
 {
 	{
 		0x80,

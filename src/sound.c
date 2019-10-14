@@ -11,11 +11,11 @@
 #include "system.h"
 #include "sound.h"
 
-extern Wave sine;
+extern Voice sine;
 
 typedef struct
 {
-	PWave 				wave;
+	PVoice 				voice;
 	uint16_t 			accumulator;
 	uint16_t			step;
 	uint8_t 			vol;
@@ -36,7 +36,7 @@ void InitSound()
 	memset((Channel*)channel, 0, sizeof(channel));
 	memset((uint16_t*)soundBuf, 0, sizeof(soundBuf));
 	for(int i=0; i<SOUND_CHANNELS; i++)
-		channel[i].wave = &sine;
+		channel[i].voice = &sine;
 
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
@@ -124,7 +124,6 @@ void LoadSoundBuffer(uint16_t bufhalf)
 	uint16_t start	= bufhalf * (SOUND_BUFFER_LEN / 2);
 	uint16_t end	= (bufhalf + 1) * (SOUND_BUFFER_LEN / 2);
 
-	uint8_t val = 0;
 	for(uint16_t i = start; i < end; i++)
 	{
 		uint32_t val	= 127;		// Half point of wave
@@ -132,7 +131,7 @@ void LoadSoundBuffer(uint16_t bufhalf)
 		{
 			if(channel[j].step > 0)
 			{
-				val	+= (channel[j].wave->sample[channel[j].accumulator >> 8] * channel[j].vol) >> 8;
+				val	+= (channel[j].voice->sample[channel[j].accumulator >> 8] * channel[j].vol) >> 8;
 				channel[j].accumulator += channel[j].step;
 			}
 		}
@@ -151,9 +150,9 @@ void INTERRUPT DMA1_Channel2_IRQHandler()
 	LoadSoundBuffer((sr & DMA_ISR_TCIF2) ? 1 : 0);
 }
 
-void SelectSound(uint8_t chan, uint8_t vol, PWave pw)
+void SelectSound(uint8_t chan, uint8_t vol, PVoice voice)
 {
-	channel[chan].wave			= pw;
+	channel[chan].voice			= voice;
 	channel[chan].vol			= vol;
 }
 

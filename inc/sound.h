@@ -15,10 +15,10 @@
 typedef struct
 {
 	uint8_t sample[WAVE_SAMPLES];
-} Wave, *PWave;
+} Voice, *PVoice;
 
 void InitSound();
-void SelectSound(uint8_t channel, uint8_t vol, PWave pw);
+void SelectVoice(uint8_t channel, uint8_t vol, PVoice pv);
 void SoundOn(uint8_t channel, uint16_t hz);
 void SoundOff(uint8_t channel);
 

@@ -65,7 +65,8 @@ void SetTempo(uint16_t tempo)
 {
 	state.tempo = tempo;
 
-	// todo: TIM3->ARR		= n;
+	// todo: check this
+	TIM_SetAutoreload(TIM3, ((SystemCoreClock / 2) / (60000000 / tempo)) - 1);
 }
 
 void IncrementTempo(uint16_t inc)
@@ -77,17 +78,35 @@ void SelectSong(PSong song)
 {
 	state.song = song;
 
-	// todo: initialize
+	SetTempo(song->bpm);
 
-	if(state.song != NULL)
+	for(int i=0; i<SOUND_CHANNELS; i++)
 	{
-		SetTempo(song->bpm);
+		SoundOff(i);
+		memset((PTrackState)&state.track[i], 0, sizeof(TrackState));
+	}
+
+	for(int i=0; i<SOUND_CHANNELS; i++)
+	{
+		PTrackState ts 	= (PTrackState)&state.track[i];
+		PTrack t		= state.song->tracks[i];
+
+		if(t == NULL)
+			break;
+
+		ts->flags |= Active;
+		SelectVoice(i, t->volume, t->voice);
 	}
 }
 
 void PlaySong()
 {
-	// todo: TIM_Cmd(TIM3, ENABLE);
+	TIM_Cmd(TIM3, ENABLE);
+}
+
+void PauseSong()
+{
+	TIM_Cmd(TIM3, DISABLE);
 }
 
 void EndSong()
@@ -98,7 +117,7 @@ void EndSong()
 	for(int i=0; i< SOUND_CHANNELS; i++)
 	{
 		SoundOff(i);
-		memset(&state.track[i], 0, sizeof(TrackState));
+		memset((PTrackState)&state.track[i], 0, sizeof(TrackState));
 	}
 }
 
@@ -111,7 +130,7 @@ void INTERRUPT TIM3_IRQHandler()
 	for(int i=0; i < SOUND_CHANNELS; i++)
 	{
 		PTrackState ts 	= (PTrackState)&state.track[i];
-		PTrack t		= &state.song->tracks[i];
+		PTrack t		= state.song->tracks[i];
 
 		if(ts->flags & Active)
 		{

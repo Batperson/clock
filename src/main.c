@@ -10,9 +10,10 @@
 #include "graphics.h"
 #include "fonts.h"
 #include "sound.h"
+#include "song.h"
 #include "st7735.h"
 
-extern Wave sine;
+extern Voice sine;
 
 int main(void)
 {
@@ -25,9 +26,9 @@ int main(void)
 
 	ClearScreen();
 
-	SelectSound(0, 255 , &sine);
-	SelectSound(1, 255 , &sine);
-	SoundOn(0, 44000);
+	//SelectVoice(0, 255 , &sine);
+	//SelectVoice(1, 255 , &sine);
+	//SoundOn(0, 44000);
 	//SoundOn(1, 52325);
 
 	while(1)
