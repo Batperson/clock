@@ -70,20 +70,25 @@ typedef struct
 typedef struct
 {
 	uint8_t	volume;		// 0 - 255
-	uint8_t legato;		// ticks subtracted from note length to create silences between notes. 0 = very legato, increasing values = staccato
-	PVoice voice;
+	uint8_t legato;		// ticks subtracted from note length to create silences between notes. 0 = notes run together, increasing values = staccato
+	PVoice voice;		// instrument
 	Note notes[];		// note of { 0, 0 } = end of track.
 } Track, *PTrack;
 
 typedef struct
 {
-	uint16_t bpm;		// beats per minute, high value = faster
-	PTrack tracks[];	// null = no more tracks
+	uint16_t bpm;		// beats per minute, higher value = faster
+	PTrack tracks[];	// null = no more tracks. Max = SOUND_CHANNELS
 } Song, *PSong;
 
 void SelectSong(PSong song);
+void SetTempo(uint16_t bpm);
 void IncrementTempo(uint16_t inc);
 void PlaySong();
 void PauseSong();
+
+// Events called in interrupt time
+void OnSongEnd();
+void OnTrackEnd(int track);
 
 #endif /* SONG_H_ */

@@ -13,7 +13,6 @@
 #include "song.h"
 
 #define INTERVAL_TO_TICKS(intv) (uint16_t)((TICKS_PER_BEAT * 4) / intv)
-#define BPM_TO_APB1TICKS(bpm)	()
 
 typedef enum
 {
@@ -61,25 +60,20 @@ void InitSong()
 	NVIC_Init(&nvic);
 }
 
-void SetTempo(uint16_t tempo)
+void SetTempo(uint16_t bpm)
 {
-	state.tempo = tempo;
+	state.tempo = bpm;
 
-	// todo: check this
-	TIM_SetAutoreload(TIM3, ((SystemCoreClock / 2) / (60000000 / tempo)) - 1);
+	TIM_SetAutoreload(TIM3, ((SystemCoreClock / 2) / (60 * bpm)) - 1);
 }
 
-void IncrementTempo(uint16_t inc)
+void IncrementTempo(uint16_t bpm)
 {
-	SetTempo(state.tempo + inc);
+	SetTempo(state.tempo + bpm);
 }
 
-void SelectSong(PSong song)
+void InitTracks()
 {
-	state.song = song;
-
-	SetTempo(song->bpm);
-
 	for(int i=0; i<SOUND_CHANNELS; i++)
 	{
 		SoundOff(i);
@@ -99,6 +93,15 @@ void SelectSong(PSong song)
 	}
 }
 
+void SelectSong(PSong song)
+{
+	state.song = song;
+
+	SetTempo(song->bpm);
+
+	InitTracks();
+}
+
 void PlaySong()
 {
 	TIM_Cmd(TIM3, ENABLE);
@@ -107,6 +110,19 @@ void PlaySong()
 void PauseSong()
 {
 	TIM_Cmd(TIM3, DISABLE);
+
+	for(int i=0; i< SOUND_CHANNELS; i++)
+		SoundOff(i);
+}
+
+void WEAKREF OnSongEnd()
+{
+
+}
+
+void WEAKREF OnTrackEnd(int track)
+{
+
 }
 
 void EndSong()
@@ -114,11 +130,9 @@ void EndSong()
 	TIM_Cmd(TIM3, DISABLE);
 	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 
-	for(int i=0; i< SOUND_CHANNELS; i++)
-	{
-		SoundOff(i);
-		memset((PTrackState)&state.track[i], 0, sizeof(TrackState));
-	}
+	InitTracks();
+
+	OnSongEnd();
 }
 
 void INTERRUPT TIM3_IRQHandler()
@@ -143,6 +157,8 @@ void INTERRUPT TIM3_IRQHandler()
 					// Track ends
 					ts->flags			= None;
 					atracks--;
+
+					OnTrackEnd(i);
 				}
 				else
 				{

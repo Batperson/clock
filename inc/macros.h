@@ -11,6 +11,7 @@
 #define IN_RAM  			__attribute__((section(".data")))
 #define ALIGNED(n) 			__attribute__((aligned(n)))
 #define INTERRUPT 			__attribute__((interrupt("IRQ")))
+#define WEAKREF				__attribute__((weak))
 #define ALWAYS_INLINE 		inline __attribute__((always_inline))
 
 #define ITM_Port8(n)    (*((volatile unsigned char *)(0xE0000000+4*n)))

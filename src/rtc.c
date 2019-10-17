@@ -7,6 +7,7 @@
 #include <time.h>
 #include <string.h>
 #include "stm32f10x.h"
+#include "macros.h"
 #include "rtc.h"
 
 void InitRTCInterrupts()
@@ -127,12 +128,12 @@ void RTC_IRQHandler()
 		RTC_OnAlarm();
 }
 
-void __attribute__((weak)) RTC_OnSecond()
+void WEAKREF RTC_OnSecond()
 {
 
 }
 
-void __attribute__((weak)) RTC_OnAlarm()
+void WEAKREF RTC_OnAlarm()
 {
 
 }

@@ -13,12 +13,20 @@
 
 extern Voice sine;
 
+typedef enum {
+	Sustain		= 0,
+	Attack		= 1,
+	Decay		= 2
+} Phase;
+
 typedef struct
 {
 	PVoice 				voice;
 	uint16_t 			accumulator;
 	uint16_t			step;
 	uint8_t 			vol;
+	Phase				envphase;
+	int16_t				envfactor;
 } Channel;
 
 volatile Channel channel[SOUND_CHANNELS];
@@ -124,6 +132,8 @@ void LoadSoundBuffer(uint16_t bufhalf)
 	uint16_t start	= bufhalf * (SOUND_BUFFER_LEN / 2);
 	uint16_t end	= (bufhalf + 1) * (SOUND_BUFFER_LEN / 2);
 
+	// todo: lets use signed values, bit shift operations should not affect the sign unless overflow occurs.
+
 	for(uint16_t i = start; i < end; i++)
 	{
 		uint32_t val	= 127;		// Half point of wave
@@ -131,8 +141,34 @@ void LoadSoundBuffer(uint16_t bufhalf)
 		{
 			if(channel[j].step > 0)
 			{
-				val	+= (channel[j].voice->sample[channel[j].accumulator >> 8] * channel[j].vol) >> 8;
+				uint32_t rval = 	channel[j].voice->sample[channel[j].accumulator >> 8];
+				rval *=				channel[j].vol;
+
+				//val	+= (channel[j].voice->sample[channel[j].accumulator >> 8] * channel[j].vol) >> 8;
 				channel[j].accumulator += channel[j].step;
+
+				switch(channel[j].envphase)
+				{
+				case Attack:
+					rval *=			channel[j].envfactor >> 8;
+					val += 			rval >> 16;
+
+					if((channel[j].envfactor += channel[j].voice->attack) >= 0xffff)
+						channel[j].envphase		= Sustain;
+					break;
+
+				case Decay:
+					rval *=			channel[j].envfactor >> 8;
+					val += 			rval >> 16;
+
+					if((channel[j].envfactor -= channel[j].voice->decay) <= 0)
+						channel[j].step			= 0;	// Stop playing
+					break;
+
+				default:
+					val += 			rval >> 8;
+					break;
+				}
 			}
 		}
 
@@ -150,7 +186,7 @@ void INTERRUPT DMA1_Channel2_IRQHandler()
 	LoadSoundBuffer((sr & DMA_ISR_TCIF2) ? 1 : 0);
 }
 
-void SelectSound(uint8_t chan, uint8_t vol, PVoice voice)
+void SelectVoice(uint8_t chan, uint8_t vol, PVoice voice)
 {
 	channel[chan].voice			= voice;
 	channel[chan].vol			= vol;
@@ -164,9 +200,13 @@ void SoundOn(uint8_t chan, uint16_t hz)
 	// Note hz = hertz * 100
 	channel[chan].accumulator	= 0;
 	channel[chan].step			= ((uint32_t)(((WAVE_SAMPLES * 256) << 8) / ((SAMPLE_RATE * 100) / hz))) >> 8;
+	channel[chan].envphase		= Attack;
+	channel[chan].envfactor		= 0;
 }
 
 void SoundOff(uint8_t chan)
 {
-	channel[chan].step			= 0;
+	channel[chan].envphase		= Decay;
+	channel[chan].envfactor		= 0xffff;
+	//channel[chan].step			= 0;
 }

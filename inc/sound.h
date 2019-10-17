@@ -14,6 +14,8 @@
 
 typedef struct
 {
+	uint16_t attack;	// Number of steps each sample clock to increment / decrement the volume offset.
+	uint16_t decay;
 	uint8_t sample[WAVE_SAMPLES];
 } Voice, *PVoice;
 
