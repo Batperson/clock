@@ -41,17 +41,18 @@ void InitSong()
 	TIM_TimeBaseInitTypeDef		timb;
 	NVIC_InitTypeDef 			nvic;
 
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
 	TIM_TimeBaseStructInit(&timb);
 
-	timb.TIM_Prescaler 			= 0;
+	timb.TIM_Prescaler 			= (SystemCoreClock /*/2 */) / 1000000;	// Clock ticks at 1MHz
 	timb.TIM_CounterMode 		= TIM_CounterMode_Up;
-	timb.TIM_Period 			= 0;
+	timb.TIM_Period 			= 1000;
 	timb.TIM_ClockDivision 		= TIM_CKD_DIV1;
 	timb.TIM_RepetitionCounter 	= 0;
-	TIM_TimeBaseInit(TIM2, &timb);
-	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+	TIM_TimeBaseInit(TIM3, &timb);
+	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
 	nvic.NVIC_IRQChannel 					= TIM3_IRQn;
 	nvic.NVIC_IRQChannelPreemptionPriority 	= 0;
@@ -64,7 +65,8 @@ void SetTempo(uint16_t bpm)
 {
 	state.tempo = bpm;
 
-	TIM_SetAutoreload(TIM3, ((SystemCoreClock / 2) / (60 * bpm)) - 1);
+	// 1MHz, divided by (beats per second * TICKS_PER_BEAT)
+	TIM_SetAutoreload(TIM3, (1000000 / ((bpm * TICKS_PER_BEAT) / 60))- 1);
 }
 
 void IncrementTempo(uint16_t bpm)
@@ -128,7 +130,7 @@ void WEAKREF OnTrackEnd(int track)
 void EndSong()
 {
 	TIM_Cmd(TIM3, DISABLE);
-	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 
 	InitTracks();
 
@@ -158,6 +160,7 @@ void INTERRUPT TIM3_IRQHandler()
 					ts->flags			= None;
 					atracks--;
 
+					SoundOff(i);
 					OnTrackEnd(i);
 				}
 				else
@@ -168,6 +171,9 @@ void INTERRUPT TIM3_IRQHandler()
 						SoundOn(i, n->pitch);
 					else
 						SoundOff(i);
+
+					ITM->PORT[1].u32	= n->pitch;
+					ITM->PORT[2].u8		= ts->ticks;
 				}
 			}
 			else if(ts->ticks == t->legato)

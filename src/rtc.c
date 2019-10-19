@@ -14,12 +14,9 @@ void InitRTCInterrupts()
 {
 	NVIC_InitTypeDef nvic;
 
-	/* Configure one bit for preemption priority */
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-
 	/* Enable the RTC Interrupt */
 	nvic.NVIC_IRQChannel 					= RTC_IRQn;
-	nvic.NVIC_IRQChannelPreemptionPriority 	= 1;
+	nvic.NVIC_IRQChannelPreemptionPriority 	= 4;
 	nvic.NVIC_IRQChannelSubPriority 		= 0;
 	nvic.NVIC_IRQChannelCmd 				= ENABLE;
 	NVIC_Init(&nvic);

@@ -14,6 +14,8 @@
 #include "st7735.h"
 
 extern Voice sine;
+extern Song scale_c;
+extern Song reveille;
 
 int main(void)
 {
@@ -23,13 +25,27 @@ int main(void)
 	InitSystem();
 	InitDisplay();
 	InitSound();
+	InitSong();
 
 	ClearScreen();
 
-	//SelectVoice(0, 255 , &sine);
-	//SelectVoice(1, 255 , &sine);
-	//SoundOn(0, 44000);
-	//SoundOn(1, 52325);
+	SelectSong(&reveille);
+	PlaySong();
+
+	/*
+	SelectVoice(0, 255 , &sine);
+	SoundOn(0, 44000);
+	sleep(1000);
+	SoundOff(0);
+
+	SoundOn(0, 55437);
+	sleep(1000);
+	SoundOff(0);
+
+	SoundOn(0, 65925);
+	sleep(1000);
+	SoundOff(0);
+	*/
 
 	while(1)
 	{

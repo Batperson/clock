@@ -8,6 +8,9 @@
 #define SONG_H_
 
 // Note frequencies, Equal Temperament
+#define		G3					19600
+#define		G3s					20765
+#define		A3f					G3s
 #define		A3					22000
 #define		A3s					22308
 #define		B3f					A3s
@@ -63,7 +66,7 @@
 
 typedef struct
 {
-	uint8_t pitch;		// Note pitch in hertz * 100
+	uint32_t pitch;		// Note pitch in hertz * 100
 	uint8_t interval;	// 1 = whole note (semibreve), 2 = half note (minim), 4 = quarter (crotchet) etc
 } Note, *PNote;
 
@@ -81,6 +84,7 @@ typedef struct
 	PTrack tracks[];	// null = no more tracks. Max = SOUND_CHANNELS
 } Song, *PSong;
 
+void InitSong();
 void SelectSong(PSong song);
 void SetTempo(uint16_t bpm);
 void IncrementTempo(uint16_t inc);

@@ -26,7 +26,7 @@ typedef struct
 	uint16_t			step;
 	uint8_t 			vol;
 	Phase				envphase;
-	int16_t				envfactor;
+	int32_t				envfactor;
 } Channel;
 
 volatile Channel channel[SOUND_CHANNELS];
@@ -132,19 +132,17 @@ void LoadSoundBuffer(uint16_t bufhalf)
 	uint16_t start	= bufhalf * (SOUND_BUFFER_LEN / 2);
 	uint16_t end	= (bufhalf + 1) * (SOUND_BUFFER_LEN / 2);
 
-	// todo: lets use signed values, bit shift operations should not affect the sign unless overflow occurs.
-
 	for(uint16_t i = start; i < end; i++)
 	{
-		uint32_t val	= 127;		// Half point of wave
+		int32_t val	= 0;
 		for(int j=0; j<4; j++)
 		{
+			// If we're not stepping through samples, we're not playing
 			if(channel[j].step > 0)
 			{
-				uint32_t rval = 	channel[j].voice->sample[channel[j].accumulator >> 8];
+				int32_t rval = 		channel[j].voice->sample[channel[j].accumulator >> 8];
 				rval *=				channel[j].vol;
 
-				//val	+= (channel[j].voice->sample[channel[j].accumulator >> 8] * channel[j].vol) >> 8;
 				channel[j].accumulator += channel[j].step;
 
 				switch(channel[j].envphase)
@@ -174,7 +172,7 @@ void LoadSoundBuffer(uint16_t bufhalf)
 
 		val /= SOUND_CHANNELS;
 
-		soundBuf[i]	= (uint16_t)val;
+		soundBuf[i]	= (uint16_t)(127 + val);
 	}
 }
 
@@ -192,7 +190,7 @@ void SelectVoice(uint8_t chan, uint8_t vol, PVoice voice)
 	channel[chan].vol			= vol;
 }
 
-void SoundOn(uint8_t chan, uint16_t hz)
+void SoundOn(uint8_t chan, uint32_t hz)
 {
 	// float s = ((float)WAVE_SAMPLES * 256) / ((float)SAMPLE_RATE / (float)hz);
 	// float m = (SAMPLE_RATE / 1000) * ms;
@@ -208,5 +206,4 @@ void SoundOff(uint8_t chan)
 {
 	channel[chan].envphase		= Decay;
 	channel[chan].envfactor		= 0xffff;
-	//channel[chan].step			= 0;
 }
