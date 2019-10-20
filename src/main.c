@@ -32,21 +32,6 @@ int main(void)
 	SelectSong(&reveille);
 	PlaySong();
 
-	/*
-	SelectVoice(0, 255 , &sine);
-	SoundOn(0, 44000);
-	sleep(1000);
-	SoundOff(0);
-
-	SoundOn(0, 55437);
-	sleep(1000);
-	SoundOff(0);
-
-	SoundOn(0, 65925);
-	sleep(1000);
-	SoundOff(0);
-	*/
-
 	while(1)
 	{
 		/* Loop infinitely */

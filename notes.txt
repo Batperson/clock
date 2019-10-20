@@ -1,0 +1,8 @@
+20/10/2019
+
+There is a high-frequency whine from the audio signal. This changes in frequency with the length of the
+audio sample buffer, so there is likely a glitch when populating the buffer.
+
+There is an audible glitch every 1 seconds, it is caused by the RTC interrupt.
+
+Currently using 150 ohm / 0.1 uF RC low pass filter. HF PWM is attenuated to around 0.1V.
