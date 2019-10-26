@@ -13,8 +13,7 @@
 #include "song.h"
 #include "st7735.h"
 
-extern Voice sine;
-extern Song scale_c;
+extern Song arpegios;
 extern Song reveille;
 
 int main(void)
@@ -29,7 +28,7 @@ int main(void)
 
 	ClearScreen();
 
-	SelectSong(&reveille);
+	SelectSong(&arpegios);
 	PlaySong();
 
 	while(1)

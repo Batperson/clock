@@ -165,7 +165,7 @@ void INTERRUPT TIM3_IRQHandler()
 				}
 				else
 				{
-					ts->ticks			= INTERVAL_TO_TICKS(n->interval);
+					ts->ticks			= n->interval-1;
 
 					if(n->pitch > 0)
 						SoundOn(i, n->pitch);

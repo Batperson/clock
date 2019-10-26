@@ -7,6 +7,23 @@
 #ifndef SONG_H_
 #define SONG_H_
 
+// Tick = basic unit of time, 1 quarter note = 48 ticks
+#define TICKS_PER_BEAT			48
+
+// Note intervals
+#define		QRT					TICKS_PER_BEAT		// Quarter note	= crotchet
+#define		HLF					QRT * 2				// Half note	= minim
+#define		WHL					QRT * 4				// Whole note 	= semibreve
+#define		EGH					QRT / 2				// Eighth note 	= quaver
+#define 	SXT					QRT / 4				// Sixteenth	= semiquaver
+
+#define		HLFD				HLF + (HLF / 2)		// dotted minim
+#define		QRTD				QRT + (QRT / 2)		// dotted crotchet
+#define		EGHD				EGH + (EGH / 2)		// dotted quaver
+
+#define		EGHT				QRT / 3				// triplet quaver
+#define		EGHX				EGHT * 2			// double triplet quaver
+
 // Note frequencies, Equal Temperament
 #define		G3					19600
 #define		G3s					20765
@@ -60,9 +77,7 @@
 #define		F6s					147998
 #define		G6f					F6s
 #define		G6					156798
-
-// Tick = basic unit of time, 1 quarter note = 48 ticks
-#define TICKS_PER_BEAT			48
+#define		A6					176000
 
 typedef struct
 {
