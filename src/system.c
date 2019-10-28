@@ -5,6 +5,7 @@
  */
 #include <stdio.h>
 #include "stm32f10x.h"
+#include "button.h"
 
 static volatile uint32_t _millis;
 static volatile uint32_t _timer;
@@ -26,6 +27,8 @@ void SysTick_Handler(void)
 	_millis++;
 	if(_timer > 0)
 		_timer--;
+
+	PollButtonState();
 }
 
 void sleep(uint32_t ms)

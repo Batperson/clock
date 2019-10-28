@@ -35,7 +35,7 @@ volatile uint16_t soundBuf[SOUND_BUFFER_LEN];
 
 void InitSound()
 {
-	GPIO_InitTypeDef gpio;
+	GPIO_InitTypeDef 			gpio;
 	TIM_TimeBaseInitTypeDef		timb;
 	TIM_OCInitTypeDef			ocnt;
 	DMA_InitTypeDef				dmai;

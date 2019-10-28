@@ -11,10 +11,23 @@
 #include "fonts.h"
 #include "sound.h"
 #include "song.h"
+#include "button.h"
 #include "st7735.h"
 
 extern Song arpegios;
 extern Song reveille;
+
+// 	Pins
+//	A9				Button (Select)
+//	A8				Audio
+//	A7				Screen (MOSI)
+//	A6				Screen (Data/Command)
+//	A5				Screen (SCK)
+//	A4				Screen (Slave select)
+//	A3				Screen (Reset)
+// 	A2				Screen (Backlight)
+//	A1				Button (Up)
+//	A0				Button (Down)
 
 int main(void)
 {
@@ -25,6 +38,7 @@ int main(void)
 	InitDisplay();
 	InitSound();
 	InitSong();
+	InitButton();
 
 	ClearScreen();
 

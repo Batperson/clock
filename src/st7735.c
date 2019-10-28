@@ -171,10 +171,10 @@ void InitDisplay()
 	gpio.GPIO_Pin				= CL_PIN | SD_PIN;
 	GPIO_Init(GPIOA, &gpio);
 
-	// CS  = PB12 (software slave select)
-	// RS  = PB14 (reset)
-	// DC  = PB11 (data/command)
-	// BL  = PB10 (backlight)
+	// CS  = PA4 (software slave select)
+	// RS  = PA3 (reset)
+	// DC  = PA6 (data/command)
+	// BL  = PA2 (backlight)
 	gpio.GPIO_Mode				= GPIO_Mode_Out_PP;
 	gpio.GPIO_Pin				= CS_PIN | DC_PIN | RS_PIN | BL_PIN;
 	GPIO_Init(GPIOA, &gpio);
