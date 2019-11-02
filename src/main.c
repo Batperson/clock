@@ -111,17 +111,22 @@ void RTC_OnAlarm()
 	ChangeState(AlarmRing);
 }
 
-/*
 void BTN_OnDown(uint16_t btn, PressType press)
 {
 	if(state == AlarmRing && press == Short)
+	{
 		ChangeState(Normal);
+	}
 	else if(press == Long)
+	{
+		Beep(88000, 100, 90);
 		ChangeState(Menu);
+	}
 }
 
 void BTN_OnPress(uint16_t btn, PressType press)
 {
-
+	if(press == Short)
+		Beep(88000, 60, 90);
 }
-*/
+

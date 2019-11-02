@@ -31,6 +31,6 @@ void InitSound();
 void SelectVoice(uint8_t channel, uint8_t vol, PVoice pv);
 void SoundOn(uint8_t channel, uint32_t hz);
 void SoundOff(uint8_t channel);
-
+void Beep(uint32_t hz, uint16_t ms, uint8_t vol);
 
 #endif /* SOUND_H_ */

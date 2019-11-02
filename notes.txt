@@ -9,3 +9,10 @@ Currently using 150 ohm / 0.1 uF RC low pass filter. HF PWM is attenuated to aro
 
 29/10/2019
 Implemented button firmware. IDR value is always 1 for all buttons.
+
+02/11/2019
+Buttons are working correctly now. Needed to add pull-down resistors even though I specified internal pulldown resistors.
+
+03/11/2019
+Implemented a beep routine for button press. This is working but a hard fault occurs if the beep is triggered
+by a long button press while a song is playing.

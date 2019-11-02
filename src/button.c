@@ -8,6 +8,7 @@
 #include <string.h>
 #include "stm32f10x.h"
 #include "macros.h"
+#include "system.h"
 #include "button.h"
 
 uint8_t prescaler;
@@ -27,6 +28,8 @@ void InitButton()
 	gpio.GPIO_Speed				= GPIO_Speed_50MHz;
 	gpio.GPIO_Pin				= BUTTON_PINS;
 	GPIO_Init(BUTTON_PORT, &gpio);
+
+	RegisterSysTickCallback(&PollButtonState);
 
 	printf("Buttons initialized\n");
 }

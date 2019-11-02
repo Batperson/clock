@@ -33,6 +33,8 @@ volatile Channel channel[SOUND_CHANNELS];
 
 volatile uint16_t soundBuf[SOUND_BUFFER_LEN];
 
+void SoundCallback();
+
 void InitSound()
 {
 	GPIO_InitTypeDef 			gpio;
@@ -40,6 +42,8 @@ void InitSound()
 	TIM_OCInitTypeDef			ocnt;
 	DMA_InitTypeDef				dmai;
 	NVIC_InitTypeDef 			nvic;
+
+	RegisterSysTickCallback(&SoundCallback);
 
 	memset((Channel*)channel, 0, sizeof(channel));
 	memset((uint16_t*)soundBuf, 0, sizeof(soundBuf));
@@ -210,4 +214,38 @@ void SoundOff(uint8_t chan)
 {
 	channel[chan].envphase		= Decay;
 	channel[chan].envfactor		= 0xffff;
+}
+
+#define BEEP_CHANNEL SOUND_CHANNELS-1
+
+uint8_t	oldVol		= 0;
+PVoice oldVoice		= 0;
+uint16_t beepTicks 	= 0;
+
+void Beep(uint32_t hz, uint16_t ms, uint8_t vol)
+{
+	if(ms > 0)
+	{
+		oldVoice	= channel[BEEP_CHANNEL].voice;
+		oldVol		= channel[BEEP_CHANNEL].vol;
+
+		SelectVoice(BEEP_CHANNEL, vol, &sine);
+		SoundOn(BEEP_CHANNEL, hz);
+
+		beepTicks = ms;
+	}
+}
+
+void SoundCallback()
+{
+	if(beepTicks)
+	{
+		if(--beepTicks == 0)
+		{
+			SoundOff(BEEP_CHANNEL);
+
+			if(oldVoice)
+				SelectVoice(BEEP_CHANNEL, oldVol, oldVoice);
+		}
+	}
 }

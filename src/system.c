@@ -5,10 +5,12 @@
  */
 #include <stdio.h>
 #include "stm32f10x.h"
-#include "button.h"
+#include "system.h"
 
 static volatile uint32_t _millis;
 static volatile uint32_t _timer;
+
+callback_ptr callbacks[MAX_CALLBACKS];
 
 void InitSystem()
 {
@@ -31,7 +33,25 @@ void SysTick_Handler(void)
 	if(_timer > 0)
 		_timer--;
 
-	PollButtonState();
+	for(int i=0; i<MAX_CALLBACKS; i++)
+	{
+		if(!callbacks[i])
+			break;
+
+		callbacks[i]();
+	}
+}
+
+void RegisterSysTickCallback(callback_ptr ptr)
+{
+	for(uint8_t i=0; i<MAX_CALLBACKS; i++)
+	{
+		if(!callbacks[i])
+		{
+			callbacks[i] = ptr;
+			break;
+		}
+	}
 }
 
 void sleep(uint32_t ms)
