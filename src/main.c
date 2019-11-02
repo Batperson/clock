@@ -14,6 +14,29 @@
 #include "button.h"
 #include "st7735.h"
 
+typedef enum {
+	Normal,
+	Menu,
+	ClockSet,
+	AlarmSet,
+	AlarmRing,
+	About
+} State;
+
+typedef struct {
+	State st;
+	char* txt;
+} MenuItem;
+
+MenuItem menu[] = {
+	{ ClockSet,	"Set Time" },
+	{ AlarmSet, "Set Alarm" },
+	{ About, "About" },
+	{ Normal, "Exit" }
+};
+
+State state;
+
 extern Song arpegios;
 extern Song reveille;
 
@@ -42,6 +65,8 @@ int main(void)
 
 	ClearScreen();
 
+	state = Normal;
+
 	SelectSong(&arpegios);
 	PlaySong();
 
@@ -49,6 +74,11 @@ int main(void)
 	{
 		/* Loop infinitely */
 	}
+}
+
+void ChangeState(State st)
+{
+	state = st;
 }
 
 void RTC_OnSecond()
@@ -75,3 +105,23 @@ void RTC_OnSecond()
 	DrawRect(153, top, 8, tm.tm_sec);
 	DrawGradientVertical(153, top + tm.tm_sec, 8, 60 - tm.tm_sec, tm.tm_sec);
 }
+
+void RTC_OnAlarm()
+{
+	ChangeState(AlarmRing);
+}
+
+/*
+void BTN_OnDown(uint16_t btn, PressType press)
+{
+	if(state == AlarmRing && press == Short)
+		ChangeState(Normal);
+	else if(press == Long)
+		ChangeState(Menu);
+}
+
+void BTN_OnPress(uint16_t btn, PressType press)
+{
+
+}
+*/

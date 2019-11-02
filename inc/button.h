@@ -7,8 +7,11 @@
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
-#define		SHORT_PRESS_MS		30
-#define 	LONG_PRESS_MS		600
+// Polling interval is divided by the prescaler. So if polling every millisec
+// and the prescaler value is 4 then 1 tick = 4 millisecs.
+#define		TICK_PRESCALER		4
+#define		SHORT_PRESS_TICKS	8
+#define 	LONG_PRESS_TICKS	150
 
 #define 	BUTTON_PORT			GPIOA
 #define		BUTTON_PINS			GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_9
@@ -21,7 +24,7 @@ typedef enum
 
 void InitButton();
 void PollButtonState();
-void OnButtonDown(uint16_t button);
-void OnButtonPress(uint16_t button, PressType press);
+void BTN_OnDown(uint16_t button, PressType press);
+void BTN_OnPress(uint16_t button, PressType press);
 
 #endif /* BUTTON_H_ */

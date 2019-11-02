@@ -50,6 +50,8 @@ void InitSound()
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
+	// Give the audio DMA interrupt highest priority so it won't be pre-empted causing
+	// audible glitches
 	nvic.NVIC_IRQChannel 					= DMA1_Channel2_IRQn;
 	nvic.NVIC_IRQChannelPreemptionPriority 	= 0;
 	nvic.NVIC_IRQChannelSubPriority 		= 0;
@@ -125,6 +127,8 @@ void InitSound()
 
 	TIM_DMACmd(TIM2, TIM_DMA_Update, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
+
+	printf("Sound initialized\n");
 }
 
 void LoadSoundBuffer(uint16_t bufhalf)

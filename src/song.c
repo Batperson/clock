@@ -55,10 +55,12 @@ void InitSong()
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
 	nvic.NVIC_IRQChannel 					= TIM3_IRQn;
-	nvic.NVIC_IRQChannelPreemptionPriority 	= 0;
+	nvic.NVIC_IRQChannelPreemptionPriority 	= 1;
 	nvic.NVIC_IRQChannelSubPriority 		= 0;
 	nvic.NVIC_IRQChannelCmd 				= ENABLE;
 	NVIC_Init(&nvic);
+
+	printf("Song player initialized\n");
 }
 
 void SetTempo(uint16_t bpm)

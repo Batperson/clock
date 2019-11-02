@@ -6,3 +6,6 @@ audio sample buffer, so there is likely a glitch when populating the buffer.
 There is an audible glitch every 1 seconds, it is caused by the RTC interrupt.
 
 Currently using 150 ohm / 0.1 uF RC low pass filter. HF PWM is attenuated to around 0.1V.
+
+29/10/2019
+Implemented button firmware. IDR value is always 1 for all buttons.

@@ -14,6 +14,9 @@ void InitSystem()
 {
 	SysTick_Config(SystemCoreClock / 1000);
 
+	// Set SysTick to a low priority
+	NVIC_SetPriority(SysTick_IRQn, 6);
+
 	printf("System functions initialized\n");
 }
 
