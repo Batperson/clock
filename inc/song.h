@@ -105,6 +105,7 @@ void SetTempo(uint16_t bpm);
 void IncrementTempo(uint16_t inc);
 void PlaySong();
 void PauseSong();
+void EndSong();
 
 // Events called in interrupt time
 void OnSongEnd();

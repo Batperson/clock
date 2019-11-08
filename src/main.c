@@ -13,29 +13,42 @@
 #include "song.h"
 #include "button.h"
 #include "st7735.h"
+#include "clock.h"
+#include "render.h"
 
-typedef enum {
-	Normal,
-	Menu,
-	ClockSet,
-	AlarmSet,
-	AlarmRing,
-	About
-} State;
-
-typedef struct {
-	State st;
-	char* txt;
-} MenuItem;
 
 MenuItem menu[] = {
 	{ ClockSet,	"Set Time" },
+	{ DateSet,	"Set Date" },
 	{ AlarmSet, "Set Alarm" },
+	{ AlarmToggle, "Alarm On" },
 	{ About, "About" },
 	{ Normal, "Exit" }
 };
 
-State state;
+const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today", 0 };
+const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", 0 };
+const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", 0 };
+const char* birthdayPeterTexts[]		= { "It's Dad's birthday!", "He is %d today.", "Give him a handshake!", 0 };
+const char* christmasTexts[]			= { "Merry Christmas!", 0 };
+const char* newYearTexts[]				= { "Happy New Year!", 0 };
+
+SpecialDay specialDays[] = {
+	{ 65535, 0, birthdayChristopherTexts },
+	{ 65535, 0, birthdayRosieTexts },
+	{ 65535, 0, birthdayXiaTexts },
+	{ 65535, 0, birthdayPeterTexts },
+	{ 65535, 0, christmasTexts },
+	{ 65535, 0, newYearTexts },
+	{ 0, 0, 0 }
+};
+
+ClockState 		clockState 			= Normal;
+ClockSetField 	clockField 			= Hour;
+AlarmState		alarmState			= Disabled;
+uint8_t 		quarterSecond		= -1;
+uint8_t			specialDay			= -1;
+struct tm 		clockFields;
 
 extern Song arpegios;
 extern Song reveille;
@@ -63,47 +76,80 @@ int main(void)
 	InitSong();
 	InitButton();
 
+	GetTime(&clockFields);
 	ClearScreen();
 
-	state = Normal;
-
-	SelectSong(&arpegios);
-	PlaySong();
+	//SelectSong(&reveille);
+	//PlaySong();
 
 	while(1)
 	{
-		/* Loop infinitely */
+		// Maybe this will save some milliamps?
+		__WFI();
 	}
 }
 
-void ChangeState(State st)
+void ToggleAlarm()
 {
-	state = st;
+	if(alarmState == Enabled)
+	{
+		alarmState = Disabled;
+	}
+	else
+	{
+		alarmState = Enabled;
+	}
+
+	clockState = Normal;
+}
+
+void ChangeState(ClockState state)
+{
+	switch(state)
+	{
+	case AlarmRing:
+	case AlarmSnooze:
+		EndSong();
+		break;
+
+	default:break;
+	}
+
+	clockState = state;
+
+	switch(clockState)
+	{
+	case AlarmToggle:
+		ToggleAlarm();
+		break;
+
+	default:
+		break;
+	}
 }
 
 void RTC_OnSecond()
 {
-	struct tm tm;
-	GetTime(&tm);
+	GetTime(&clockFields);
+	Render();
 
-	char sz[24];
-	strftime(sz, sizeof(sz), "%I:%M", &tm);
+	/*
+	if(quarterSecond < 0)
+	{
 
-	SetForegroundColour(CYAN);
-	SetFont(lcdFont);
-	DrawText(10, 36, sz);
+	}
+	else
+	{
+		if(++quarterSecond > 3)
+		{
+			quarterSecond = 0;
 
-	strftime(sz, sizeof(sz), "%a %d %b %Y", &tm);
-	strupr(sz);
+			GetTime(&clockFields);
+		}
 
-	SetForegroundColour(BLUE);
-	SetFont(sysFont);
-	DrawText(10, 74, sz);
-
-	uint16_t top 	= 40;
-	SetForegroundColour(BLACK);
-	DrawRect(153, top, 8, tm.tm_sec);
-	DrawGradientVertical(153, top + tm.tm_sec, 8, 60 - tm.tm_sec, tm.tm_sec);
+		Render();
+	}
+	*/
 }
 
 void RTC_OnAlarm()
@@ -113,9 +159,9 @@ void RTC_OnAlarm()
 
 void BTN_OnDown(uint16_t btn, PressType press)
 {
-	if(state == AlarmRing && press == Short)
+	if(clockState == AlarmRing && press == Short)
 	{
-		ChangeState(Normal);
+		ChangeState(AlarmSnooze);
 	}
 	else if(press == Long)
 	{
