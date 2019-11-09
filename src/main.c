@@ -14,17 +14,12 @@
 #include "button.h"
 #include "st7735.h"
 #include "clock.h"
+#include "menu.h"
 #include "render.h"
 
-
-MenuItem menu[] = {
-	{ ClockSet,	"Set Time" },
-	{ DateSet,	"Set Date" },
-	{ AlarmSet, "Set Alarm" },
-	{ AlarmToggle, "Alarm On" },
-	{ About, "About" },
-	{ Normal, "Exit" }
-};
+#define BTN_SELECT					GPIO_Pin_9
+#define BTN_UP						GPIO_Pin_0
+#define BTN_DOWN					GPIO_Pin_1
 
 const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today", 0 };
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", 0 };
@@ -46,7 +41,6 @@ SpecialDay specialDays[] = {
 ClockState 		clockState 			= Normal;
 ClockSetField 	clockField 			= Hour;
 AlarmState		alarmState			= Disabled;
-uint8_t 		quarterSecond		= -1;
 uint8_t			specialDay			= -1;
 struct tm 		clockFields;
 
@@ -62,8 +56,14 @@ extern Song reveille;
 //	A4				Screen (Slave select)
 //	A3				Screen (Reset)
 // 	A2				Screen (Backlight)
-//	A1				Button (Up)
-//	A0				Button (Down)
+//	A1				Button (Down)
+//	A0				Button (Up)
+
+void LoadConfiguration()
+{
+	// TODO: Read alarm state etc from backup domain
+	printf("Config read from backup domain\n");
+}
 
 int main(void)
 {
@@ -75,44 +75,55 @@ int main(void)
 	InitSound();
 	InitSong();
 	InitButton();
+	InitRender();
 
-	GetTime(&clockFields);
 	ClearScreen();
+
+	LoadConfiguration();
 
 	//SelectSong(&reveille);
 	//PlaySong();
 
 	while(1)
 	{
+		// Stop the CPU clock until there is something to do
 		// Maybe this will save some milliamps?
 		__WFI();
 	}
 }
 
-void ToggleAlarm()
+void SetAlarmState(AlarmState als)
 {
-	if(alarmState == Enabled)
+	if(als == Enabled)
 	{
-		alarmState = Disabled;
+		alarmState 		= Enabled;
+		menu[3].text	= "SET ALARM OFF";
 	}
 	else
 	{
-		alarmState = Enabled;
+		alarmState 		= Disabled;
+		menu[3].text	= "SET ALARM ON";
 	}
-
-	clockState = Normal;
 }
 
 void ChangeState(ClockState state)
 {
-	switch(state)
+	switch(clockState)
 	{
 	case AlarmRing:
 	case AlarmSnooze:
 		EndSong();
 		break;
 
-	default:break;
+	case Menu:
+		// We don't clear the screen when drawing the clock, but we do need to if we have been displaying a menu or some
+		// other graphics.
+		ClearScreen();
+		TriggerRender();
+		break;
+
+	default:
+		break;
 	}
 
 	clockState = state;
@@ -120,7 +131,14 @@ void ChangeState(ClockState state)
 	switch(clockState)
 	{
 	case AlarmToggle:
-		ToggleAlarm();
+		SetAlarmState(alarmState == Enabled ? Disabled : Enabled);
+		TriggerRender();
+
+		clockState = Menu;
+		break;
+
+	case Menu:
+		TriggerRender();
 		break;
 
 	default:
@@ -131,25 +149,16 @@ void ChangeState(ClockState state)
 void RTC_OnSecond()
 {
 	GetTime(&clockFields);
-	Render();
 
-	/*
-	if(quarterSecond < 0)
+	switch(clockState)
 	{
+	case Menu:
+		break;
 
+	default:
+		TriggerRender();
+		break;
 	}
-	else
-	{
-		if(++quarterSecond > 3)
-		{
-			quarterSecond = 0;
-
-			GetTime(&clockFields);
-		}
-
-		Render();
-	}
-	*/
 }
 
 void RTC_OnAlarm()
@@ -157,22 +166,39 @@ void RTC_OnAlarm()
 	ChangeState(AlarmRing);
 }
 
-void BTN_OnDown(uint16_t btn, PressType press)
+void BTN_OnDown(uint32_t btn)
 {
-	if(clockState == AlarmRing && press == Short)
+	if(clockState == AlarmRing && !(btn & BUTTON_LPRESS))
 	{
 		ChangeState(AlarmSnooze);
 	}
-	else if(press == Long)
+	else if(btn == (BUTTON_LPRESS | BTN_SELECT))
 	{
 		Beep(88000, 100, 90);
 		ChangeState(Menu);
 	}
 }
 
-void BTN_OnPress(uint16_t btn, PressType press)
+void BTN_OnPress(uint32_t btn)
 {
-	if(press == Short)
+	if(!(btn & BUTTON_LPRESS))
+	{
+		switch(btn)
+		{
+		case BTN_SELECT:
+			if(clockState == Menu) MenuSelect();
+			break;
+		case BTN_UP:
+			if(clockState == Menu) MenuUp();
+			break;
+		case BTN_DOWN:
+			if(clockState == Menu) MenuDown();
+			break;
+		default:
+			break;
+		}
+
 		Beep(88000, 60, 90);
+	}
 }
 

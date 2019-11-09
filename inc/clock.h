@@ -52,14 +52,13 @@ typedef struct {
 	const char** 	texts;
 } SpecialDay;
 
-extern MenuItem 		menu[];
 extern SpecialDay 		specialDays[];
-
 extern ClockState 		clockState;
 extern ClockSetField 	clockSetField;
 extern AlarmState		alarmState;
-extern uint8_t 			quarterSecond;
 extern uint8_t			specialDay;
 extern struct tm 		clockFields;
+
+void ChangeState(ClockState state);
 
 #endif /* CLOCK_H_ */

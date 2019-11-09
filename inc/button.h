@@ -16,15 +16,13 @@
 #define 	BUTTON_PORT			GPIOA
 #define		BUTTON_PINS			GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_9
 
-typedef enum
-{
-	Short,
-	Long
-} PressType;
+#define		BUTTON_PIN_MASK		0x0000FFFF
+#define		BUTTON_FLAG_MASK	0xFFFF0000
+#define		BUTTON_LPRESS		0x80000000
 
 void InitButton();
 void PollButtonState();
-void BTN_OnDown(uint16_t button, PressType press);
-void BTN_OnPress(uint16_t button, PressType press);
+void BTN_OnDown(uint32_t button);
+void BTN_OnPress(uint32_t button);
 
 #endif /* BUTTON_H_ */

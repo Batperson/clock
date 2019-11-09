@@ -54,9 +54,9 @@ void PollButtonState()
 						buttonState[i]++;
 
 						if(bts == SHORT_PRESS_TICKS)
-							BTN_OnDown(btn, Short);
+							BTN_OnDown(btn);
 						else if(bts == LONG_PRESS_TICKS)
-							BTN_OnDown(btn, Long);
+							BTN_OnDown(btn + BUTTON_LPRESS);
 					}
 				}
 				else if(bts)
@@ -64,21 +64,21 @@ void PollButtonState()
 					buttonState[i]	= 0;
 
 					if(bts >= LONG_PRESS_TICKS)
-						BTN_OnPress(btn, Long);
+						BTN_OnPress(btn | BUTTON_LPRESS);
 					else if(bts >= SHORT_PRESS_TICKS)
-						BTN_OnPress(btn, Short);
+						BTN_OnPress(btn);
 				}
 			}
 		}
 	}
 }
 
-void WEAKREF BTN_OnDown(uint16_t button, PressType press)
+void WEAKREF BTN_OnDown(uint32_t button)
 {
-	printf("Button down: %d %d\n", button, press);
+	printf("Button down: %d\n", (int)button);
 }
 
-void WEAKREF BTN_OnPress(uint16_t button, PressType press)
+void WEAKREF BTN_OnPress(uint32_t button)
 {
-	printf("Button press: %d %d\n", button, press);
+	printf("Button press: %d\n", (int)button);
 }

@@ -7,6 +7,7 @@
 #ifndef RENDER_H_
 #define RENDER_H_
 
-void Render();
+void InitRender();
+void TriggerRender();
 
 #endif /* RENDER_H_ */
