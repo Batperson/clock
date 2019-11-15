@@ -22,7 +22,7 @@ void InitRender()
 {
 	// No need to use NVIC_Init to enable this system interrupt but we do want to set the priority.
 	// We need to use this function for IRQs with negative values such as PendSV, SVC etc
-	// We want PendSV to have the lowest possible priority so it doesn't pre-empt any time-critical interrupts, especially sync
+	// We want PendSV to have the lowest possible priority so it doesn't pre-empt any time-critical interrupts
 	NVIC_SetPriority(PendSV_IRQn, 255);
 
 	printf("Rendering subsystem initialized");

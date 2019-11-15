@@ -7,11 +7,18 @@
 #ifndef MENU_H_
 #define MENU_H_
 
-extern MenuItem menu[];
-extern uint8_t	menuIndex;
+typedef void (*PMenuProc)(uint32_t);
+
+typedef struct {
+	char* 					text;
+	void*					proc;
+	uint32_t				arg;
+} MenuItem, *PMenuItem;
 
 void MenuUp();
 void MenuDown();
 void MenuSelect();
+void RenderMenu();
+void SetCurrentMenu(PMenuItem);
 
 #endif /* MENU_H_ */

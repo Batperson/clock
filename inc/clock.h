@@ -15,7 +15,6 @@ typedef enum {
 	DateSet,
 	AlarmRing,
 	AlarmSnooze,
-	AlarmToggle,
 	About
 } ClockState;
 
@@ -37,14 +36,9 @@ typedef enum {
 } FlashType;
 
 typedef enum {
-	Disabled,
-	Enabled
+	AlarmDisabled,
+	AlarmEnabled
 } AlarmState;
-
-typedef struct {
-	ClockState 		st;
-	char* 			text;
-} MenuItem;
 
 typedef struct {
 	time_t 			time;
@@ -59,6 +53,8 @@ extern AlarmState		alarmState;
 extern uint8_t			specialDay;
 extern struct tm 		clockFields;
 
+void SetAlarmRing(PSong song);
+void SetAlarmState(AlarmState state);
 void ChangeState(ClockState state);
 
 #endif /* CLOCK_H_ */

@@ -73,7 +73,7 @@ Track arpeg_track_3 = {
 };
 
 
-Song arpegios = {
+Song arpeggiator = {
 	230,
 	{ &arpeg_track_1, &arpeg_track_2, &arpeg_track_3, 0 }
 };

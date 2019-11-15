@@ -16,3 +16,25 @@ Buttons are working correctly now. Needed to add pull-down resistors even though
 03/11/2019
 Implemented a beep routine for button press. This is working but a hard fault occurs if the beep is triggered
 by a long button press while a song is playing.
+
+12/11/2019
+160 * 128 bare TFT with 14-pin flex connector. Maybe glue directly to outside of enclosure?
+Pinout:
+1  NC
+2  VSS		connect to GND
+3  LED-		connect to GND
+4  LED+		connect to 3V3 (LED backlight. Resistor needed?)
+5  VSS		connect to GND
+6  /RESET	reset active low
+7  A0		data/command for 4-wire SPI
+8  SDA		serial data, MOSI
+9  SCK		serial clock
+10 VDDA		connect to 3V3 (analog supply)
+11 VDDIC	connect to 3V3 (VDDIO? digital supply)
+12 /CS		chip select active low
+13 VSS		connect to GND
+14 NC
+
+13/11/2019
+Free shipping to Dec 31 for Element14 with I'MINVITEDFORFREESHIPPING in special instructions/other in delivery options. Order amplifier ICs.
+Bomb disarming puzzle in suitcase: https://imgur.com/a/8nmzieA

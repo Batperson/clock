@@ -18,17 +18,31 @@
 #include "fonts.h"
 #include "clock.h"
 #include "render.h"
+#include "menu.h"
 
-MenuItem menu[] = {
-	{ ClockSet,	"SET TIME" },
-	{ DateSet,	"SET DATE" },
-	{ AlarmSet, "SET ALARM" },
-	{ AlarmToggle, "SET ALARM ON" },
-	{ About, "ABOUT THIS CLOCK" },
-	{ Normal, "EXIT" }
-};
+PMenuItem 	currentMenu	= NULL;
+uint8_t 	menuIndex	= 0;
+uint8_t 	menuLength	= 0;
 
-uint8_t menuIndex	= 0;
+void SetCurrentMenu(PMenuItem menu)
+{
+	menuIndex	= 0;
+	currentMenu = menu;
+
+	uint8_t i = 0;
+	while(1)
+	{
+		if(menu[i].text == NULL)
+		{
+			menuLength = i;
+			break;
+		}
+
+		i++;
+	}
+
+	if(clockState == Menu) TriggerRender();
+}
 
 void MenuUp()
 {
@@ -41,7 +55,7 @@ void MenuUp()
 
 void MenuDown()
 {
-	if(menuIndex < (sizeof(menu) / sizeof(MenuItem))-1)
+	if(menuIndex < menuLength - 1)
 	{
 		menuIndex++;
 		TriggerRender();
@@ -50,7 +64,10 @@ void MenuDown()
 
 void MenuSelect()
 {
-	ChangeState(menu[menuIndex].st);
+	PMenuProc menuProc	= (PMenuProc)currentMenu[menuIndex].proc;
+	uint32_t arg		= currentMenu[menuIndex].arg;
+
+	if(menuProc) menuProc(arg);
 }
 
 void RenderMenu()
@@ -59,11 +76,20 @@ void RenderMenu()
 	SetFont(sysFont);
 
 	uint16_t top	= 40;
-	for(uint8_t i = 0; i < sizeof(menu) / sizeof(MenuItem); i++)
+
+	uint8_t start;
+	if(menuIndex < 2)
+		start = 0;
+	else if(menuIndex > menuLength - 5)
+		start = menuLength - 5;
+	else
+		start = menuIndex - 2;
+
+	for(uint8_t i = start; i < start + 5; i++)
 	{
 		SetForegroundColour((i == menuIndex) ? BLACK : GREEN);
 		SetBackgroundColour((i == menuIndex) ? GREEN : BLACK);
-		DrawText(10, top, menu[i].text);
+		DrawText(10, top, currentMenu[i].text);
 
 		top += sysFont->height + 1;
 	}

@@ -21,6 +21,9 @@
 #define BTN_UP						GPIO_Pin_0
 #define BTN_DOWN					GPIO_Pin_1
 
+extern Song arpeggiator;
+extern Song reveille;
+
 const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today", 0 };
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", 0 };
 const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", 0 };
@@ -38,14 +41,32 @@ SpecialDay specialDays[] = {
 	{ 0, 0, 0 }
 };
 
+MenuItem mainMenu[];
+
+MenuItem alarmMenu[] = {
+	{ "SET ALARM ON", 				SetAlarmState, 		AlarmEnabled },
+	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
+	{ "ALARM RING: REVEILLE", 		SetAlarmRing, 		(uint32_t)&reveille  },
+	{ "ALARM RING: ARPEGGIATOR", 	SetAlarmRing, 		(uint32_t)&arpeggiator  },
+	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
+	{ NULL, NULL, 0 }
+};
+
+MenuItem mainMenu[] = {
+	{ "SET TIME", 					ChangeState, 	ClockSet },
+	{ "SET DATE", 					ChangeState, 	DateSet },
+	{ "SET ALARM", 					SetCurrentMenu,	(uint32_t)alarmMenu },
+	{ "ABOUT THIS CLOCK", 			ChangeState, 	About },
+	{ "EXIT", 						ChangeState, 	Normal },
+	{ NULL, NULL, 0 }
+};
+
+PSong			alarmRing			= &reveille;
 ClockState 		clockState 			= Normal;
 ClockSetField 	clockField 			= Hour;
-AlarmState		alarmState			= Disabled;
+AlarmState		alarmState			= AlarmDisabled;
 uint8_t			specialDay			= -1;
 struct tm 		clockFields;
-
-extern Song arpegios;
-extern Song reveille;
 
 // 	Pins
 //	A9				Button (Select)
@@ -69,6 +90,10 @@ int main(void)
 {
 	printf("STM32F103 RTC Alarm Clock v0.01 by Weka Workshop\n");
 
+	// Use all priority bits for pre-emption priority. We want the DMA interrupt for waveform generation
+	// to be able to pre-empt everything else.
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
 	InitClock();
 	InitSystem();
 	InitDisplay();
@@ -78,7 +103,7 @@ int main(void)
 	InitRender();
 
 	ClearScreen();
-
+	SetCurrentMenu(mainMenu);
 	LoadConfiguration();
 
 	//SelectSong(&reveille);
@@ -94,15 +119,17 @@ int main(void)
 
 void SetAlarmState(AlarmState als)
 {
-	if(als == Enabled)
+	if(als == AlarmEnabled)
 	{
-		alarmState 		= Enabled;
-		menu[3].text	= "SET ALARM OFF";
+		alarmState 			= AlarmEnabled;
+		alarmMenu[0].text	= "SET ALARM OFF";
+		alarmMenu[0].arg	= AlarmDisabled;
 	}
 	else
 	{
-		alarmState 		= Disabled;
-		menu[3].text	= "SET ALARM ON";
+		alarmState 			= AlarmDisabled;
+		alarmMenu[0].text	= "SET ALARM ON";
+		alarmMenu[0].arg	= AlarmEnabled;
 	}
 }
 
@@ -130,13 +157,6 @@ void ChangeState(ClockState state)
 
 	switch(clockState)
 	{
-	case AlarmToggle:
-		SetAlarmState(alarmState == Enabled ? Disabled : Enabled);
-		TriggerRender();
-
-		clockState = Menu;
-		break;
-
 	case Menu:
 		TriggerRender();
 		break;
@@ -144,6 +164,11 @@ void ChangeState(ClockState state)
 	default:
 		break;
 	}
+}
+
+void SetAlarmRing(PSong song)
+{
+	alarmRing = song;
 }
 
 void RTC_OnSecond()
