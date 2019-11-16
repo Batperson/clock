@@ -38,3 +38,9 @@ Pinout:
 13/11/2019
 Free shipping to Dec 31 for Element14 with I'MINVITEDFORFREESHIPPING in special instructions/other in delivery options. Order amplifier ICs.
 Bomb disarming puzzle in suitcase: https://imgur.com/a/8nmzieA
+
+17/11/2019
+Clock set functionality working. Counter does not update immediately.
+Next tasks:
+* Implement a menu timeout to play an alarm song if the menu option is selected for 1 sec
+* Implement a centre-align text render

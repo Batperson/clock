@@ -17,5 +17,7 @@ uint32_t millis();
 
 typedef void (*callback_ptr)();
 void RegisterSysTickCallback(callback_ptr ptr);
+void RegisterTimeoutCallback(callback_ptr ptr, uint32_t millis);
+void DeregisterCallback(callback_ptr);
 
 #endif /* SYSTEM_H_ */

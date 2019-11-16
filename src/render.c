@@ -36,14 +36,14 @@ void TriggerRender()
 void RenderNormal()
 {
 	char sz[24];
-	strftime(sz, sizeof(sz), "%I:%M", &clockFields);
+	strftime(sz, sizeof(sz), "%I:%M", &clockValues);
 
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(CYAN);
 	SetFont(lcdFont);
 	DrawText(10, 36, sz);
 
-	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockFields);
+	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);
 	strupr(sz);
 
 	SetForegroundColour(BLUE);
@@ -52,13 +52,50 @@ void RenderNormal()
 
 	uint16_t top 	= 40;
 	SetForegroundColour(BLACK);
-	DrawRect(153, top, 8, clockFields.tm_sec);
-	DrawGradientVertical(153, top + clockFields.tm_sec, 8, 60 - clockFields.tm_sec, clockFields.tm_sec);
+	DrawRect(153, top, 8, clockValues.tm_sec);
+	DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
 }
 
 void RenderClockSet()
 {
+	char sz[24];
 
+	switch(clockSetField)
+	{
+	case Hour:
+	case Minute:
+		strftime(sz, sizeof(sz), "%I:%M", &clockSetValues);
+		break;
+	case Second:
+		strftime(sz, sizeof(sz), "%S", &clockSetValues);
+		break;
+	default:
+		break;
+	}
+
+	SetBackgroundColour(BLACK);
+	SetForegroundColour(CYAN);
+	SetFont(lcdFont);
+	DrawText(10, 36, sz);
+
+	switch(clockSetField)
+	{
+	case Hour:
+		strcpy(sz, "SET HOUR");
+		break;
+	case Minute:
+		strcpy(sz, "SET MINUTE");
+		break;
+	case Second:
+		strcpy(sz, "SET SECOND");
+		break;
+	default:
+		break;
+	}
+
+	SetForegroundColour(MAGENTA);
+	SetFont(sysFont);
+	DrawText(30, 84, sz);
 }
 
 void RenderAlarmSet()

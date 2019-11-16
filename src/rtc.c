@@ -102,7 +102,9 @@ void InitClock()
 
 void SetTime(struct tm* ptm)
 {
+	time_t tim = mktime(ptm);
 
+	RTC_SetCounter(tim);
 }
 
 void GetTime(struct tm* ptm)

@@ -22,7 +22,6 @@ typedef enum {
 	Hour,
 	Minute,
 	Second,
-	AmPm,
 
 	Year	= Hour,
 	Month	= Minute,
@@ -44,14 +43,16 @@ typedef struct {
 	time_t 			time;
 	PSong 			specialSong;
 	const char** 	texts;
-} SpecialDay;
+} SpecialDay, *PSpecialDay;
 
-extern SpecialDay 		specialDays[];
+extern PSpecialDay		specialDay;
+extern uint16_t			specialDayYears;
+extern char*			specialDayText;
 extern ClockState 		clockState;
 extern ClockSetField 	clockSetField;
 extern AlarmState		alarmState;
-extern uint8_t			specialDay;
-extern struct tm 		clockFields;
+extern struct tm 		clockValues;
+extern struct tm 		clockSetValues;
 
 void SetAlarmRing(PSong song);
 void SetAlarmState(AlarmState state);

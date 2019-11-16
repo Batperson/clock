@@ -24,21 +24,22 @@
 extern Song arpeggiator;
 extern Song reveille;
 
-const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today", 0 };
-const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", 0 };
-const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", 0 };
-const char* birthdayPeterTexts[]		= { "It's Dad's birthday!", "He is %d today.", "Give him a handshake!", 0 };
-const char* christmasTexts[]			= { "Merry Christmas!", 0 };
-const char* newYearTexts[]				= { "Happy New Year!", 0 };
+const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today.", NULL };
+const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
+const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", NULL };
+const char* birthdayPeterTexts[]		= { "It's Dad's birthday!", "He is %d today.", "Give him a handshake!", NULL };
+const char* christmasTexts[]			= { "Merry Christmas!", NULL };
+const char* newYearTexts[]				= { "Happy New Year!", NULL };
+const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", NULL };
 
 SpecialDay specialDays[] = {
-	{ 65535, 0, birthdayChristopherTexts },
-	{ 65535, 0, birthdayRosieTexts },
-	{ 65535, 0, birthdayXiaTexts },
-	{ 65535, 0, birthdayPeterTexts },
-	{ 65535, 0, christmasTexts },
-	{ 65535, 0, newYearTexts },
-	{ 0, 0, 0 }
+	{ 65535, 	NULL, 			birthdayChristopherTexts },
+	{ 65535, 	NULL, 			birthdayRosieTexts },
+	{ 65535, 	NULL, 			birthdayXiaTexts },
+	{ 65535, 	NULL, 			birthdayPeterTexts },
+	{ 65535, 	NULL, 			christmasTexts },
+	{ 0, 		NULL, 			newYearTexts },
+	{ 65535, 	NULL, 			waitangiDayTexts }
 };
 
 MenuItem mainMenu[];
@@ -46,8 +47,8 @@ MenuItem mainMenu[];
 MenuItem alarmMenu[] = {
 	{ "SET ALARM ON", 				SetAlarmState, 		AlarmEnabled },
 	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
-	{ "ALARM RING: REVEILLE", 		SetAlarmRing, 		(uint32_t)&reveille  },
-	{ "ALARM RING: ARPEGGIATOR", 	SetAlarmRing, 		(uint32_t)&arpeggiator  },
+	{ "RING: REVEILLE", 			SetAlarmRing, 		(uint32_t)&reveille  },
+	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		(uint32_t)&arpeggiator },
 	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
 	{ NULL, NULL, 0 }
 };
@@ -63,10 +64,14 @@ MenuItem mainMenu[] = {
 
 PSong			alarmRing			= &reveille;
 ClockState 		clockState 			= Normal;
-ClockSetField 	clockField 			= Hour;
+ClockSetField 	clockSetField 		= Hour;
 AlarmState		alarmState			= AlarmDisabled;
-uint8_t			specialDay			= -1;
-struct tm 		clockFields;
+PSpecialDay		specialDay			= NULL;
+char*			specialDayText		= NULL;
+uint16_t		specialDayYears		= 0;
+uint8_t			snoozeMinutes		= 5;
+struct tm 		clockValues;
+struct tm		clockSetValues;
 
 // 	Pins
 //	A9				Button (Select)
@@ -138,7 +143,6 @@ void ChangeState(ClockState state)
 	switch(clockState)
 	{
 	case AlarmRing:
-	case AlarmSnooze:
 		EndSong();
 		break;
 
@@ -157,11 +161,27 @@ void ChangeState(ClockState state)
 
 	switch(clockState)
 	{
+	case AlarmRing:
+		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
+		PlaySong();
+		break;
+
+	case AlarmSnooze:
+		// TODO: Set the alarm to go again in n minutes
+		break;
+
 	case Menu:
 		TriggerRender();
 		break;
 
+	case ClockSet:
+		clockSetField = Hour;
+		GetTime(&clockSetValues);
+		TriggerRender();
+		break;
+
 	default:
+		TriggerRender();
 		break;
 	}
 }
@@ -171,24 +191,184 @@ void SetAlarmRing(PSong song)
 	alarmRing = song;
 }
 
+void SetAlarmTime()
+{
+	ChangeState(Normal);
+}
+
+void ButtonSelectPress()
+{
+	switch(clockState)
+	{
+	case Menu:
+		MenuSelect();
+		break;
+	case ClockSet:
+		switch(clockSetField)
+		{
+		case Hour:
+			clockSetField = Minute;
+			break;
+		case Minute:
+			clockSetField = Second;
+			ClearScreen();
+			TriggerRender();
+			break;
+		case Second:
+			SetTime(&clockSetValues);
+			GetTime(&clockValues);
+			ClearScreen();
+			ChangeState(Normal);
+			break;
+		default:
+			break;
+		}
+		TriggerRender();
+		break;
+	case DateSet:
+		switch(clockSetField)
+		{
+		case Day:
+			clockSetField = Month;
+			break;
+		case Month:
+			clockSetField = Year;
+			break;
+		case Year:
+			SetTime(&clockSetValues);
+			GetTime(&clockValues);
+			ClearScreen();
+			ChangeState(Normal);
+			break;
+		default:
+			break;
+		}
+		TriggerRender();
+	case AlarmSet:
+		switch(clockSetField)
+		{
+		case Hour:
+			clockSetField = Minute;
+			break;
+		case Minute:
+			SetAlarmTime();
+			break;
+		default:
+			break;
+		}
+		TriggerRender();
+	default:
+		break;
+	}
+}
+
+void ButtonUpPress()
+{
+	switch(clockState)
+	{
+	case Menu:
+		MenuUp();
+		break;
+	case ClockSet:
+	case AlarmSet:
+		switch(clockSetField)
+		{
+		case Hour:
+			if(--clockSetValues.tm_hour < 0) clockSetValues.tm_hour = 23;
+			break;
+		case Minute:
+			if(--clockSetValues.tm_min < 0) clockSetValues.tm_min = 59;
+			break;
+		case Second:
+			clockSetValues.tm_sec = 0;
+			break;
+		default:
+			break;
+		}
+		TriggerRender();
+		break;
+	default:
+		break;
+	}
+}
+
+void ButtonDownPress()
+{
+	switch(clockState)
+	{
+	case Menu:
+		MenuDown();
+		break;
+	case ClockSet:
+	case AlarmSet:
+		switch(clockSetField)
+		{
+		case Hour:
+			if(++clockSetValues.tm_hour > 23) clockSetValues.tm_hour = 0;
+			break;
+		case Minute:
+			if(++clockSetValues.tm_min > 59) clockSetValues.tm_min = 0;
+			break;
+		case Second:
+			clockSetValues.tm_sec = 0;
+			break;
+		default:
+			break;
+		}
+		TriggerRender();
+		break;
+	default:
+		break;
+	}
+}
+
 void RTC_OnSecond()
 {
-	GetTime(&clockFields);
+	GetTime(&clockValues);
+
+	if(++clockSetValues.tm_sec >= 60)
+		clockSetValues.tm_sec = 0;
 
 	switch(clockState)
 	{
 	case Menu:
+		break;
+	case ClockSet:
+		if(clockSetField == Second)
+			TriggerRender();
 		break;
 
 	default:
 		TriggerRender();
 		break;
 	}
+
+	static int yday = -1;
+	if(clockValues.tm_yday != yday)
+	{
+		yday = clockValues.tm_yday;
+
+		specialDay 		= NULL;
+		specialDayText	= NULL;
+
+		for(int i=0; i<sizeof(specialDays) / sizeof(SpecialDay); i++)
+		{
+			struct tm* ptm = localtime(&specialDays[i].time);
+			if(ptm->tm_mday == clockValues.tm_mday && ptm->tm_mon == clockValues.tm_mon)
+			{
+				specialDay 		= &specialDays[i];
+				specialDayText	= (char*)*specialDay->texts;
+				specialDayYears = clockValues.tm_year - ptm->tm_year;
+				break;
+			}
+		}
+	}
 }
 
 void RTC_OnAlarm()
 {
-	ChangeState(AlarmRing);
+	// Ignore an alarm if the user is busy with the menu
+	if(clockState != Menu) ChangeState(AlarmRing);
 }
 
 void BTN_OnDown(uint32_t btn)
@@ -211,13 +391,13 @@ void BTN_OnPress(uint32_t btn)
 		switch(btn)
 		{
 		case BTN_SELECT:
-			if(clockState == Menu) MenuSelect();
+			ButtonSelectPress();
 			break;
 		case BTN_UP:
-			if(clockState == Menu) MenuUp();
+			ButtonUpPress();
 			break;
 		case BTN_DOWN:
-			if(clockState == Menu) MenuDown();
+			ButtonDownPress();
 			break;
 		default:
 			break;
