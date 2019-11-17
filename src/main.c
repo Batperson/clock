@@ -111,9 +111,6 @@ int main(void)
 	SetCurrentMenu(mainMenu);
 	LoadConfiguration();
 
-	//SelectSong(&reveille);
-	//PlaySong();
-
 	while(1)
 	{
 		// Stop the CPU clock until there is something to do
@@ -319,6 +316,20 @@ void ButtonDownPress()
 		break;
 	default:
 		break;
+	}
+}
+
+void OnMenuHighlight(PMenuItem item)
+{
+	EndSong();
+}
+
+void OnMenuTimeout(PMenuItem item)
+{
+	if(item->proc == SetAlarmRing)
+	{
+		SelectSong((PSong)item->arg);
+		PlaySong();
 	}
 }
 

@@ -44,11 +44,29 @@ void SetCurrentMenu(PMenuItem menu)
 	if(clockState == Menu) TriggerRender();
 }
 
+void WEAKREF OnMenuTimeout(PMenuItem item)
+{
+
+}
+
+void WEAKREF OnMenuHighlight(PMenuItem item)
+{
+
+}
+
+void MenuTimeoutHandler()
+{
+	OnMenuTimeout(&currentMenu[menuIndex]);
+}
+
 void MenuUp()
 {
 	if(menuIndex > 0)
 	{
 		menuIndex--;
+		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS);
+		OnMenuHighlight(&currentMenu[menuIndex]);
+
 		TriggerRender();
 	}
 }
@@ -58,6 +76,9 @@ void MenuDown()
 	if(menuIndex < menuLength - 1)
 	{
 		menuIndex++;
+		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS);
+		OnMenuHighlight(&currentMenu[menuIndex]);
+
 		TriggerRender();
 	}
 }
@@ -67,7 +88,10 @@ void MenuSelect()
 	PMenuProc menuProc	= (PMenuProc)currentMenu[menuIndex].proc;
 	uint32_t arg		= currentMenu[menuIndex].arg;
 
-	if(menuProc) menuProc(arg);
+	DeregisterCallback(MenuTimeoutHandler);
+
+	if(menuProc)
+		menuProc(arg);
 }
 
 void RenderMenu()

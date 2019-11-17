@@ -135,7 +135,8 @@ void EndSong()
 	TIM_Cmd(TIM3, DISABLE);
 	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 
-	InitTracks();
+	if(state.song != NULL)
+		InitTracks();
 
 	OnSongEnd();
 }

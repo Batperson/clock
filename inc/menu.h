@@ -7,6 +7,8 @@
 #ifndef MENU_H_
 #define MENU_H_
 
+#define MENU_TIMEOUT_MILLIS	1500
+
 typedef void (*PMenuProc)(uint32_t);
 
 typedef struct {

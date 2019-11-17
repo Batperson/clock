@@ -8,11 +8,10 @@
 #include "stm32f10x.h"
 #include "system.h"
 
-static volatile uint32_t _millis;
-static volatile uint32_t _timer;
+static volatile uint32_t timer;
 
 callback_ptr 	callbacks[MAX_CALLBACKS];
-uint32_t		timeouts[MAX_CALLBACKS];
+int16_t			timeouts[MAX_CALLBACKS];
 
 void InitSystem()
 {
@@ -27,40 +26,45 @@ void InitSystem()
 	printf("System functions initialized\n");
 }
 
-uint32_t millis()
-{
-	return _millis;
-}
-
 void sleep(uint32_t ms)
 {
-	_timer = ms + 1;
-	while(_timer > 0)
+	timer = ms + 1;
+	while(timer > 0)
 		;
 }
 
 void SysTick_Handler(void)
 {
-	_millis++;
-	if(_timer > 0) _timer--;
+	if(timer > 0)
+		timer--;
 
 	for(int i=0; i<MAX_CALLBACKS; i++)
-		if(callbacks[i]) callbacks[i]();
+	{
+		if(callbacks[i])
+		{
+			if(timeouts[i] <= 0)
+				callbacks[i]();
+			if(timeouts[i] == 0)
+				DeregisterCallback(callbacks[i]);
+			else if(timeouts[i] > 0)
+				timeouts[i]--;
+		}
+	}
 }
 
 void RegisterSysTickCallback(callback_ptr ptr)
 {
-	RegisterTimeoutCallback(ptr, 0);
+	RegisterTimeoutCallback(ptr, -1);
 }
 
-void RegisterTimeoutCallback(callback_ptr ptr, uint32_t millis)
+void RegisterTimeoutCallback(callback_ptr ptr, int16_t millis)
 {
 	for(uint8_t i=0; i<MAX_CALLBACKS; i++)
 	{
 		if(!callbacks[i])
 		{
 			callbacks[i] 	= ptr;
-			timeouts[i] 	= 0;
+			timeouts[i] 	= millis;
 			break;
 		}
 	}
