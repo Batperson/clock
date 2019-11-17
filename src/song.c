@@ -92,7 +92,8 @@ void InitTracks()
 		if(t == NULL)
 			break;
 
-		ts->flags |= Active;
+		ts->ticks 	= state.song->tickOffset[i];
+		ts->flags 	|= Active;
 		SelectVoice(i, t->volume, t->voice);
 	}
 }

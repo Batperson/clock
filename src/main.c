@@ -118,7 +118,7 @@ int main(void)
 	{
 		// Stop the CPU clock until there is something to do
 		// Maybe this will save some milliamps?
-		__WFI();
+		//__WFI();
 	}
 }
 

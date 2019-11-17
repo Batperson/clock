@@ -4,6 +4,7 @@
  *  Created on: 14/10/2019
  */
 
+#include <stddef.h>
 #include "stm32f10x.h"
 #include "sound.h"
 #include "song.h"
@@ -75,7 +76,8 @@ Track arpeg_track_3 = {
 
 Song arpeggiator = {
 	230,
-	{ &arpeg_track_1, &arpeg_track_2, &arpeg_track_3, 0 }
+	{ &arpeg_track_1, &arpeg_track_2, &arpeg_track_3, NULL },
+	{ 0, 0, 0, 0 }
 };
 
 Track reveille_track_1 = {
@@ -117,5 +119,6 @@ Track reveille_track_1 = {
 
 Song reveille = {
 	340,
-	{ &reveille_track_1, 0 }
+	{ &reveille_track_1, &reveille_track_1, &reveille_track_1 },
+	{ 0, 3, 9, 0 }
 };

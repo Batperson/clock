@@ -1,6 +1,5 @@
 20/10/2019
-
-There is a high-frequency whine from the audio signal. This changes in frequency with the length of the
+There is a high-frequency whine from the audio. This changes in frequency with the length of the
 audio sample buffer, so there is likely a glitch when populating the buffer.
 
 There is an audible glitch every 1 seconds, it is caused by the RTC interrupt.
@@ -44,3 +43,11 @@ Clock set functionality working. Counter does not update immediately.
 Next tasks:
 * Implement a menu timeout to play an alarm song if the menu option is selected for 1 sec
 * Implement a centre-align text render
+
+Audio output has an unpleasant whine. The whine is reduced if LoadSoundBuffer returns early, and goes away entirely if the sound buffer
+contains only zeroes. It shows on the oscilloscope as a square wave.
+The whine is present on the VCC line so most likely digital noise.
+The click which occurs every second when the screen refreshes is also present asa voltage drop on VCC.
+The whine is most likely caused by voltage fluctuations which occur as interrupts change the demand for current.
+It is mitigated by removing the __WFI() line (i.e. disabling sleep until interrupt) and by placing a 220uF cap
+across VCC / GND.

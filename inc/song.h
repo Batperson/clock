@@ -95,8 +95,9 @@ typedef struct
 
 typedef struct
 {
-	uint16_t bpm;		// beats per minute, higher value = faster
-	PTrack tracks[];	// null = no more tracks. Max = SOUND_CHANNELS
+	uint16_t bpm;							// beats per minute, higher value = faster
+	PTrack tracks[SOUND_CHANNELS];			// null = no more tracks. Max = SOUND_CHANNELS
+	uint8_t tickOffset[SOUND_CHANNELS];		// ticks to offset the tempo of each track
 } Song, *PSong;
 
 void InitSong();
