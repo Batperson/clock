@@ -14,17 +14,12 @@ enum AlarmFlags {
 	AlarmFlagsMask	= 0xF800
 };
 
-typedef struct {
-	uint8_t 			hour;
-	uint8_t				minute;
-	enum AlarmFlags		flags;
-} Alarm, *PAlarm;
-
 void InitClock();
 void SetTime(struct tm* ptm);
 void GetTime(struct tm* ptm);
-void SetAlarm(PAlarm alm);
-void GetAlarm(PAlarm alm);
+void GetAlarmTime(struct tm* ptm);
+enum AlarmFlags GetAlarmFlags();
+void SetAlarmTimeAndFlags(struct tm* ptm, enum AlarmFlags flags);
 void SnoozeAlarm(uint8_t minutes);
 
 void RTC_OnSecond();

@@ -177,6 +177,12 @@ void ChangeState(ClockState state)
 		TriggerRender();
 		break;
 
+	case AlarmSet:
+		clockSetField = Hour;
+		GetAlarmTime(&clockSetValues);
+		TriggerRender();
+		break;
+
 	default:
 		TriggerRender();
 		break;
@@ -186,11 +192,6 @@ void ChangeState(ClockState state)
 void SetAlarmRing(PSong song)
 {
 	alarmRing = song;
-}
-
-void SetAlarmTime()
-{
-	ChangeState(Normal);
 }
 
 void ButtonSelectPress()
@@ -248,7 +249,8 @@ void ButtonSelectPress()
 			clockSetField = Minute;
 			break;
 		case Minute:
-			SetAlarmTime();
+			SetAlarmTimeAndFlags(&clockSetValues, RecurWeekday | RecurWeekend);	// For now
+			ChangeState(Normal);
 			break;
 		default:
 			break;

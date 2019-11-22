@@ -98,11 +98,6 @@ void RenderClockSet()
 	DrawText(30, 84, sz);
 }
 
-void RenderAlarmSet()
-{
-
-}
-
 void RenderAbout()
 {
 
@@ -115,10 +110,8 @@ void Render()
 	switch(clockState)
 	{
 	case ClockSet:
-		RenderClockSet();
-		break;
 	case AlarmSet:
-		RenderAlarmSet();
+		RenderClockSet();
 		break;
 	case Menu:
 		RenderMenu();

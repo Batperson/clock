@@ -67,15 +67,21 @@ void InitRTCOneTimeConfig(void)
 	RTC_WaitForLastTask();
 }
 
-void ConfigAlarm(PAlarm alm)
+void ConfigNextAlarm()
 {
-	if(alm->flags & (RecurWeekday | RecurWeekend))
+	uint16_t val			= BKP_ReadBackupRegister(BREG_ALARM);
+
+	enum AlarmFlags flags	= val & AlarmFlagsMask;
+	uint8_t min				= val & 0x3F;
+	uint8_t hour			= (val & 0x7C0) >> 6;
+
+	if(flags & (RecurWeekday | RecurWeekend))
 	{
 		struct tm at;
 		GetTime(&at);
 
-		at.tm_hour	= alm->hour;
-		at.tm_min	= alm->minute;
+		at.tm_hour	= hour;
+		at.tm_min	= min;
 		at.tm_sec	= 0;
 
 		// Calculate the alarm time based on today, with the hours and minutes specified
@@ -91,9 +97,9 @@ void ConfigAlarm(PAlarm alm)
 		while(1)
 		{
 			// Keep adding 24 hours until we get a time which complies with the recurrence flag
-			if(alm->flags & RecurWeekday && pat->tm_wday > 0 && pat->tm_wday < 6)
+			if(flags & RecurWeekday && pat->tm_wday > 0 && pat->tm_wday < 6)
 				break;
-			if(alm->flags & RecurWeekend && (pat->tm_wday < 1 || pat->tm_wday > 5))
+			if(flags & RecurWeekend && (pat->tm_wday < 1 || pat->tm_wday > 5))
 				break;
 
 			atim += 24 * 3600;
@@ -112,13 +118,6 @@ void ConfigAlarm(PAlarm alm)
 
 		printf("Alarm disabled\n");
 	}
-}
-
-void ConfigNextAlarm()
-{
-	Alarm al;
-	GetAlarm(&al);
-	ConfigAlarm(&al);
 }
 
 void InitClock()
@@ -175,24 +174,34 @@ void GetTime(struct tm* ptm)
 	memcpy(ptm, pltm, sizeof(struct tm));
 }
 
-void SetAlarm(PAlarm alm)
+void GetAlarmTime(struct tm* ptm)
 {
-	uint16_t val	= (alm->minute & 0x3F);
-	val 			|= (alm->hour << 6) & 0x7C0;
-	val				|= (alm->flags & AlarmFlagsMask);
+	memset(ptm, 0, sizeof(struct tm));
+
+	uint16_t val	= BKP_ReadBackupRegister(BREG_ALARM);
+
+	ptm->tm_min		= val & 0x3F;
+	ptm->tm_hour	= (val & 0x7C0) >> 6;
+}
+
+void SetAlarmTimeAndFlags(struct tm* ptm, enum AlarmFlags flags)
+{
+	uint16_t val		= flags;
+
+	if(ptm)
+	{
+		val				|= (ptm->tm_min & 0x3F);
+		val 			|= (ptm->tm_hour << 6) & 0x7C0;
+	}
 
 	BKP_WriteBackupRegister(BREG_ALARM, val);
 
-	ConfigAlarm(alm);
+	ConfigNextAlarm();
 }
 
-void GetAlarm(PAlarm alm)
+enum AlarmFlags GetAlarmFlags()
 {
-	uint16_t val	= BKP_ReadBackupRegister(BREG_ALARM);
-
-	alm->flags		= val & AlarmFlagsMask;
-	alm->minute		= val & 0x3F;
-	alm->hour		= (val & 0x7C0) >> 6;
+	return BKP_ReadBackupRegister(BREG_ALARM) & AlarmFlagsMask;
 }
 
 void SnoozeAlarm(uint8_t minutes)
