@@ -51,3 +51,6 @@ The click which occurs every second when the screen refreshes is also present as
 The whine is most likely caused by voltage fluctuations which occur as interrupts change the demand for current.
 It is mitigated by removing the __WFI() line (i.e. disabling sleep until interrupt) and by placing a 220uF cap
 across VCC / GND.
+
+18/11/2019
+Now possible to preview an alarm ring by highlighting it in the alarm menu, it will play after 1.5 secs.

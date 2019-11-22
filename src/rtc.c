@@ -10,6 +10,9 @@
 #include "macros.h"
 #include "rtc.h"
 
+#define BREG_ONETIMECONFIG			BKP_DR1
+#define BREG_ALARM					BKP_DR2
+
 void InitRTCInterrupts()
 {
 	NVIC_InitTypeDef nvic;
@@ -51,8 +54,8 @@ void InitRTCOneTimeConfig(void)
 	/* Wait until last write operation on RTC registers has finished */
 	RTC_WaitForLastTask();
 
-	/* Enable the RTC Second */
-	RTC_ITConfig(RTC_IT_SEC, ENABLE);
+	/* Enable the RTC Second and Alarm interrupts */
+	RTC_ITConfig(RTC_IT_SEC | RTC_IT_ALR, ENABLE);
 
 	/* Wait until last write operation on RTC registers has finished */
 	RTC_WaitForLastTask();
@@ -62,6 +65,60 @@ void InitRTCOneTimeConfig(void)
 
 	/* Wait until last write operation on RTC registers has finished */
 	RTC_WaitForLastTask();
+}
+
+void ConfigAlarm(PAlarm alm)
+{
+	if(alm->flags & (RecurWeekday | RecurWeekend))
+	{
+		struct tm at;
+		GetTime(&at);
+
+		at.tm_hour	= alm->hour;
+		at.tm_min	= alm->minute;
+		at.tm_sec	= 0;
+
+		// Calculate the alarm time based on today, with the hours and minutes specified
+		time_t atim	= mktime(&at);
+		time_t ctim = (time_t)RTC_GetCounter();
+
+		// If the alarm time is already in the past, add 24 hours
+		if(atim <= ctim)
+			atim += 24 * 3600;
+
+		struct tm* pat = localtime(&atim);
+
+		while(1)
+		{
+			// Keep adding 24 hours until we get a time which complies with the recurrence flag
+			if(alm->flags & RecurWeekday && pat->tm_wday > 0 && pat->tm_wday < 6)
+				break;
+			if(alm->flags & RecurWeekend && (pat->tm_wday < 1 || pat->tm_wday > 5))
+				break;
+
+			atim += 24 * 3600;
+			pat = localtime(&atim);
+		}
+
+		RTC_SetAlarm(atim);
+
+		char sz[32];
+		strftime(sz, sizeof(sz), "Next alarm: %F %R\n", pat);
+		printf(sz);
+	}
+	else
+	{
+		RTC_SetAlarm(-1);
+
+		printf("Alarm disabled\n");
+	}
+}
+
+void ConfigNextAlarm()
+{
+	Alarm al;
+	GetAlarm(&al);
+	ConfigAlarm(&al);
 }
 
 void InitClock()
@@ -74,28 +131,31 @@ void InitClock()
 
 	/* Check for a flag in the backup register which should already be set if the RTC
 	 * has been programmed previously */
-	if (BKP_ReadBackupRegister(BKP_DR1) != 0xA5A5)
+	if (BKP_ReadBackupRegister(BREG_ONETIMECONFIG) != 0xA5A5)
 	{
 		/* RTC has not been previously configured */
 		printf("Initializing RTC and backup domain\n");
 
 	    InitRTCOneTimeConfig();
 
-	    BKP_WriteBackupRegister(BKP_DR1, 0xA5A5);
+	    BKP_WriteBackupRegister(BREG_ONETIMECONFIG, 0xA5A5);
+	    BKP_WriteBackupRegister(BREG_ALARM, 0);
 	}
 	else
 	{
 		/* Wait for RTC registers synchronization */
 		RTC_WaitForSynchro();
 
-		/* Enable the RTC Second */
-		RTC_ITConfig(RTC_IT_SEC, ENABLE);
+		/* Enable the RTC Second and Alarm interrupts */
+		RTC_ITConfig(RTC_IT_SEC | RTC_IT_ALR, ENABLE);
 		/* Wait until last write operation on RTC registers has finished */
 		RTC_WaitForLastTask();
 	}
 
 	/* Clear reset flags */
 	RCC_ClearFlag();
+
+	ConfigNextAlarm();
 
 	printf("Clock initialized\n");
 }
@@ -115,6 +175,34 @@ void GetTime(struct tm* ptm)
 	memcpy(ptm, pltm, sizeof(struct tm));
 }
 
+void SetAlarm(PAlarm alm)
+{
+	uint16_t val	= (alm->minute & 0x3F);
+	val 			|= (alm->hour << 6) & 0x7C0;
+	val				|= (alm->flags & AlarmFlagsMask);
+
+	BKP_WriteBackupRegister(BREG_ALARM, val);
+
+	ConfigAlarm(alm);
+}
+
+void GetAlarm(PAlarm alm)
+{
+	uint16_t val	= BKP_ReadBackupRegister(BREG_ALARM);
+
+	alm->flags		= val & AlarmFlagsMask;
+	alm->minute		= val & 0x3F;
+	alm->hour		= (val & 0x7C0) >> 6;
+}
+
+void SnoozeAlarm(uint8_t minutes)
+{
+	time_t tim		= RTC_GetCounter();
+	tim 			+= (60 * minutes);
+
+	RTC_SetAlarm(tim);
+}
+
 void RTC_IRQHandler()
 {
 	int it = RTC->CRH & (RTC_IT_SEC | RTC_IT_ALR);
@@ -124,7 +212,13 @@ void RTC_IRQHandler()
 		RTC_OnSecond();
 
 	if(it & RTC_IT_ALR)
+	{
+		printf("Alarm activated\n");
+
+		ConfigNextAlarm();
+
 		RTC_OnAlarm();
+	}
 }
 
 void WEAKREF RTC_OnSecond()
