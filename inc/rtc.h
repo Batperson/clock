@@ -7,19 +7,19 @@
 #ifndef RTC_H_
 #define RTC_H_
 
-enum AlarmFlags {
+typedef enum {
 	RecurWeekend	= 0x8000,
 	RecurWeekday 	= 0x4000,
 
 	AlarmFlagsMask	= 0xF800
-};
+} AlarmFlags;
 
 void InitClock();
 void SetTime(struct tm* ptm);
 void GetTime(struct tm* ptm);
 void GetAlarmTime(struct tm* ptm);
-enum AlarmFlags GetAlarmFlags();
-void SetAlarmTimeAndFlags(struct tm* ptm, enum AlarmFlags flags);
+AlarmFlags GetAlarmFlags();
+void SetAlarmTimeAndFlags(struct tm* ptm, AlarmFlags flags);
 void SnoozeAlarm(uint8_t minutes);
 
 void RTC_OnSecond();

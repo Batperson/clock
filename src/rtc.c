@@ -54,9 +54,6 @@ void InitRTCOneTimeConfig(void)
 	/* Wait until last write operation on RTC registers has finished */
 	RTC_WaitForLastTask();
 
-	/* Enable the RTC Second and Alarm interrupts */
-	RTC_ITConfig(RTC_IT_SEC | RTC_IT_ALR, ENABLE);
-
 	/* Wait until last write operation on RTC registers has finished */
 	RTC_WaitForLastTask();
 
@@ -71,7 +68,7 @@ void ConfigNextAlarm()
 {
 	uint16_t val			= BKP_ReadBackupRegister(BREG_ALARM);
 
-	enum AlarmFlags flags	= val & AlarmFlagsMask;
+	AlarmFlags flags		= val & AlarmFlagsMask;
 	uint8_t min				= val & 0x3F;
 	uint8_t hour			= (val & 0x7C0) >> 6;
 
@@ -126,8 +123,6 @@ void InitClock()
 
 	PWR_BackupAccessCmd(ENABLE);
 
-	InitRTCInterrupts();
-
 	/* Check for a flag in the backup register which should already be set if the RTC
 	 * has been programmed previously */
 	if (BKP_ReadBackupRegister(BREG_ONETIMECONFIG) != 0xA5A5)
@@ -150,6 +145,11 @@ void InitClock()
 		/* Wait until last write operation on RTC registers has finished */
 		RTC_WaitForLastTask();
 	}
+
+	/* Clear interrupt flags, then enable interrupts */
+	RTC_ClearFlag(RTC_IT_SEC | RTC_IT_ALR | RTC_IT_OW);
+	RTC_ITConfig(RTC_IT_SEC | RTC_IT_ALR, ENABLE);
+	InitRTCInterrupts();
 
 	/* Clear reset flags */
 	RCC_ClearFlag();
@@ -184,7 +184,7 @@ void GetAlarmTime(struct tm* ptm)
 	ptm->tm_hour	= (val & 0x7C0) >> 6;
 }
 
-void SetAlarmTimeAndFlags(struct tm* ptm, enum AlarmFlags flags)
+void SetAlarmTimeAndFlags(struct tm* ptm, AlarmFlags flags)
 {
 	uint16_t val		= flags;
 
@@ -199,7 +199,7 @@ void SetAlarmTimeAndFlags(struct tm* ptm, enum AlarmFlags flags)
 	ConfigNextAlarm();
 }
 
-enum AlarmFlags GetAlarmFlags()
+AlarmFlags GetAlarmFlags()
 {
 	return BKP_ReadBackupRegister(BREG_ALARM) & AlarmFlagsMask;
 }
@@ -214,7 +214,7 @@ void SnoozeAlarm(uint8_t minutes)
 
 void RTC_IRQHandler()
 {
-	int it = RTC->CRH & (RTC_IT_SEC | RTC_IT_ALR);
+	int it = RTC->CRL & (RTC_IT_SEC | RTC_IT_ALR);
 	RTC_ClearITPendingBit(RTC_IT_SEC | RTC_IT_ALR);
 
 	if(it & RTC_IT_SEC)

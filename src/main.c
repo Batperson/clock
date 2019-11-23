@@ -156,6 +156,9 @@ void ChangeState(ClockState state)
 
 	clockState = state;
 
+	ClearScreen();
+	TriggerRender();
+
 	switch(clockState)
 	{
 	case AlarmRing:
@@ -167,24 +170,17 @@ void ChangeState(ClockState state)
 		// TODO: Set the alarm to go again in n minutes
 		break;
 
-	case Menu:
-		TriggerRender();
-		break;
-
 	case ClockSet:
 		clockSetField = Hour;
 		GetTime(&clockSetValues);
-		TriggerRender();
 		break;
 
 	case AlarmSet:
 		clockSetField = Hour;
 		GetAlarmTime(&clockSetValues);
-		TriggerRender();
 		break;
 
 	default:
-		TriggerRender();
 		break;
 	}
 }
@@ -250,6 +246,7 @@ void ButtonSelectPress()
 			break;
 		case Minute:
 			SetAlarmTimeAndFlags(&clockSetValues, RecurWeekday | RecurWeekend);	// For now
+			ClearScreen();
 			ChangeState(Normal);
 			break;
 		default:
