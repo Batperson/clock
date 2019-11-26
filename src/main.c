@@ -138,14 +138,28 @@ void SetAlarmState(AlarmState als)
 	}
 }
 
+void ShowNormal()
+{
+	ChangeState(Normal);
+}
+
 void ShowMenu()
 {
 	ChangeState(Menu);
 }
 
-void ShowNormal()
+void OnMenuHighlight(PMenuItem item)
 {
-	ChangeState(Normal);
+	EndSong();
+}
+
+void OnMenuTimeout(PMenuItem item)
+{
+	if(item->proc == SetAlarmRing)
+	{
+		SelectSong((PSong)item->arg);
+		PlaySong();
+	}
 }
 
 void FieldSetUp()
@@ -300,20 +314,6 @@ void SetAlarmRing(PSong song)
 	alarmRing = song;
 }
 
-void OnMenuHighlight(PMenuItem item)
-{
-	EndSong();
-}
-
-void OnMenuTimeout(PMenuItem item)
-{
-	if(item->proc == SetAlarmRing)
-	{
-		SelectSong((PSong)item->arg);
-		PlaySong();
-	}
-}
-
 void OnRtcSecond()
 {
 	GetTime(&clockValues);
@@ -366,7 +366,7 @@ void OnRtcAlarm()
 
 void OnButtonEvent(uint32_t btn, ButtonEventType eventType)
 {
-	printf("btn: %d\n", eventType);
+	printf("btn: %d\t%d\n", (int)btn, eventType);
 
 	switch(eventType)
 	{

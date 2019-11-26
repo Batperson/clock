@@ -25,7 +25,7 @@ void InitRender()
 	// We want PendSV to have the lowest possible priority so it doesn't pre-empt any time-critical interrupts
 	NVIC_SetPriority(PendSV_IRQn, 255);
 
-	printf("Rendering subsystem initialized");
+	printf("Rendering subsystem initialized\n");
 }
 
 void TriggerRender()

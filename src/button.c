@@ -12,6 +12,7 @@
 #include "button.h"
 
 uint8_t 	prescaler;
+uint8_t		counter;
 uint32_t	state[BUTTON_MAX_CBACK];
 uint16_t	press;
 
@@ -35,52 +36,59 @@ void PollButtonState()
 	{
 		prescaler = 0;
 
-		for(uint8_t i=0; i<BUTTON_MAX_CBACK; i++)
+		ButtonEventType eta = ButtonNone;
+
+		if(BUTTON_PORT->IDR & (BUTTON_PINS))
 		{
-			uint32_t val = state[i];
-			if(val != 0)
+			if(!press)
+				press = BUTTON_PORT->IDR & (BUTTON_PINS);
+
+			if(counter < 0xFF)
 			{
-				uint32_t pin		= 1 << ((val & PIN_MASK) >> 23);
-				uint32_t ctr		= (val & COUNTER_MASK) >> 17;
-				button_callback cbk	= (button_callback)(val & FUNC_PTR_MASK);
-				ButtonEventType et 	= (val & EVENT_TYPE_MASK) >> 28;
-				ButtonEventType eta = ButtonNone;
+				counter++;
 
-				if(pin & BUTTON_PORT->IDR & ~press)
+				if(counter == SHORT_PRESS_TICKS)
+					eta = ButtonShortDown;
+				else if(counter == LONG_PRESS_TICKS)
+					eta = ButtonLongDown;
+			}
+		}
+		else if(press)
+		{
+			if(counter >= LONG_PRESS_TICKS)
+				eta = ButtonLongPress;
+			else if(counter >= SHORT_PRESS_TICKS)
+				eta = ButtonShortPress;
+
+			counter = 0;
+		}
+
+		if(eta != ButtonNone)
+		{
+			OnButtonEvent(press, eta);
+			button_callback callback = NULL;
+
+			for(uint8_t i=0; i<BUTTON_MAX_CBACK; i++)
+			{
+				uint32_t val;
+				if((val = state[i]))
 				{
-					if(ctr == SHORT_PRESS_TICKS)
-						eta = ButtonShortDown;
-					else if(ctr == LONG_PRESS_TICKS)
-						eta = ButtonLongDown;
+					uint32_t pin		= 1 << ((val & PIN_MASK) >> 23);
+					button_callback cbk	= (button_callback)(val & FUNC_PTR_MASK);
+					ButtonEventType et 	= (val & EVENT_TYPE_MASK) >> 28;
 
-					if(eta == ButtonLongDown)
-						press |= pin;
-					if(ctr < MAX_TICK_COUNT)
-						ctr++;
-				}
-				else if(!(pin & BUTTON_PORT->IDR))
-				{
-					if(ctr >= LONG_PRESS_TICKS)
-						eta = ButtonLongPress;
-					else if(ctr >= SHORT_PRESS_TICKS)
-						eta = ButtonShortPress;
-
-					press	&= ~pin;
-					ctr 	= 0;
-				}
-
-				val			&= ~COUNTER_MASK;
-				val			|= ctr << 17;
-				state[i]	= val;
-
-				if(eta != ButtonNone)
-				{
-					OnButtonEvent(pin, eta);
-
-					if((eta & et) == eta)
-						cbk();
+					if(press == pin && (et & eta) == eta)
+					{
+						callback = cbk;
+						break;
+					}
 				}
 			}
+
+			if(callback != NULL)
+				callback();
+
+			press = 0;
 		}
 	}
 }
@@ -92,6 +100,7 @@ void InitButton()
 	memset(state, 0, sizeof(state));
 	prescaler 					= 0;
 	press						= 0;
+	counter						= 0;
 
 	GPIO_StructInit(&gpio);
 
