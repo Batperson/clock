@@ -8,6 +8,7 @@
 
 // use #ifdef __CDT_PARSER__ if necessary to hide constructs from the indexer
 
+#define IN_ROM				__attribute__ ((section (".rodata")))
 #define IN_RAM  			__attribute__((section(".data")))
 #define ALIGNED(n) 			__attribute__((aligned(n)))
 #define INTERRUPT 			__attribute__((interrupt("IRQ")))

@@ -28,9 +28,10 @@ const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You 
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
 const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", NULL };
 const char* birthdayPeterTexts[]		= { "It's Dad's birthday!", "He is %d today.", "Give him a handshake!", NULL };
-const char* christmasTexts[]			= { "Merry Christmas!", NULL };
+const char* christmasTexts[]			= { "Around this day in Palestine", "A child was born", "And the world changed.", "Merry Christmas!", NULL };
 const char* newYearTexts[]				= { "Happy New Year!", NULL };
-const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", NULL };
+const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", "Celebrate your freedoms", "And appreciate your country.", "Remember the past", "And look to the future.", NULL };
+const char* anzacDayTexts[]				= { "They shall not grow old", "As we that are left grow old", "Age shall not weary them", "Nor the years condemn.", "But at the going down of the sun", "And in the morning", "We will remember them.", NULL };
 
 SpecialDay specialDays[] = {
 	{ 65535, 	NULL, 			birthdayChristopherTexts },
@@ -65,6 +66,7 @@ MenuItem mainMenu[] = {
 PSong			alarmRing			= &reveille;
 ClockState 		clockState 			= Normal;
 ClockSetField 	clockSetField 		= Hour;
+ClockFormat		clockFormat			= Format24Hour;
 AlarmState		alarmState			= AlarmDisabled;
 PSpecialDay		specialDay			= NULL;
 char*			specialDayText		= NULL;
@@ -109,6 +111,7 @@ int main(void)
 
 	ClearScreen();
 	SetCurrentMenu(mainMenu);
+	ChangeState(Normal);
 	LoadConfiguration();
 
 	while(1)
@@ -135,6 +138,91 @@ void SetAlarmState(AlarmState als)
 	}
 }
 
+void ShowMenu()
+{
+	ChangeState(Menu);
+}
+
+void ShowNormal()
+{
+	ChangeState(Normal);
+}
+
+void FieldSetUp()
+{
+	switch(clockSetField)
+	{
+	case Hour:
+		if(clockSetValues.tm_hour-- == 0) clockSetValues.tm_hour = 23;
+		break;
+	case Minute:
+		if(clockSetValues.tm_min-- == 0) clockSetValues.tm_min = 59;
+		break;
+	case Second:
+		clockSetValues.tm_sec = 0;
+		break;
+	default:
+		break;
+	}
+
+	TriggerRender();
+}
+
+void FieldSetDown()
+{
+	switch(clockSetField)
+	{
+	case Hour:
+		if(clockSetValues.tm_hour++ == 23) clockSetValues.tm_hour = 0;
+		break;
+	case Minute:
+		if(clockSetValues.tm_min++ == 59) clockSetValues.tm_min = 0;
+		break;
+	case Second:
+		clockSetValues.tm_sec = 0;
+		break;
+	default:
+		break;
+	}
+
+	TriggerRender();
+}
+
+void FieldMoveNext()
+{
+	switch(clockState)
+	{
+	case ClockSet:
+		if(clockSetField++ >= Second)
+		{
+			SetTime(&clockSetValues);
+			GetTime(&clockValues);
+			ChangeState(Normal);
+		}
+		break;
+	case DateSet:
+		if(clockSetField++ >= Day)
+		{
+			SetTime(&clockSetValues);
+			GetTime(&clockValues);
+			ChangeState(Normal);
+		}
+		break;
+	case AlarmSet:
+		if(clockSetField++ >= Minute)
+		{
+			SetAlarmTimeAndFlags(&clockSetValues, RecurWeekday | RecurWeekend);	// For now
+			ChangeState(Normal);
+		}
+		break;
+	default:
+		break;
+	}
+
+	TriggerRender();
+}
+
+
 void ChangeState(ClockState state)
 {
 	switch(clockState)
@@ -143,179 +231,73 @@ void ChangeState(ClockState state)
 		EndSong();
 		break;
 
-	case Menu:
-		// We don't clear the screen when drawing the clock, but we do need to if we have been displaying a menu or some
-		// other graphics.
-		ClearScreen();
-		TriggerRender();
-		break;
-
 	default:
 		break;
 	}
 
 	clockState = state;
 
-	ClearScreen();
-	TriggerRender();
+	DeregisterButtonCallbacks();
 
 	switch(clockState)
 	{
+	case About:
+		RegisterButtonCallback(BTN_SELECT, ButtonAny, ShowNormal);
+		RegisterButtonCallback(BTN_UP, ButtonAny, ShowNormal);
+		RegisterButtonCallback(BTN_DOWN, ButtonAny, ShowNormal);
+		break;
+
+	case Menu:
+		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, MenuSelect);
+		RegisterButtonCallback(BTN_UP, ButtonShortPress, MenuUp);
+		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, MenuDown);
+		break;
+
 	case AlarmRing:
 		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
 		PlaySong();
-		break;
-
-	case AlarmSnooze:
-		// TODO: Set the alarm to go again in n minutes
+		//RegisterButtonCallback(BTN_SELECT, ButtonShortPress, SnoozeAlarm);
+		//RegisterButtonCallback(BTN_UP, ButtonShortPress, SnoozeAlarm);
+		//RegisterButtonCallback(BTN_DOWN, ButtonShortPress, SnoozeAlarm);
 		break;
 
 	case ClockSet:
 		clockSetField = Hour;
 		GetTime(&clockSetValues);
+		RegisterButtonCallback(BTN_UP, ButtonShortPress, FieldSetUp);
+		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, FieldSetDown);
+		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, FieldMoveNext);
+		break;
+
+	case DateSet:
+		clockSetField = Year;
+		GetTime(&clockSetValues);
+		RegisterButtonCallback(BTN_UP, ButtonShortPress, FieldSetUp);
+		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, FieldSetDown);
+		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, FieldMoveNext);
 		break;
 
 	case AlarmSet:
 		clockSetField = Hour;
 		GetAlarmTime(&clockSetValues);
+		RegisterButtonCallback(BTN_UP, ButtonShortPress, FieldSetUp);
+		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, FieldSetDown);
+		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, FieldMoveNext);
 		break;
 
+	case Normal:
 	default:
+		RegisterButtonCallback(BTN_SELECT, ButtonLongDown, ShowMenu);
 		break;
 	}
+
+	ClearScreen();
+	TriggerRender();
 }
 
 void SetAlarmRing(PSong song)
 {
 	alarmRing = song;
-}
-
-void ButtonSelectPress()
-{
-	switch(clockState)
-	{
-	case Menu:
-		MenuSelect();
-		break;
-	case ClockSet:
-		switch(clockSetField)
-		{
-		case Hour:
-			clockSetField = Minute;
-			break;
-		case Minute:
-			clockSetField = Second;
-			ClearScreen();
-			TriggerRender();
-			break;
-		case Second:
-			SetTime(&clockSetValues);
-			GetTime(&clockValues);
-			ClearScreen();
-			ChangeState(Normal);
-			break;
-		default:
-			break;
-		}
-		TriggerRender();
-		break;
-	case DateSet:
-		switch(clockSetField)
-		{
-		case Day:
-			clockSetField = Month;
-			break;
-		case Month:
-			clockSetField = Year;
-			break;
-		case Year:
-			SetTime(&clockSetValues);
-			GetTime(&clockValues);
-			ClearScreen();
-			ChangeState(Normal);
-			break;
-		default:
-			break;
-		}
-		TriggerRender();
-	case AlarmSet:
-		switch(clockSetField)
-		{
-		case Hour:
-			clockSetField = Minute;
-			break;
-		case Minute:
-			SetAlarmTimeAndFlags(&clockSetValues, RecurWeekday | RecurWeekend);	// For now
-			ClearScreen();
-			ChangeState(Normal);
-			break;
-		default:
-			break;
-		}
-		TriggerRender();
-	default:
-		break;
-	}
-}
-
-void ButtonUpPress()
-{
-	switch(clockState)
-	{
-	case Menu:
-		MenuUp();
-		break;
-	case ClockSet:
-	case AlarmSet:
-		switch(clockSetField)
-		{
-		case Hour:
-			if(--clockSetValues.tm_hour < 0) clockSetValues.tm_hour = 23;
-			break;
-		case Minute:
-			if(--clockSetValues.tm_min < 0) clockSetValues.tm_min = 59;
-			break;
-		case Second:
-			clockSetValues.tm_sec = 0;
-			break;
-		default:
-			break;
-		}
-		TriggerRender();
-		break;
-	default:
-		break;
-	}
-}
-
-void ButtonDownPress()
-{
-	switch(clockState)
-	{
-	case Menu:
-		MenuDown();
-		break;
-	case ClockSet:
-	case AlarmSet:
-		switch(clockSetField)
-		{
-		case Hour:
-			if(++clockSetValues.tm_hour > 23) clockSetValues.tm_hour = 0;
-			break;
-		case Minute:
-			if(++clockSetValues.tm_min > 59) clockSetValues.tm_min = 0;
-			break;
-		case Second:
-			clockSetValues.tm_sec = 0;
-			break;
-		default:
-			break;
-		}
-		TriggerRender();
-		break;
-	default:
-		break;
-	}
 }
 
 void OnMenuHighlight(PMenuItem item)
@@ -332,7 +314,7 @@ void OnMenuTimeout(PMenuItem item)
 	}
 }
 
-void RTC_OnSecond()
+void OnRtcSecond()
 {
 	GetTime(&clockValues);
 
@@ -375,45 +357,28 @@ void RTC_OnSecond()
 	}
 }
 
-void RTC_OnAlarm()
+void OnRtcAlarm()
 {
 	// Ignore an alarm if the user is busy with the menu
-	if(clockState != Menu) ChangeState(AlarmRing);
+	if(clockState != Menu)
+		ChangeState(AlarmRing);
 }
 
-void BTN_OnDown(uint32_t btn)
+void OnButtonEvent(uint32_t btn, ButtonEventType eventType)
 {
-	if(clockState == AlarmRing && !(btn & BUTTON_LPRESS))
+	switch(eventType)
 	{
-		ChangeState(AlarmSnooze);
-	}
-	else if(btn == (BUTTON_LPRESS | BTN_SELECT))
-	{
-		Beep(88000, 100, 90);
-		ChangeState(Menu);
-	}
-}
-
-void BTN_OnPress(uint32_t btn)
-{
-	if(!(btn & BUTTON_LPRESS))
-	{
-		switch(btn)
-		{
-		case BTN_SELECT:
-			ButtonSelectPress();
-			break;
-		case BTN_UP:
-			ButtonUpPress();
-			break;
-		case BTN_DOWN:
-			ButtonDownPress();
-			break;
-		default:
-			break;
-		}
-
+	case ButtonShortPress:
 		Beep(88000, 60, 90);
+		break;
+
+	case ButtonLongDown:
+		Beep(88000, 100, 90);
+		break;
+
+	default:
+		break;
 	}
 }
+
 

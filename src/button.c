@@ -11,14 +11,81 @@
 #include "system.h"
 #include "button.h"
 
-uint8_t prescaler;
-uint8_t	buttonState[16];
+uint8_t 	prescaler;
+uint32_t	state[BUTTON_MAX_CBACK];
+
+#define EVENT_TYPE_MASK			0xF0000000	// >> 28
+#define COUNTER_MASK			0x007E0000	// >> 17
+#define FUNC_PTR_MASK			0x0801FFFF
+#define PIN_MASK				0x07800000  // >> 23
+
+// LONG_PRESS_TICKS must not exceed this value or the event will never occur.
+#define MAX_TICK_COUNT			0x3F		// 63
+
+void WEAKREF OnButtonEvent(uint32_t button, ButtonEventType eventType)
+{
+
+}
+
+// To be called from a repeating interrupt such as SysTick, ideally 1KHz.
+void PollButtonState()
+{
+	if(prescaler++ >= TICK_PRESCALER)
+	{
+		prescaler = 0;
+
+		for(uint8_t i=0; i<BUTTON_MAX_CBACK; i++)
+		{
+			uint32_t val = state[i];
+			if(val != 0)
+			{
+				uint32_t pin		= 1 << ((val & PIN_MASK) >> 23);
+				uint32_t ctr		= (val & COUNTER_MASK) >> 17;
+				button_callback cbk	= (button_callback)(val & FUNC_PTR_MASK);
+				ButtonEventType et 	= (val & EVENT_TYPE_MASK) >> 28;
+				ButtonEventType eta = ButtonNone;
+
+				if(pin & BUTTON_PORT->IDR)
+				{
+					if(ctr == SHORT_PRESS_TICKS)
+						eta = ButtonShortDown;
+					else if(ctr == LONG_PRESS_TICKS)
+						eta = ButtonLongDown;
+
+					if(ctr < MAX_TICK_COUNT)
+						ctr++;
+				}
+				else
+				{
+					if(ctr >= LONG_PRESS_TICKS)
+						eta = ButtonLongPress;
+					else if(ctr >= SHORT_PRESS_TICKS)
+						eta = ButtonShortPress;
+
+					ctr = 0;
+				}
+
+				val			&= ~COUNTER_MASK;
+				val			|= ctr << 17;
+				state[i]	= val;
+
+				if(eta != ButtonNone)
+				{
+					OnButtonEvent(pin, eta);
+
+					if((eta & et) == eta)
+						cbk();
+				}
+			}
+		}
+	}
+}
 
 void InitButton()
 {
 	GPIO_InitTypeDef 			gpio;
 
-	memset(buttonState, 0, sizeof(buttonState));
+	memset(state, 0, sizeof(state));
 	prescaler 					= 0;
 
 	GPIO_StructInit(&gpio);
@@ -34,51 +101,27 @@ void InitButton()
 	printf("Buttons initialized\n");
 }
 
-// To be called from a repeating interrupt such as SysTick, ideally 1KHz.
-void PollButtonState()
+void RegisterButtonCallback(uint32_t button, ButtonEventType eventType, button_callback callback)
 {
-	if(prescaler++ >= TICK_PRESCALER)
+	uint8_t btn			= 0;
+	for(uint32_t b = button; b > 1; b >>= 1)
+		btn++;
+
+	uint32_t val		= (uint32_t)callback;
+	val					|= eventType << 28;
+	val					|= (btn << 23);
+
+	for(uint8_t i=0; i<BUTTON_MAX_CBACK; i++)
 	{
-		prescaler = 0;
-
-		uint16_t btn, i;
-		for((btn = GPIO_Pin_0, i=0); i < 16; (btn = btn << 1, i++))
+		if(state[i] == 0)
 		{
-			if(btn & (BUTTON_PINS))
-			{
-				uint8_t bts = buttonState[i];
-				if(btn & BUTTON_PORT->IDR)
-				{
-					if(bts < 0xFF)
-					{
-						buttonState[i]++;
-
-						if(bts == SHORT_PRESS_TICKS)
-							BTN_OnDown(btn);
-						else if(bts == LONG_PRESS_TICKS)
-							BTN_OnDown(btn + BUTTON_LPRESS);
-					}
-				}
-				else if(bts)
-				{
-					buttonState[i]	= 0;
-
-					if(bts >= LONG_PRESS_TICKS)
-						BTN_OnPress(btn | BUTTON_LPRESS);
-					else if(bts >= SHORT_PRESS_TICKS)
-						BTN_OnPress(btn);
-				}
-			}
+			state[i] = val;
+			break;
 		}
 	}
 }
 
-void WEAKREF BTN_OnDown(uint32_t button)
+void DeregisterButtonCallbacks()
 {
-	printf("Button down: %d\n", (int)button);
-}
-
-void WEAKREF BTN_OnPress(uint32_t button)
-{
-	printf("Button press: %d\n", (int)button);
+	memset(state, 0, sizeof(state));
 }

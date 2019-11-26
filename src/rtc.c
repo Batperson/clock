@@ -218,7 +218,7 @@ void RTC_IRQHandler()
 	RTC_ClearITPendingBit(RTC_IT_SEC | RTC_IT_ALR);
 
 	if(it & RTC_IT_SEC)
-		RTC_OnSecond();
+		OnRtcSecond();
 
 	if(it & RTC_IT_ALR)
 	{
@@ -226,16 +226,16 @@ void RTC_IRQHandler()
 
 		ConfigNextAlarm();
 
-		RTC_OnAlarm();
+		OnRtcAlarm();
 	}
 }
 
-void WEAKREF RTC_OnSecond()
+void WEAKREF OnRtcSecond()
 {
 
 }
 
-void WEAKREF RTC_OnAlarm()
+void WEAKREF OnRtcAlarm()
 {
 
 }

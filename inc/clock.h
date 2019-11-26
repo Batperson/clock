@@ -14,7 +14,6 @@ typedef enum {
 	AlarmSet,
 	DateSet,
 	AlarmRing,
-	AlarmSnooze,
 	About
 } ClockState;
 
@@ -22,10 +21,9 @@ typedef enum {
 	Hour,
 	Minute,
 	Second,
-
-	Year	= Hour,
-	Month	= Minute,
-	Day		= Second
+	Year,
+	Month,
+	Day
 } ClockSetField;
 
 typedef enum {
@@ -39,6 +37,11 @@ typedef enum {
 	AlarmEnabled
 } AlarmState;
 
+typedef enum {
+	Format24Hour,
+	Format12Hour
+} ClockFormat;
+
 typedef struct {
 	time_t 			time;
 	PSong 			specialSong;
@@ -50,6 +53,7 @@ extern uint16_t			specialDayYears;
 extern char*			specialDayText;
 extern ClockState 		clockState;
 extern ClockSetField 	clockSetField;
+extern ClockFormat		clockFormat;
 extern AlarmState		alarmState;
 extern struct tm 		clockValues;
 extern struct tm 		clockSetValues;

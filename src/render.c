@@ -36,14 +36,14 @@ void TriggerRender()
 void RenderNormal()
 {
 	char sz[24];
-	strftime(sz, sizeof(sz), "%I:%M", &clockValues);
+	strftime(sz, sizeof(sz), "%I:%M", &clockValues);	// %H = 12 hour, %I = 24 hour, %p = AM/PM
 
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(CYAN);
 	SetFont(lcdFont);
 	DrawText(10, 36, sz);
 
-	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);
+	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
 	strupr(sz);
 
 	SetForegroundColour(BLUE);
@@ -56,18 +56,29 @@ void RenderNormal()
 	DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
 }
 
-void RenderClockSet()
+void RenderFieldSet()
 {
 	char sz[24];
 
 	switch(clockSetField)
 	{
 	case Hour:
+		strftime(sz, sizeof(sz), "%I", &clockSetValues);
+		break;
 	case Minute:
-		strftime(sz, sizeof(sz), "%I:%M", &clockSetValues);
+		strftime(sz, sizeof(sz), "%M", &clockSetValues);
 		break;
 	case Second:
 		strftime(sz, sizeof(sz), "%S", &clockSetValues);
+		break;
+	case Year:
+		strftime(sz, sizeof(sz), "%Y", &clockSetValues);
+		break;
+	case Month:
+		strftime(sz, sizeof(sz), "%m", &clockSetValues);	// %b = JAN, %B = January
+		break;
+	case Day:
+		strftime(sz, sizeof(sz), "%d", &clockSetValues);
 		break;
 	default:
 		break;
@@ -88,6 +99,15 @@ void RenderClockSet()
 		break;
 	case Second:
 		strcpy(sz, "SET SECOND");
+		break;
+	case Year:
+		strcpy(sz, "SET YEAR");
+		break;
+	case Month:
+		strcpy(sz, "SET MONTH");
+		break;
+	case Day:
+		strcpy(sz, "SET DAY");
 		break;
 	default:
 		break;
@@ -111,7 +131,8 @@ void Render()
 	{
 	case ClockSet:
 	case AlarmSet:
-		RenderClockSet();
+	case DateSet:
+		RenderFieldSet();
 		break;
 	case Menu:
 		RenderMenu();
@@ -121,7 +142,6 @@ void Render()
 		break;
 	case Normal:
 	case AlarmRing:
-	case AlarmSnooze:
 	default:
 		RenderNormal();
 		break;
