@@ -366,6 +366,8 @@ void OnRtcAlarm()
 
 void OnButtonEvent(uint32_t btn, ButtonEventType eventType)
 {
+	printf("btn: %d\n", eventType);
+
 	switch(eventType)
 	{
 	case ButtonShortPress:

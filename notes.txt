@@ -54,3 +54,10 @@ across VCC / GND.
 
 18/11/2019
 Now possible to preview an alarm ring by highlighting it in the alarm menu, it will play after 1.5 secs.
+
+26/11/2019
+Revised the button system.
+Now an issue where the same button events repeat, if the button handlers are changed (e.g. when displaying a menu).
+Fixed the button issue.
+Seems to be a memory corruption problem, where song state is being overwritten.
+

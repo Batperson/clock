@@ -13,6 +13,7 @@
 
 uint8_t 	prescaler;
 uint32_t	state[BUTTON_MAX_CBACK];
+uint16_t	press;
 
 #define EVENT_TYPE_MASK			0xF0000000	// >> 28
 #define COUNTER_MASK			0x007E0000	// >> 17
@@ -45,24 +46,27 @@ void PollButtonState()
 				ButtonEventType et 	= (val & EVENT_TYPE_MASK) >> 28;
 				ButtonEventType eta = ButtonNone;
 
-				if(pin & BUTTON_PORT->IDR)
+				if(pin & BUTTON_PORT->IDR & ~press)
 				{
 					if(ctr == SHORT_PRESS_TICKS)
 						eta = ButtonShortDown;
 					else if(ctr == LONG_PRESS_TICKS)
 						eta = ButtonLongDown;
 
+					if(eta == ButtonLongDown)
+						press |= pin;
 					if(ctr < MAX_TICK_COUNT)
 						ctr++;
 				}
-				else
+				else if(!(pin & BUTTON_PORT->IDR))
 				{
 					if(ctr >= LONG_PRESS_TICKS)
 						eta = ButtonLongPress;
 					else if(ctr >= SHORT_PRESS_TICKS)
 						eta = ButtonShortPress;
 
-					ctr = 0;
+					press	&= ~pin;
+					ctr 	= 0;
 				}
 
 				val			&= ~COUNTER_MASK;
@@ -87,6 +91,7 @@ void InitButton()
 
 	memset(state, 0, sizeof(state));
 	prescaler 					= 0;
+	press						= 0;
 
 	GPIO_StructInit(&gpio);
 
