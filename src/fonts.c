@@ -8,7 +8,7 @@
 #include "macros.h"
 #include "graphics.h"
 
-Font sysFontData = { 7, 9, 1, 32, {
+const Font sysFontData = { 7, 9, 1, 32, {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,		// 0x20 ' '
 	0x00, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x20, 0x00, 		// 0x20 '!'
 	0x00, 0x50, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 		// 0x20 '"'
@@ -107,7 +107,7 @@ Font sysFontData = { 7, 9, 1, 32, {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 		// 0x20 ''
 }};
 
-Font menloFontData = { 20, 27, 3, 48, {
+const Font menloFontData = { 20, 27, 3, 48, {
 	// @1536 '0' (20 pixels wide)
 	0x00, 0x00, 0x00, /* |                    | */
 	0x01, 0xF0, 0x00, /* |       #####        | */
@@ -428,7 +428,7 @@ Font menloFontData = { 20, 27, 3, 48, {
 	0x00, 0x00, 0x00, /* |                    | */
 }};
 
-Font lcdFontData = { 24, 32, 3, 48, {
+const Font lcdFontData = { 24, 32, 3, 48, {
 	// @0 '0' (18 pixels wide)
 	0x7F, 0xFE, 0x00, //  ##############
 	0xFF, 0xFE, 0xC0, // ############### ##
@@ -804,6 +804,6 @@ Font lcdFontData = { 24, 32, 3, 48, {
 	0x00, 0x00, 0x00 //
 }};
 
-PFont sysFont 	= &sysFontData;
-PFont menloFont = &menloFontData;
-PFont lcdFont 	= &lcdFontData;
+const Font* sysFont 		= &sysFontData;
+const Font* menloFont 		= &menloFontData;
+const Font* lcdFont 		= &lcdFontData;

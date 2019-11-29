@@ -9,6 +9,7 @@
 #include "macros.h"
 #include "system.h"
 #include "graphics.h"
+#include "graphics_impl.h"
 #include "fonts.h"
 #include "st7735.h"
 
@@ -25,10 +26,6 @@ typedef struct
 	uint8_t		datalen;
 	uint8_t		data[16];
 } InitStruct, *PInitStruct;
-
-static Colour fg;
-static Colour bg;
-static PFont pf;
 
 InitStruct is[] =
 {
@@ -246,26 +243,22 @@ void AddressSet(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
 	WriteByte(Cmd, 0x2c);	// Memory write
 }
 
-void SetForegroundColour(Colour f) { fg = f; }
-void SetBackgroundColour(Colour b) { bg = b; }
-void SetFont(PFont f) {  pf = f; }
-
 void ClearScreen()
 {
 	AddressSet(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	WriteShortRepeat(Data, 0x00, SCREEN_WIDTH * SCREEN_HEIGHT);
 }
 
-void SetPixel(uint16_t l, uint16_t t)
+void SetPixelImpl(PDrawOp pd)
 {
-    AddressSet(l, t, l, t);
-    WriteShort(Data, fg);
+    AddressSet(pd->l, pd->t, pd->l, pd->t);
+    WriteShort(Data, pd->fg);
 }
 
-void DrawRect(uint16_t l, uint16_t t, uint16_t w, uint16_t h)
+void DrawRectImpl(PDrawOp pd)
 {
-	AddressSet(l, t, l + w - 1, t + h - 1);
-	WriteShortRepeat(Data, fg, (w * h));
+	AddressSet(pd->l, pd->t, pd->l + pd->w - 1, pd->t + pd->h - 1);
+	WriteShortRepeat(Data, pd->fg, (pd->w * pd->h));
 }
 
 Colour buf[32];
@@ -280,12 +273,12 @@ void ALWAYS_INLINE FlushBuf()
 	}
 }
 
-void BlitLine1BPP(uint8_t* psrc, uint16_t cnt)
+void BlitLine1BPP(uint8_t* psrc, uint16_t ofs, uint16_t cnt, uint32_t colours)
 {
 	uint8_t bcnt 	= 7;
-	uint8_t src 	= *psrc;
-	uint16_t f		= swap(fg);
-	uint16_t b 		= swap(bg);
+	uint8_t src 	= *psrc++;
+	uint16_t f		= swap(colours >> 16);
+	uint16_t b 		= swap(colours & 0xFFFF);
 
 	while(cnt--)
 	{
@@ -297,27 +290,31 @@ void BlitLine1BPP(uint8_t* psrc, uint16_t cnt)
 		src <<= 1;
 		if(bcnt-- == 0)
 		{
-			src = *++psrc;
+			src = *psrc++;
 			bcnt = 7;
 		}
 	}
 }
 
-void DrawText(uint16_t l, uint16_t t, char* psz)
+void DrawTextImpl(PDrawOp pd, char* psz)
 {
-	int len 		= strlen(psz);
+	AddressSet(pd->l, pd->t, (pd->l + pd->w) - 1, (pd->t + pd->h) - 1);
 
-	uint16_t w		= len * pf->width;
-	uint16_t h		= pf->height;
+	PFont pf 			= pd->ft;
+	uint32_t clr		= (uint32_t)pd->fg << 16 | pd->bg;
+	uint16_t w			= pd->w;
 
-	AddressSet(l, t, (l + w) - 1, (t + h) - 1);
-
-	for(int ln = 0; ln < h; ln++)
+	for(uint16_t ln = pd->toff; ln < pd->h; ln++)
 	{
+		uint16_t loff 	= pd->loff;
+		uint16_t cnt	= pf->width - loff;
 		for(char* p = psz; *p; p++)
 		{
-			uint8_t* pfd	= pf->data + ((*p-pf->offset) * (pf->cellwidth * pf->height))  + (pf->cellwidth * ln);
-			BlitLine1BPP(pfd, pf->width);
+			uint8_t* pfd	= pf->data + ((*p-pf->offset) * (pf->cellwidth * pf->height)) + (pf->cellwidth * ln);
+			BlitLine1BPP(pfd, loff, cnt, clr);
+
+			loff			= 0;
+			cnt				= (w -= cnt) > pf->width ? pf->width : w;
 		}
 
 		FlushBuf();

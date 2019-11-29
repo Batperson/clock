@@ -96,10 +96,12 @@ void MenuSelect()
 
 void RenderMenu()
 {
+	uint16_t w, h;
+	uint16_t top	= 40;
+
 	ClearScreen();
 	SetFont(sysFont);
-
-	uint16_t top	= 40;
+	MeasureChar(' ', &w, &h);
 
 	uint8_t start;
 	if(menuIndex < 2)
@@ -111,10 +113,10 @@ void RenderMenu()
 
 	for(uint8_t i = start; i < start + 5; i++)
 	{
-		SetForegroundColour((i == menuIndex) ? BLACK : GREEN);
-		SetBackgroundColour((i == menuIndex) ? GREEN : BLACK);
-		DrawText(10, top, currentMenu[i].text);
+		SetForegroundColour(GREEN);
+		SetBackgroundColour(BLACK);
+		DrawText(10, top, 142, h, (i == menuIndex) ? DrawInverse : DrawNormal, currentMenu[i].text);
 
-		top += sysFont->height + 1;
+		top += h + 1;
 	}
 }

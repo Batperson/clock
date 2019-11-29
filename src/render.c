@@ -41,18 +41,18 @@ void RenderNormal()
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(CYAN);
 	SetFont(lcdFont);
-	DrawText(10, 36, sz);
+	DrawText(0, 36, 152, 36, AlignCentre, sz);
 
 	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
 	strupr(sz);
 
 	SetForegroundColour(BLUE);
 	SetFont(sysFont);
-	DrawText(10, 74, sz);
+	DrawText(0, 80, 152, 12, AlignCentre, sz);
 
 	uint16_t top 	= 40;
 	SetForegroundColour(BLACK);
-	DrawRect(153, top, 8, clockValues.tm_sec);
+	DrawRect(153, top, 8, clockValues.tm_sec, DrawNormal);
 	DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
 }
 
@@ -87,7 +87,7 @@ void RenderFieldSet()
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(CYAN);
 	SetFont(lcdFont);
-	DrawText(10, 36, sz);
+	DrawText(0, 36, 152, 36, AlignCentre, sz);
 
 	switch(clockSetField)
 	{
@@ -115,7 +115,7 @@ void RenderFieldSet()
 
 	SetForegroundColour(MAGENTA);
 	SetFont(sysFont);
-	DrawText(30, 84, sz);
+	DrawText(0, 80, 152, 12, AlignCentre, sz);
 }
 
 void RenderAbout()

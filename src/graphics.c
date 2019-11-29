@@ -9,7 +9,23 @@
 #include "macros.h"
 #include "system.h"
 #include "graphics.h"
+#include "graphics_impl.h"
 #include "fonts.h"
+
+static DrawOp op = {
+	0, 0, 0, 0,
+	NULL,
+	RGB(0, 255, 0),
+	RGB(0, 0, 0),
+	0, 0
+};
+
+static Colour fg	= RGB(0, 255, 0);
+static Colour bg	= RGB(0, 0, 0);
+
+void SetForegroundColour(Colour f) { fg = f; }
+void SetBackgroundColour(Colour b) { bg = b; }
+void SetFont(PFont f) {  op.ft = f; }
 
 Colour Gradient(double ratio)
 {
@@ -35,4 +51,100 @@ Colour Gradient(double ratio)
     }
 
     return RGB(red, grn, blu);
+}
+
+void MeasureChar(char c, uint16_t* w, uint16_t* h)
+{
+	*w	= op.ft->width;
+	*h	= op.ft->height;
+}
+
+void MeasureText(char* psz, uint16_t* w, uint16_t* h)
+{
+	*w	= strlen(psz) * op.ft->width;
+	*h	= op.ft->height;
+}
+
+void SetPixel(uint16_t l, uint16_t t, DrawFlags flags)
+{
+	op.l	= l;
+	op.t	= t;
+	op.fg	= (flags & DrawInverse) ? bg : fg;
+	op.bg	= (flags & DrawInverse) ? fg : bg;
+
+	SetPixelImpl(&op);
+}
+
+void DrawRect(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags)
+{
+	op.l	= l;
+	op.t	= t;
+	op.w	= w;
+	op.h	= h;
+	op.fg	= (flags & DrawInverse) ? bg : fg;
+	op.bg	= (flags & DrawInverse) ? fg : bg;
+
+	DrawRectImpl(&op);
+}
+
+void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, char* psz)
+{
+	uint16_t actw, acth;	// actual width & height
+
+	MeasureText(psz, &actw, &acth);
+
+	op.fg			= (flags & DrawInverse) ? bg : fg;
+	op.bg			= (flags & DrawInverse) ? fg : bg;
+
+	switch(flags & (AlignRight | AlignCentre))
+	{
+	case AlignRight:
+		op.loff			= (actw > w) ? actw - w : 0;
+		op.l			= (actw > w) ? l : l + (w - actw);
+		op.w			= (actw > w) ? w : actw;
+		break;
+	case AlignCentre:
+		op.loff			= (actw > w) ? (actw - w) / 2 : 0;
+		op.l			= (actw > w) ? l : l + (w - actw) / 2;
+		op.w			= (actw > w) ? w : actw;
+		break;
+	default:
+		op.loff			= 0;
+		op.l			= l;
+		op.w		 	= (actw > w) ? w : actw;
+		break;
+	}
+
+	switch(flags & (AlignBottom | AlignVCentre))
+	{
+	case AlignBottom:
+		op.toff			= (acth > h) ? acth - h : 0;
+		op.t			= (acth > h) ? h : h + (h - acth);
+		op.h			= (acth > h) ? h :acth;
+		break;
+	case AlignVCentre:
+		op.toff			= (acth > h) ? (acth - h) / 2 : 0;
+		op.t			= (acth > h) ? h : h + (h - acth) / 2;
+		op.h			= (acth > h) ? h : acth;
+		break;
+	default:
+		op.toff			= 0;
+		op.t			= t;
+		op.h			= (acth > h) ? h :acth;
+		break;
+	}
+
+	while(op.loff && *psz)
+	{
+		uint16_t cw, ch;
+		MeasureChar(*psz, &cw, &ch);
+
+		if(op.loff < cw)
+			break;
+
+		op.loff -= cw;
+		psz++;
+	}
+
+	DrawTextImpl(&op, psz);
 }

@@ -7,8 +7,8 @@
 #ifndef FONTS_H_
 #define FONTS_H_
 
-extern PFont sysFont;
-extern PFont menloFont;
-extern PFont lcdFont;
+const extern PFont sysFont;
+const extern PFont menloFont;
+const extern PFont lcdFont;
 
 #endif /* FONTS_H_ */
