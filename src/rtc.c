@@ -212,6 +212,8 @@ void SetAlarmFlags(AlarmFlags flags)
 	val				|= flags;
 
 	BKP_WriteBackupRegister(BREG_ALARM, val);
+
+	ConfigNextAlarm();
 }
 
 AlarmFlags GetAlarmFlags()

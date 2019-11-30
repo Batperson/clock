@@ -58,7 +58,7 @@ extern AlarmState		alarmState;
 extern struct tm 		clockValues;
 extern struct tm 		clockSetValues;
 
-void SetAlarmRing(PSong song);
+void SetAlarmRing(uint32_t index);
 void SetAlarmState(AlarmState state);
 void ChangeState(ClockState state);
 

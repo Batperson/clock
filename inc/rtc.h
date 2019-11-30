@@ -8,6 +8,7 @@
 #define RTC_H_
 
 typedef enum {
+	RecurNone		= 0x0000,
 	RecurWeekend	= 0x8000,
 	RecurWeekday 	= 0x4000,
 

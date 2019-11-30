@@ -21,6 +21,8 @@
 #define BTN_UP						GPIO_Pin_0
 #define BTN_DOWN					GPIO_Pin_1
 
+#define BREG_ALARM_RING				BKP_DR3
+
 extern Song arpeggiator;
 extern Song reveille;
 
@@ -43,13 +45,18 @@ SpecialDay specialDays[] = {
 	{ 65535, 	NULL, 			waitangiDayTexts }
 };
 
+PSong alarmRings[] = {
+	&reveille,
+	&arpeggiator
+};
+
 MenuItem mainMenu[];
 
 MenuItem alarmMenu[] = {
 	{ "SET ALARM ON", 				SetAlarmState, 		AlarmEnabled },
 	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
-	{ "RING: REVEILLE", 			SetAlarmRing, 		(uint32_t)&reveille  },
-	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		(uint32_t)&arpeggiator },
+	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
+	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
 	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
 	{ NULL, NULL, 0 }
 };
@@ -129,13 +136,19 @@ void SetAlarmState(AlarmState als)
 		alarmState 			= AlarmEnabled;
 		alarmMenu[0].text	= "SET ALARM OFF";
 		alarmMenu[0].arg	= AlarmDisabled;
+
+		SetAlarmFlags(RecurWeekend | RecurWeekday);
 	}
 	else
 	{
 		alarmState 			= AlarmDisabled;
 		alarmMenu[0].text	= "SET ALARM ON";
 		alarmMenu[0].arg	= AlarmEnabled;
+
+		SetAlarmFlags(RecurNone);
 	}
+
+	TriggerRender();
 }
 
 void AboutHandler(uint16_t btn, ButtonEventType et)
@@ -397,9 +410,16 @@ void ChangeState(ClockState state)
 	TriggerRender();
 }
 
-void SetAlarmRing(PSong song)
+void SetAlarmRing(uint32_t index)
 {
-	alarmRing = song;
+	if(index < (sizeof(alarmRings) / sizeof(PSong)))
+	{
+		alarmRing = alarmRings[index];
+
+		BKP_WriteBackupRegister(BREG_ALARM_RING, index);
+
+		TriggerRender();
+	}
 }
 
 void OnRtcSecond()
