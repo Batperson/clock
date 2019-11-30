@@ -113,7 +113,8 @@ void RegisterButtonCallback(uint16_t button, ButtonEventType eventType, button_c
 		if(state[i] == 0)
 		{
 			state[i] 	= (eventType << 24) | button;
-			callback[i]	= (uint32_t)cbk | (eventType << EVENT_SHIFT);
+			callback[i] &= CNT_MASK;
+			callback[i]	|= (uint32_t)cbk | (eventType << EVENT_SHIFT);
 			break;
 		}
 	}
