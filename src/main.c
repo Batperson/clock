@@ -285,7 +285,7 @@ void FieldMoveNext()
 	case AlarmSet:
 		if(clockSetField++ >= Minute)
 		{
-			SetAlarmTimeAndFlags(&clockSetValues, RecurWeekday | RecurWeekend);	// For now
+			SetAlarmTime(&clockSetValues);
 			ChangeState(Normal);
 		}
 		break;
@@ -319,6 +319,7 @@ void FieldLongPressActive()
 {
 	if(stprescaler++ >= 70)
 	{
+		Beep(88000, 30, 90);
 		FieldPressHandler(lngpress, ButtonShortPress);
 		stprescaler = 0;
 	}

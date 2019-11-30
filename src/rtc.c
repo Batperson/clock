@@ -13,6 +13,12 @@
 #define BREG_ONETIMECONFIG			BKP_DR1
 #define BREG_ALARM					BKP_DR2
 
+#define RTC_ONETIME_VAL				0xA5A5
+
+#define ALARM_MIN_MASK				0x03F
+#define ALARM_HR_MASK				0x7C0
+#define ALARM_HR_SHIFT				6
+
 void InitRTCInterrupts()
 {
 	NVIC_InitTypeDef nvic;
@@ -69,8 +75,8 @@ void ConfigNextAlarm()
 	uint16_t val			= BKP_ReadBackupRegister(BREG_ALARM);
 
 	AlarmFlags flags		= val & AlarmFlagsMask;
-	uint8_t min				= val & 0x3F;
-	uint8_t hour			= (val & 0x7C0) >> 6;
+	uint8_t min				= val & ALARM_MIN_MASK;
+	uint8_t hour			= (val & ALARM_HR_MASK) >> ALARM_HR_SHIFT;
 
 	if(flags & (RecurWeekday | RecurWeekend))
 	{
@@ -125,14 +131,14 @@ void InitClock()
 
 	/* Check for a flag in the backup register which should already be set if the RTC
 	 * has been programmed previously */
-	if (BKP_ReadBackupRegister(BREG_ONETIMECONFIG) != 0xA5A5)
+	if (BKP_ReadBackupRegister(BREG_ONETIMECONFIG) != RTC_ONETIME_VAL)
 	{
 		/* RTC has not been previously configured */
 		printf("Initializing RTC and backup domain\n");
 
 	    InitRTCOneTimeConfig();
 
-	    BKP_WriteBackupRegister(BREG_ONETIMECONFIG, 0xA5A5);
+	    BKP_WriteBackupRegister(BREG_ONETIMECONFIG, RTC_ONETIME_VAL);
 	    BKP_WriteBackupRegister(BREG_ALARM, 0);
 	}
 	else
@@ -180,23 +186,32 @@ void GetAlarmTime(struct tm* ptm)
 
 	uint16_t val	= BKP_ReadBackupRegister(BREG_ALARM);
 
-	ptm->tm_min		= val & 0x3F;
-	ptm->tm_hour	= (val & 0x7C0) >> 6;
+	ptm->tm_min		= val & ALARM_MIN_MASK;
+	ptm->tm_hour	= (val & ALARM_HR_MASK) >> 6;
 }
 
-void SetAlarmTimeAndFlags(struct tm* ptm, AlarmFlags flags)
+void SetAlarmTime(struct tm* ptm)
 {
-	uint16_t val		= flags;
+	uint16_t val		= BKP_ReadBackupRegister(BREG_ALARM) & AlarmFlagsMask;
 
 	if(ptm)
 	{
-		val				|= (ptm->tm_min & 0x3F);
-		val 			|= (ptm->tm_hour << 6) & 0x7C0;
+		val				|= (ptm->tm_min & ALARM_MIN_MASK);
+		val 			|= (ptm->tm_hour << ALARM_HR_SHIFT) & ALARM_HR_MASK;
 	}
 
 	BKP_WriteBackupRegister(BREG_ALARM, val);
 
 	ConfigNextAlarm();
+}
+
+void SetAlarmFlags(AlarmFlags flags)
+{
+	uint16_t val	= BKP_ReadBackupRegister(BREG_ALARM);
+	val 			&= (ALARM_HR_MASK | ALARM_MIN_MASK);
+	val				|= flags;
+
+	BKP_WriteBackupRegister(BREG_ALARM, val);
 }
 
 AlarmFlags GetAlarmFlags()
