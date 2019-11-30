@@ -138,14 +138,30 @@ void SetAlarmState(AlarmState als)
 	}
 }
 
-void ShowNormal()
+void AboutHandler(uint16_t btn, ButtonEventType et)
 {
 	ChangeState(Normal);
 }
 
-void ShowMenu()
+void ShowMenuHandler(uint16_t btn, ButtonEventType et)
 {
 	ChangeState(Menu);
+}
+
+void MenuHandler(uint16_t btn, ButtonEventType et)
+{
+	switch(btn)
+	{
+	case BTN_SELECT:
+		MenuSelect();
+		break;
+	case BTN_UP:
+		MenuUp();
+		break;
+	case BTN_DOWN:
+		MenuDown();
+		break;
+	}
 }
 
 void OnMenuHighlight(PMenuItem item)
@@ -162,6 +178,32 @@ void OnMenuTimeout(PMenuItem item)
 	}
 }
 
+int GetMaxDay(uint32_t year, uint8_t month)
+{
+	/*
+	 * Thirty days hath September April June and November
+	 * All the rest have 31 except February alone which has 28 days clear
+	 * And 29 each leap year.
+	 * And there is a leap year if the year % 4 == 0, unless year % 100 == 0 and year % 400 != 0
+	 * The only year within a unix timestamp where the last 2 criteria can apply is 2000.
+	 */
+	switch(month)
+	{
+	case 1:
+		if(year % 4 == 0)
+			return 29;
+		if(year == 2000)
+			return 29;
+		return 28;
+	case 3:
+	case 8:
+	case 10:
+		return 30;
+	default:
+		return 31;
+	}
+}
+
 void FieldSetUp()
 {
 	switch(clockSetField)
@@ -174,6 +216,15 @@ void FieldSetUp()
 		break;
 	case Second:
 		clockSetValues.tm_sec = 0;
+		break;
+	case Year:
+		if(clockSetValues.tm_year-- == 1902) clockSetValues.tm_year = 1902;	// Around the smallest possible timestamp year
+		break;
+	case Month:
+		if(clockSetValues.tm_mon-- == 0) clockSetValues.tm_mon = 11;
+		break;
+	case Day:
+		if(clockSetValues.tm_mday-- == 1) clockSetValues.tm_mday = GetMaxDay(clockSetValues.tm_year, clockSetValues.tm_mon);
 		break;
 	default:
 		break;
@@ -194,6 +245,15 @@ void FieldSetDown()
 		break;
 	case Second:
 		clockSetValues.tm_sec = 0;
+		break;
+	case Year:
+		if(clockSetValues.tm_year++ == 2038) clockSetValues.tm_year = 2038;	// Max possible timestamp year
+		break;
+	case Month:
+		if(clockSetValues.tm_mon++ == 11) clockSetValues.tm_mon = 0;
+		break;
+	case Day:
+		if(clockSetValues.tm_mday++ == GetMaxDay(clockSetValues.tm_year, clockSetValues.tm_mon)) clockSetValues.tm_mday = 1;
 		break;
 	default:
 		break;
@@ -233,38 +293,68 @@ void FieldMoveNext()
 		break;
 	}
 
+	ClearScreen();
 	TriggerRender();
 }
 
-
-void ChangeState(ClockState state)
+void FieldPressHandler(uint16_t btn, ButtonEventType et)
 {
-	switch(clockState)
+	switch(btn)
 	{
-	case AlarmRing:
-		EndSong();
+	case BTN_SELECT:
+		FieldMoveNext();
 		break;
+	case BTN_UP:
+		FieldSetUp();
+		break;
+	case BTN_DOWN:
+		FieldSetDown();
+		break;
+	}
+}
 
+static uint16_t lngpress 	= 0;
+static uint8_t stprescaler	= 0;
+void FieldLongPressActive()
+{
+	if(stprescaler++ >= 70)
+	{
+		FieldPressHandler(lngpress, ButtonShortPress);
+		stprescaler = 0;
+	}
+}
+
+void FieldLongPressHandler(uint16_t btn, ButtonEventType et)
+{
+	switch(et)
+	{
+	case ButtonLongDown:
+		lngpress = btn;
+		RegisterSysTickCallback(FieldLongPressActive);
+		break;
+	case ButtonLongPress:
+		DeregisterCallback(FieldLongPressActive);
+		break;
 	default:
 		break;
 	}
+}
 
+void ChangeState(ClockState state)
+{
 	clockState = state;
 
 	DeregisterButtonCallbacks();
+	EndSong();
 
 	switch(clockState)
 	{
 	case About:
-		RegisterButtonCallback(BTN_SELECT, ButtonAny, ShowNormal);
-		RegisterButtonCallback(BTN_UP, ButtonAny, ShowNormal);
-		RegisterButtonCallback(BTN_DOWN, ButtonAny, ShowNormal);
+		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonAny, AboutHandler);
 		break;
 
 	case Menu:
-		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, MenuSelect);
-		RegisterButtonCallback(BTN_UP, ButtonShortPress, MenuUp);
-		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, MenuDown);
+		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress, MenuHandler);
 		break;
 
 	case AlarmRing:
@@ -278,30 +368,27 @@ void ChangeState(ClockState state)
 	case ClockSet:
 		clockSetField = Hour;
 		GetTime(&clockSetValues);
-		RegisterButtonCallback(BTN_UP, ButtonShortPress, FieldSetUp);
-		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, FieldSetDown);
-		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, FieldMoveNext);
+		RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
 		break;
 
 	case DateSet:
 		clockSetField = Year;
 		GetTime(&clockSetValues);
-		RegisterButtonCallback(BTN_UP, ButtonShortPress, FieldSetUp);
-		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, FieldSetDown);
-		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, FieldMoveNext);
+		RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
 		break;
 
 	case AlarmSet:
 		clockSetField = Hour;
 		GetAlarmTime(&clockSetValues);
-		RegisterButtonCallback(BTN_UP, ButtonShortPress, FieldSetUp);
-		RegisterButtonCallback(BTN_DOWN, ButtonShortPress, FieldSetDown);
-		RegisterButtonCallback(BTN_SELECT, ButtonShortPress, FieldMoveNext);
+		RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
 		break;
 
 	case Normal:
 	default:
-		RegisterButtonCallback(BTN_SELECT, ButtonLongDown, ShowMenu);
+		RegisterButtonCallback(BTN_SELECT, ButtonLongDown, ShowMenuHandler);
 		break;
 	}
 

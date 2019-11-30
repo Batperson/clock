@@ -61,3 +61,6 @@ Now an issue where the same button events repeat, if the button handlers are cha
 Fixed the button issue.
 Seems to be a memory corruption problem, where song state is being overwritten.
 
+30/11/2019
+There was no memory corruption, but because I had not declared some variables static but given them the same name across different code units, the linker
+made them share the same memory location. Problem is fixed now.

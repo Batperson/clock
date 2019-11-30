@@ -22,4 +22,7 @@
 #define ROL(val, shift) ((val<<shift) | (val>>(-shift&31)))
 #define ROR(val, shift) ((val>>shift) | (val<<(-shift&31)))
 
+#define		MIN_SIGNED_SHORT	-32768
+#define		MAX_SIGNED_SHORT	32767
+
 #endif /* MISC_H_ */

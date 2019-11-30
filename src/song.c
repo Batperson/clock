@@ -34,7 +34,7 @@ typedef struct
 	TrackState track[SOUND_CHANNELS];
 } SongState;
 
-volatile SongState state;
+static volatile SongState state;
 
 void InitSong()
 {
