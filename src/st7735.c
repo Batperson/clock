@@ -296,7 +296,7 @@ void BlitLine1BPP(uint8_t* psrc, uint16_t ofs, uint16_t cnt, uint32_t colours)
 	}
 }
 
-void DrawTextImpl(PDrawOp pd, char* psz)
+void DrawTextImpl(PDrawOp pd, const char* psz)
 {
 	AddressSet(pd->l, pd->t, (pd->l + pd->w) - 1, (pd->t + pd->h) - 1);
 
@@ -308,7 +308,7 @@ void DrawTextImpl(PDrawOp pd, char* psz)
 	{
 		uint16_t loff 	= pd->loff;
 		uint16_t cnt	= pf->width - loff;
-		for(char* p = psz; *p; p++)
+		for(const char* p = psz; *p; p++)
 		{
 			uint8_t* pfd	= pf->data + ((*p-pf->offset) * (pf->cellwidth * pf->height)) + (pf->cellwidth * ln);
 			BlitLine1BPP(pfd, loff, cnt, clr);

@@ -22,6 +22,6 @@ typedef struct
 
 void SetPixelImpl(PDrawOp pd);
 void DrawRectImpl(PDrawOp pd);
-void DrawTextImpl(PDrawOp pd, char* psz);
+void DrawTextImpl(PDrawOp pd, const char* psz);
 
 #endif /* GRAPHICS_IMPL_H_ */

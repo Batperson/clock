@@ -18,6 +18,11 @@
 #include "clock.h"
 #include "menu.h"
 
+static const char* szAlarmKeys[] 		= { "SEL", "UP", "DN" };
+static const int16_t	lOffsets[4]		= { 0, 6, -4, 3 };
+static const int16_t	tOffsets[4]		= { -5, 3, -0, -3 };
+static uint8_t	alarmTick				= 0;
+
 void InitRender()
 {
 	// No need to use NVIC_Init to enable this system interrupt but we do want to set the priority.
@@ -54,6 +59,46 @@ void RenderNormal()
 	SetForegroundColour(BLACK);
 	DrawRect(153, top, 8, clockValues.tm_sec, DrawNormal);
 	DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
+}
+
+void RenderAlarm()
+{
+	char sz[24];
+	strftime(sz, sizeof(sz), "%I:%M", &clockValues);	// %H = 12 hour, %I = 24 hour, %p = AM/PM
+
+	uint8_t ix		= alarmTick++ & 0x03;
+	uint8_t	lOff 	= lOffsets[ix];
+	uint8_t tOff 	= tOffsets[ix];
+
+	SetForegroundColour(BLACK);
+	DrawRect(0, 0, 162, 74, DrawNormal);
+
+	Colour fg		= CYAN;
+	SetBackgroundColour(BLACK);
+	SetForegroundColour(fg);
+	SetFont(lcdFont);
+
+	DrawText(10 + lOff, 36 + tOff, 142, 36, AlignCentre, sz);
+
+	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
+	strupr(sz);
+
+	SetForegroundColour(YELLOW);
+	SetFont(sysFont);
+	DrawText(0, 80, 152, 12, AlignCentre, "TO STOP ALARM PRESS:");
+
+	if(alarmMode & AlarmLock)
+	{
+		uint16_t l	= 4;
+		for(int i=0; i<4; i++)
+		{
+			SetForegroundColour((i < alarmLockIndex) ? GREEN : RED);
+			DrawRect(l, 92, 34, 12, DrawNormal);
+			DrawText(l, 92, 34, 12, DrawInverse | AlignCentre | AlignVCentre, szAlarmKeys[alarmLock[i]]);
+
+			l += 36;
+		}
+	}
 }
 
 void RenderFieldSet()
@@ -140,8 +185,10 @@ void Render()
 	case About:
 		RenderAbout();
 		break;
-	case Normal:
 	case AlarmRing:
+		RenderAlarm();
+		break;
+	case Normal:
 	default:
 		RenderNormal();
 		break;

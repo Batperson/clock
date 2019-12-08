@@ -49,9 +49,9 @@ void SetFont(PFont pf);
 void SetPixel(uint16_t l, uint16_t t, DrawFlags flags);
 void SetTextRangeColour(uint16_t st, uint16_t len, Colour fg);
 void MeasureChar(char c, uint16_t* w, uint16_t* h);
-void MeasureText(char* psz, uint16_t* w, uint16_t* h);
+void MeasureText(const char* psz, uint16_t* w, uint16_t* h);
 void DrawRect(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags);
-void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, char* psz);
+void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, const char* psz);
 void DrawGradientVertical(uint16_t l, uint16_t t, uint16_t w, uint16_t h, uint16_t ofs);
 void DrawGradientHorizontal(uint16_t l, uint16_t t, uint16_t w, uint16_t h, uint16_t ofs);
 

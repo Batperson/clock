@@ -23,6 +23,7 @@ AlarmFlags GetAlarmFlags();
 void SetAlarmFlags(AlarmFlags flags);
 void SetAlarmTimeAndFlags(struct tm* ptm, AlarmFlags flags);
 void SetAlarmTime(struct tm* ptm);
+void SetNextAlarm();
 void SnoozeAlarm(uint8_t minutes);
 
 void OnRtcSecond();

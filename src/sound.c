@@ -43,7 +43,7 @@ void InitSound()
 	DMA_InitTypeDef				dmai;
 	NVIC_InitTypeDef 			nvic;
 
-	RegisterSysTickCallback(&SoundCallback);
+	RegisterTimeoutCallback(&SoundCallback, 0, CallbackRepeat);
 
 	memset((Channel*)channel, 0, sizeof(channel));
 	memset((uint16_t*)soundBuf, 0, sizeof(soundBuf));

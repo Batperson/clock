@@ -64,7 +64,7 @@ void MenuUp()
 	if(menuIndex > 0)
 	{
 		menuIndex--;
-		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS);
+		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS, CallbackRepeat);
 		OnMenuHighlight(&currentMenu[menuIndex]);
 
 		TriggerRender();
@@ -76,7 +76,7 @@ void MenuDown()
 	if(menuIndex < menuLength - 1)
 	{
 		menuIndex++;
-		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS);
+		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS, CallbackRepeat);
 		OnMenuHighlight(&currentMenu[menuIndex]);
 
 		TriggerRender();

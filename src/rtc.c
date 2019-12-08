@@ -70,7 +70,7 @@ void InitRTCOneTimeConfig(void)
 	RTC_WaitForLastTask();
 }
 
-void ConfigNextAlarm()
+void SetNextAlarm()
 {
 	uint16_t val			= BKP_ReadBackupRegister(BREG_ALARM);
 
@@ -160,7 +160,7 @@ void InitClock()
 	/* Clear reset flags */
 	RCC_ClearFlag();
 
-	ConfigNextAlarm();
+	SetNextAlarm();
 
 	printf("Clock initialized\n");
 }
@@ -202,7 +202,7 @@ void SetAlarmTime(struct tm* ptm)
 
 	BKP_WriteBackupRegister(BREG_ALARM, val);
 
-	ConfigNextAlarm();
+	SetNextAlarm();
 }
 
 void SetAlarmFlags(AlarmFlags flags)
@@ -213,7 +213,7 @@ void SetAlarmFlags(AlarmFlags flags)
 
 	BKP_WriteBackupRegister(BREG_ALARM, val);
 
-	ConfigNextAlarm();
+	SetNextAlarm();
 }
 
 AlarmFlags GetAlarmFlags()
@@ -241,7 +241,7 @@ void RTC_IRQHandler()
 	{
 		printf("Alarm activated\n");
 
-		ConfigNextAlarm();
+		SetNextAlarm();
 
 		OnRtcAlarm();
 	}

@@ -11,11 +11,17 @@ void InitSystem();
 
 void sleep(uint32_t ms);
 
-#define MAX_CALLBACKS	4
+#define MAX_CALLBACKS	6
 
 typedef void (*callback_ptr)();
-void RegisterSysTickCallback(callback_ptr ptr);
-void RegisterTimeoutCallback(callback_ptr ptr, int16_t millis);
+
+typedef enum {
+	CallbackNone	= 0x00000000,
+	CallbackRepeat	= 0x80000000
+} CallbackFlags;
+
+// Note millis max value is 31
+void RegisterTimeoutCallback(callback_ptr ptr, uint16_t millis, CallbackFlags flags);
 void DeregisterCallback(callback_ptr);
 
 #endif /* SYSTEM_H_ */

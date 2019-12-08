@@ -11,7 +11,6 @@
 #include "system.h"
 #include "button.h"
 
-static uint8_t 			prescaler;
 static uint32_t			state[BUTTON_MAX_CBACK];
 static uint32_t			callback[BUTTON_MAX_CBACK];
 
@@ -30,58 +29,53 @@ void WEAKREF OnButtonEvent(uint32_t button, ButtonEventType eventType)
 // To be called from a repeating interrupt such as SysTick, ideally 1KHz.
 void PollButtonState()
 {
-	if(prescaler++ >= TICK_PRESCALER)
+	for(uint8_t i=0; i<BUTTON_MAX_CBACK; i++)
 	{
-		prescaler = 0;
+		if(state[i] == 0)
+			break;
 
-		for(uint8_t i=0; i<BUTTON_MAX_CBACK; i++)
+		uint16_t btn			= state[i] & 0xFFFF;
+		uint8_t cnt				= (callback[i] & CNT_MASK) >> CNT_SHIFT;
+		ButtonEventType eta 	= ButtonNone;
+
+		if(BUTTON_PORT->IDR & btn)
 		{
-			if(state[i] == 0)
-				break;
-
-			uint16_t btn			= state[i] & 0xFFFF;
-			uint8_t cnt				= (callback[i] & CNT_MASK) >> CNT_SHIFT;
-			ButtonEventType eta 	= ButtonNone;
-
-			if(BUTTON_PORT->IDR & btn)
+			if(cnt < 0xFF)
 			{
-				if(cnt < 0xFF)
-				{
-					state[i] &= 0x0000FFFF;
-					state[i] |= ((BUTTON_PORT->IDR & btn) << 16);
+				state[i] &= 0x0000FFFF;
+				state[i] |= ((BUTTON_PORT->IDR & btn) << 16);
 
-					cnt++;
+				cnt++;
 
-					if(cnt == SHORT_PRESS_TICKS)
-						eta = ButtonShortDown;
-					else if(cnt == LONG_PRESS_TICKS)
-						eta = ButtonLongDown;
-				}
+				if(cnt == SHORT_PRESS_TICKS)
+					eta = ButtonShortDown;
+				else if(cnt == LONG_PRESS_TICKS)
+					eta = ButtonLongDown;
 			}
-			else
-			{
-				if(cnt >= LONG_PRESS_TICKS)
-					eta = ButtonLongPress;
-				else if(cnt >= SHORT_PRESS_TICKS)
-					eta = ButtonShortPress;
+		}
+		else
+		{
+			if(cnt >= LONG_PRESS_TICKS)
+				eta = ButtonLongPress;
+			else if(cnt >= SHORT_PRESS_TICKS)
+				eta = ButtonShortPress;
 
-				cnt = 0;
-			}
+			cnt = 0;
+		}
 
-			callback[i]	&= ~CNT_MASK;
-			callback[i] |= cnt << CNT_SHIFT;
+		callback[i]	&= ~CNT_MASK;
+		callback[i] |= cnt << CNT_SHIFT;
 
-			if(eta != ButtonNone)
-			{
-				uint16_t btna		= (state[i] & 0xFFFF0000) >> 16;
-				ButtonEventType et	= (callback[i] & EVENT_MASK) >> EVENT_SHIFT;
-				button_callback cbk	= (button_callback)(callback[i] & CALLBACK_MASK);
+		if(eta != ButtonNone)
+		{
+			uint16_t btna		= (state[i] & 0xFFFF0000) >> 16;
+			ButtonEventType et	= (callback[i] & EVENT_MASK) >> EVENT_SHIFT;
+			button_callback cbk	= (button_callback)(callback[i] & CALLBACK_MASK);
 
-				OnButtonEvent(btna, eta);
+			OnButtonEvent(btna, eta);
 
-				if((eta & et) == eta)
-					cbk(btna, eta);
-			}
+			if((eta & et) == eta)
+				cbk(btna, eta);
 		}
 	}
 }
@@ -91,7 +85,6 @@ void InitButton()
 	GPIO_InitTypeDef 			gpio;
 
 	memset(state, 0, sizeof(state));
-	prescaler 					= 0;
 
 	GPIO_StructInit(&gpio);
 
@@ -101,7 +94,7 @@ void InitButton()
 	gpio.GPIO_Pin				= BUTTON_PINS;
 	GPIO_Init(BUTTON_PORT, &gpio);
 
-	RegisterSysTickCallback(&PollButtonState);
+	RegisterTimeoutCallback(&PollButtonState, TICK_PRESCALER, CallbackRepeat);
 
 	printf("Buttons initialized\n");
 }

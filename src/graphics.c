@@ -59,7 +59,7 @@ void MeasureChar(char c, uint16_t* w, uint16_t* h)
 	*h	= op.ft->height;
 }
 
-void MeasureText(char* psz, uint16_t* w, uint16_t* h)
+void MeasureText(const char* psz, uint16_t* w, uint16_t* h)
 {
 	*w	= strlen(psz) * op.ft->width;
 	*h	= op.ft->height;
@@ -87,7 +87,7 @@ void DrawRect(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags)
 	DrawRectImpl(&op);
 }
 
-void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, char* psz)
+void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, const char* psz)
 {
 	uint16_t actw, acth;	// actual width & height
 

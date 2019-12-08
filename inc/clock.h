@@ -33,9 +33,16 @@ typedef enum {
 } FlashType;
 
 typedef enum {
-	AlarmDisabled,
-	AlarmEnabled
+	AlarmStateNone		= 0x00,
+	AlarmSnoozed		= 0x01,
 } AlarmState;
+
+typedef enum {
+	AlarmModeNone	= 0x00,
+	AlarmEnabled	= 0x01,
+	AlarmLock		= 0x02,
+	AlarmSnooze		= 0x04
+} AlarmMode;
 
 typedef enum {
 	Format24Hour,
@@ -55,11 +62,15 @@ extern ClockState 		clockState;
 extern ClockSetField 	clockSetField;
 extern ClockFormat		clockFormat;
 extern AlarmState		alarmState;
+extern AlarmMode		alarmMode;
 extern struct tm 		clockValues;
 extern struct tm 		clockSetValues;
+extern uint8_t			alarmLock[4];
+extern uint8_t			alarmLockIndex;
 
 void SetAlarmRing(uint32_t index);
-void SetAlarmState(AlarmState state);
+void SetAlarmMode(AlarmMode mode);
+void ClearAlarmMode(AlarmMode mode);
 void ChangeState(ClockState state);
 
 #endif /* CLOCK_H_ */

@@ -35,7 +35,7 @@ const char* newYearTexts[]				= { "Happy New Year!", NULL };
 const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", "Celebrate your freedoms", "And appreciate your country.", "Remember the past", "And look to the future.", NULL };
 const char* anzacDayTexts[]				= { "They shall not grow old", "As we that are left grow old", "Age shall not weary them", "Nor the years condemn.", "But at the going down of the sun", "And in the morning", "We will remember them.", NULL };
 
-SpecialDay specialDays[] = {
+const SpecialDay specialDays[] = {
 	{ 65535, 	NULL, 			birthdayChristopherTexts },
 	{ 65535, 	NULL, 			birthdayRosieTexts },
 	{ 65535, 	NULL, 			birthdayXiaTexts },
@@ -45,7 +45,7 @@ SpecialDay specialDays[] = {
 	{ 65535, 	NULL, 			waitangiDayTexts }
 };
 
-PSong alarmRings[] = {
+const PSong alarmRings[] = {
 	&reveille,
 	&arpeggiator
 };
@@ -53,7 +53,7 @@ PSong alarmRings[] = {
 MenuItem mainMenu[];
 
 MenuItem alarmMenu[] = {
-	{ "SET ALARM ON", 				SetAlarmState, 		AlarmEnabled },
+	{ "SET ALARM ON", 				SetAlarmMode, 		AlarmEnabled },
 	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
 	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
 	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
@@ -70,17 +70,22 @@ MenuItem mainMenu[] = {
 	{ NULL, NULL, 0 }
 };
 
+const uint16_t alarmKeys[3] = { BTN_SELECT, BTN_UP, BTN_DOWN };
+
 PSong			alarmRing			= &reveille;
 ClockState 		clockState 			= Normal;
 ClockSetField 	clockSetField 		= Hour;
 ClockFormat		clockFormat			= Format24Hour;
-AlarmState		alarmState			= AlarmDisabled;
+AlarmMode		alarmMode			= AlarmLock | AlarmSnooze;
+AlarmState		alarmState			= AlarmStateNone;
 PSpecialDay		specialDay			= NULL;
 char*			specialDayText		= NULL;
 uint16_t		specialDayYears		= 0;
 uint8_t			snoozeMinutes		= 5;
 struct tm 		clockValues;
 struct tm		clockSetValues;
+uint8_t			alarmLock[4]		= { 0, 0, 0, 0 };
+uint8_t			alarmLockIndex		= 0;
 
 // 	Pins
 //	A9				Button (Select)
@@ -118,7 +123,7 @@ int main(void)
 
 	ClearScreen();
 	SetCurrentMenu(mainMenu);
-	ChangeState(Normal);
+	ChangeState(AlarmRing);
 	LoadConfiguration();
 
 	while(1)
@@ -129,21 +134,31 @@ int main(void)
 	}
 }
 
-void SetAlarmState(AlarmState als)
+void SetAlarmMode(AlarmMode mode)
 {
-	if(als == AlarmEnabled)
+	alarmMode |= mode;
+
+	if(mode & AlarmEnabled)
 	{
-		alarmState 			= AlarmEnabled;
 		alarmMenu[0].text	= "SET ALARM OFF";
-		alarmMenu[0].arg	= AlarmDisabled;
+		alarmMenu[0].arg	= AlarmEnabled;
+		alarmMenu[0].proc	= ClearAlarmMode;
 
 		SetAlarmFlags(RecurWeekend | RecurWeekday);
 	}
-	else
+
+	TriggerRender();
+}
+
+void ClearAlarmMode(AlarmMode mode)
+{
+	alarmMode &= ~mode;
+
+	if(mode & AlarmEnabled)
 	{
-		alarmState 			= AlarmDisabled;
 		alarmMenu[0].text	= "SET ALARM ON";
 		alarmMenu[0].arg	= AlarmEnabled;
+		alarmMenu[0].proc	= ClearAlarmMode;
 
 		SetAlarmFlags(RecurNone);
 	}
@@ -198,14 +213,13 @@ int GetMaxDay(uint32_t year, uint8_t month)
 	 * All the rest have 31 except February alone which has 28 days clear
 	 * And 29 each leap year.
 	 * And there is a leap year if the year % 4 == 0, unless year % 100 == 0 and year % 400 != 0
-	 * The only year within a unix timestamp where the last 2 criteria can apply is 2000.
+	 * The only year within a unix timestamp where the last 2 criteria can apply is 2000
+	 * So we don't need to worry about Gregorian leap years.
 	 */
 	switch(month)
 	{
 	case 1:
 		if(year % 4 == 0)
-			return 29;
-		if(year == 2000)
 			return 29;
 		return 28;
 	case 3:
@@ -344,13 +358,76 @@ void FieldLongPressHandler(uint16_t btn, ButtonEventType et)
 	{
 	case ButtonLongDown:
 		lngpress = btn;
-		RegisterSysTickCallback(FieldLongPressActive);
+		RegisterTimeoutCallback(FieldLongPressActive, 1, CallbackNone);
 		break;
 	case ButtonLongPress:
 		DeregisterCallback(FieldLongPressActive);
 		break;
 	default:
 		break;
+	}
+}
+
+void SetAlarmLock()
+{
+	int n = clockValues.tm_year + clockValues.tm_mon + clockValues.tm_mday;
+	for(int i=0; i<(sizeof(alarmLock) / sizeof(alarmLock[0])); i++)
+	{
+		int v 	= n % 3;
+		n 		-= v;
+
+		alarmLock[i]	= v;
+	}
+
+	alarmLockIndex	= 0;
+}
+
+void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
+{
+	uint8_t getAlarmKeyIndex(uint16_t btn) {
+		for(uint8_t i=0; i<3; i++)
+			if(btn == alarmKeys[i])
+				return i;
+
+		return 0;
+	}
+
+	void stopAlarm() {
+		alarmState 		&= ~AlarmSnoozed;
+		alarmLockIndex 	= 0;
+		ChangeState(Normal);
+	}
+
+	void resetLock() {
+		alarmLockIndex = 0;
+		TriggerRender();
+	}
+
+	if(alarmMode & AlarmSnooze)
+	{
+		alarmState |= AlarmSnoozed;
+		SnoozeAlarm(snoozeMinutes);
+		ChangeState(Normal);
+	}
+
+	if(alarmMode & AlarmLock)
+	{
+		if(et == ButtonShortPress && getAlarmKeyIndex(btn) == alarmLock[alarmLockIndex])
+		{
+			if(alarmLockIndex++ == 3)
+				stopAlarm();
+
+			TriggerRender();
+		}
+		else
+		{
+			resetLock();
+		}
+	}
+	else
+	{
+		if(et == ButtonLongDown)
+			stopAlarm();
 	}
 }
 
@@ -373,10 +450,10 @@ void ChangeState(ClockState state)
 
 	case AlarmRing:
 		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
+		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress | ButtonLongDown, AlarmButtonHandler);
+		RegisterTimeoutCallback(TriggerRender, 140, CallbackRepeat);
+		SetAlarmLock();
 		PlaySong();
-		//RegisterButtonCallback(BTN_SELECT, ButtonShortPress, SnoozeAlarm);
-		//RegisterButtonCallback(BTN_UP, ButtonShortPress, SnoozeAlarm);
-		//RegisterButtonCallback(BTN_DOWN, ButtonShortPress, SnoozeAlarm);
 		break;
 
 	case ClockSet:
@@ -456,7 +533,7 @@ void OnRtcSecond()
 			struct tm* ptm = localtime(&specialDays[i].time);
 			if(ptm->tm_mday == clockValues.tm_mday && ptm->tm_mon == clockValues.tm_mon)
 			{
-				specialDay 		= &specialDays[i];
+				specialDay 		= (PSpecialDay)&specialDays[i];
 				specialDayText	= (char*)*specialDay->texts;
 				specialDayYears = clockValues.tm_year - ptm->tm_year;
 				break;
