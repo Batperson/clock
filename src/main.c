@@ -30,7 +30,7 @@ const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You 
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
 const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", NULL };
 const char* birthdayPeterTexts[]		= { "It's Dad's birthday!", "He is %d today.", "Give him a handshake!", NULL };
-const char* christmasTexts[]			= { "Around this day in Palestine", "A child was born", "And the world changed.", "Merry Christmas!", NULL };
+const char* christmasTexts[]			= { "Around this day in Palestine", "Speaking very approximately", "A child was born", "And the world changed.", "Merry Christmas!", NULL };
 const char* newYearTexts[]				= { "Happy New Year!", NULL };
 const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", "Celebrate your freedoms", "And appreciate your country.", "Remember the past", "And look to the future.", NULL };
 const char* anzacDayTexts[]				= { "They shall not grow old", "As we that are left grow old", "Age shall not weary them", "Nor the years condemn.", "But at the going down of the sun", "And in the morning", "We will remember them.", NULL };
@@ -54,6 +54,8 @@ MenuItem mainMenu[];
 
 MenuItem alarmMenu[] = {
 	{ "SET ALARM ON", 				SetAlarmMode, 		AlarmEnabled },
+	{ "SET LOCK ON",				SetAlarmMode, 		AlarmLock },
+	{ "SET SNOOZE ON",				SetAlarmMode,		AlarmSnooze },
 	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
 	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
 	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
@@ -103,6 +105,8 @@ void LoadConfiguration()
 {
 	// TODO: Read alarm state etc from backup domain
 	printf("Config read from backup domain\n");
+
+	SetAlarmMode(alarmMode);	// todo: load this from backup domain
 }
 
 int main(void)
@@ -123,7 +127,7 @@ int main(void)
 
 	ClearScreen();
 	SetCurrentMenu(mainMenu);
-	ChangeState(AlarmRing);
+	ChangeState(Normal);
 	LoadConfiguration();
 
 	while(1)
@@ -147,6 +151,20 @@ void SetAlarmMode(AlarmMode mode)
 		SetAlarmFlags(RecurWeekend | RecurWeekday);
 	}
 
+	if(mode & AlarmLock)
+	{
+		alarmMenu[1].text	= "SET LOCK OFF";
+		alarmMenu[1].arg	= AlarmLock;
+		alarmMenu[1].proc	= ClearAlarmMode;
+	}
+
+	if(mode & AlarmSnooze)
+	{
+		alarmMenu[1].text	= "SET SNOOZE OFF";
+		alarmMenu[1].arg	= AlarmSnooze;
+		alarmMenu[1].proc	= ClearAlarmMode;
+	}
+
 	TriggerRender();
 }
 
@@ -158,9 +176,23 @@ void ClearAlarmMode(AlarmMode mode)
 	{
 		alarmMenu[0].text	= "SET ALARM ON";
 		alarmMenu[0].arg	= AlarmEnabled;
-		alarmMenu[0].proc	= ClearAlarmMode;
+		alarmMenu[0].proc	= SetAlarmMode;
 
 		SetAlarmFlags(RecurNone);
+	}
+
+	if(mode & AlarmLock)
+	{
+		alarmMenu[1].text	= "SET LOCK ON";
+		alarmMenu[1].arg	= AlarmLock;
+		alarmMenu[1].proc	= SetAlarmMode;
+	}
+
+	if(mode & AlarmSnooze)
+	{
+		alarmMenu[1].text	= "SET SNOOZE ON";
+		alarmMenu[1].arg	= AlarmSnooze;
+		alarmMenu[1].proc	= SetAlarmMode;
 	}
 
 	TriggerRender();
@@ -245,7 +277,7 @@ void FieldSetUp()
 		clockSetValues.tm_sec = 0;
 		break;
 	case Year:
-		if(clockSetValues.tm_year-- == 1902) clockSetValues.tm_year = 1902;	// Around the smallest possible timestamp year
+		if(clockSetValues.tm_year-- <= 02) clockSetValues.tm_year = 02;	// Around the smallest possible timestamp year
 		break;
 	case Month:
 		if(clockSetValues.tm_mon-- == 0) clockSetValues.tm_mon = 11;
@@ -274,7 +306,7 @@ void FieldSetDown()
 		clockSetValues.tm_sec = 0;
 		break;
 	case Year:
-		if(clockSetValues.tm_year++ == 2038) clockSetValues.tm_year = 2038;	// Max possible timestamp year
+		if(clockSetValues.tm_year++ >= 138) clockSetValues.tm_year = 138;	// Max possible timestamp year
 		break;
 	case Month:
 		if(clockSetValues.tm_mon++ == 11) clockSetValues.tm_mon = 0;
@@ -341,15 +373,10 @@ void FieldPressHandler(uint16_t btn, ButtonEventType et)
 }
 
 static uint16_t lngpress 	= 0;
-static uint8_t stprescaler	= 0;
 void FieldLongPressActive()
 {
-	if(stprescaler++ >= 70)
-	{
-		Beep(88000, 30, 90);
-		FieldPressHandler(lngpress, ButtonShortPress);
-		stprescaler = 0;
-	}
+	Beep(88000, 30, 90);
+	FieldPressHandler(lngpress, ButtonShortPress);
 }
 
 void FieldLongPressHandler(uint16_t btn, ButtonEventType et)
@@ -358,7 +385,7 @@ void FieldLongPressHandler(uint16_t btn, ButtonEventType et)
 	{
 	case ButtonLongDown:
 		lngpress = btn;
-		RegisterTimeoutCallback(FieldLongPressActive, 1, CallbackNone);
+		RegisterTimeoutCallback(FieldLongPressActive, 70, CallbackRepeat);
 		break;
 	case ButtonLongPress:
 		DeregisterCallback(FieldLongPressActive);
@@ -451,7 +478,7 @@ void ChangeState(ClockState state)
 	case AlarmRing:
 		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
 		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress | ButtonLongDown, AlarmButtonHandler);
-		RegisterTimeoutCallback(TriggerRender, 140, CallbackRepeat);
+		RegisterTimeoutCallback(TriggerRender, 300, CallbackRepeat);
 		SetAlarmLock();
 		PlaySong();
 		break;

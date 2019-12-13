@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <time.h>
 #include <string.h>
+#include <stdlib.h>
 #include "stm32f10x.h"
 #include "macros.h"
 #include "system.h"
@@ -19,9 +20,6 @@
 #include "menu.h"
 
 static const char* szAlarmKeys[] 		= { "SEL", "UP", "DN" };
-static const int16_t	lOffsets[4]		= { 0, 6, -4, 3 };
-static const int16_t	tOffsets[4]		= { -5, 3, -0, -3 };
-static uint8_t	alarmTick				= 0;
 
 void InitRender()
 {
@@ -36,6 +34,52 @@ void InitRender()
 void TriggerRender()
 {
 	SCB->ICSR |= SCB_ICSR_PENDSVSET;
+}
+
+void RenderTextBanner(char* sz, Colour fg, uint8_t intensity)
+{
+	uint32_t 		r	= (fg >> 11) 	& 0x1F;
+	uint32_t		g	= (fg >> 5)  	& 0x3F;
+	uint32_t		b	= fg 			& 0x1F;
+
+	// intensity = 0 - 8
+	r 	= (r * intensity) / 8;
+	g 	= (g * intensity) / 8;
+	b 	= (b * intensity) / 8;
+
+	SetForegroundColour(RGB(r, g, b));
+	SetBackgroundColour(BLACK);
+	SetFont(sysFont);
+	DrawText(0, 94, 162, 12, AlignCentre | AlignVCentre, sz);
+}
+
+const uint8_t maxIntensity = 8;
+void SpecialDayCallback()
+{
+	static uint8_t textIndex = 0;
+	static uint8_t callbackCnt = 0;
+	static char* sz;
+
+	if(sz && callbackCnt <= maxIntensity)
+	{
+		RenderTextBanner(sz, YELLOW, (maxIntensity - callbackCnt));
+
+		if(callbackCnt == maxIntensity)
+		{
+			// todo: move to next string
+		}
+	}
+	else
+	{
+
+	}
+
+	if(callbackCnt++ >= (maxIntensity * 2))
+	{
+		callbackCnt = 0;
+
+		DeregisterCallback(SpecialDayCallback);
+	}
 }
 
 void RenderNormal()
@@ -59,6 +103,14 @@ void RenderNormal()
 	SetForegroundColour(BLACK);
 	DrawRect(153, top, 8, clockValues.tm_sec, DrawNormal);
 	DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
+
+	if(specialDay != NULL && clockValues.tm_min & 0x04)
+	{
+		SetForegroundColour(BLACK);
+		DrawRect(0, 94, 162, 12, DrawNormal);
+
+		RegisterTimeoutCallback(SpecialDayCallback, 20, CallbackRepeat);
+	}
 }
 
 void RenderAlarm()
@@ -66,19 +118,16 @@ void RenderAlarm()
 	char sz[24];
 	strftime(sz, sizeof(sz), "%I:%M", &clockValues);	// %H = 12 hour, %I = 24 hour, %p = AM/PM
 
-	uint8_t ix		= alarmTick++ & 0x03;
-	uint8_t	lOff 	= lOffsets[ix];
-	uint8_t tOff 	= tOffsets[ix];
+	uint8_t r		= rand() % 256;
+	uint8_t g		= rand() % 256;
+	uint8_t b		= rand() % 256;
 
-	SetForegroundColour(BLACK);
-	DrawRect(0, 0, 162, 74, DrawNormal);
-
-	Colour fg		= CYAN;
+	Colour fg		= RGB(r, g, b);
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(fg);
 	SetFont(lcdFont);
 
-	DrawText(10 + lOff, 36 + tOff, 142, 36, AlignCentre, sz);
+	DrawText(0, 36, 152, 36, AlignCentre, sz);
 
 	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
 	strupr(sz);
@@ -93,7 +142,8 @@ void RenderAlarm()
 		for(int i=0; i<4; i++)
 		{
 			SetForegroundColour((i < alarmLockIndex) ? GREEN : RED);
-			DrawRect(l, 92, 34, 12, DrawNormal);
+
+			//DrawRect(l, 92, 34, 12, DrawNormal);
 			DrawText(l, 92, 34, 12, DrawInverse | AlignCentre | AlignVCentre, szAlarmKeys[alarmLock[i]]);
 
 			l += 36;
