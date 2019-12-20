@@ -64,3 +64,11 @@ Seems to be a memory corruption problem, where song state is being overwritten.
 30/11/2019
 There was no memory corruption, but because I had not declared some variables static but given them the same name across different code units, the linker
 made them share the same memory location. Problem is fixed now.
+
+21/12/2019
+Most functionality now working. Time and date can be set. Alarm can be set. User must enter an unlock sequence to stop the alarm, this will be an option they can select.
+Next tasks to complete:
+* The FillMargin flag for DrawText currently assumes text is centred vertically & horizontally
+* Special Day messages need to be implemented
+* About screen needs to be implemented
+* Too much voltage drop causing screen to go dark, and blinking when rendering

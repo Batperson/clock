@@ -31,6 +31,7 @@ typedef struct
 {
 	PSong		song;
 	uint16_t 	tempo;
+	PlayFlags	flags;
 	TrackState track[SOUND_CHANNELS];
 } SongState;
 
@@ -107,8 +108,10 @@ void SelectSong(PSong song)
 	InitTracks();
 }
 
-void PlaySong()
+void PlaySong(PlayFlags flags)
 {
+	state.flags		= flags;
+
 	TIM_Cmd(TIM3, ENABLE);
 }
 
@@ -188,5 +191,10 @@ void INTERRUPT TIM3_IRQHandler()
 	}
 
 	if(atracks == 0)
-		EndSong();
+	{
+		if(state.flags & PlayLoop)
+			InitTracks();
+		else
+			EndSong();
+	}
 }

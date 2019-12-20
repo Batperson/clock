@@ -53,16 +53,18 @@ void RenderTextBanner(char* sz, Colour fg, uint8_t intensity)
 	DrawText(0, 94, 162, 12, AlignCentre | AlignVCentre, sz);
 }
 
-const uint8_t maxIntensity = 8;
+
 void SpecialDayCallback()
 {
-	static uint8_t textIndex = 0;
-	static uint8_t callbackCnt = 0;
-	static char* sz;
+	const uint8_t 	maxIntensity 	= 8;
+	static uint8_t 	textIndex 		= 0;
+	static uint8_t 	callbackCnt 	= 0;
+	static char* sz					= NULL;
 
-	if(sz && callbackCnt <= maxIntensity)
+	if(callbackCnt <= maxIntensity)
 	{
-		RenderTextBanner(sz, YELLOW, (maxIntensity - callbackCnt));
+		if(sz != NULL)
+			RenderTextBanner(sz, YELLOW, (maxIntensity - callbackCnt));
 
 		if(callbackCnt == maxIntensity)
 		{
@@ -118,9 +120,9 @@ void RenderAlarm()
 	char sz[24];
 	strftime(sz, sizeof(sz), "%I:%M", &clockValues);	// %H = 12 hour, %I = 24 hour, %p = AM/PM
 
-	uint8_t r		= rand() % 256;
-	uint8_t g		= rand() % 256;
-	uint8_t b		= rand() % 256;
+	uint8_t r		= 255; //rand() % 256;
+	uint8_t g		= 0; //rand() % 256;
+	uint8_t b		= 0; //rand() % 256;
 
 	Colour fg		= RGB(r, g, b);
 	SetBackgroundColour(BLACK);
@@ -143,8 +145,7 @@ void RenderAlarm()
 		{
 			SetForegroundColour((i < alarmLockIndex) ? GREEN : RED);
 
-			//DrawRect(l, 92, 34, 12, DrawNormal);
-			DrawText(l, 92, 34, 12, DrawInverse | AlignCentre | AlignVCentre, szAlarmKeys[alarmLock[i]]);
+			DrawText(l, 94, 34, 12, DrawInverse | FillMargin | AlignCentre | AlignVCentre, szAlarmKeys[alarmLock[i]]);
 
 			l += 36;
 		}

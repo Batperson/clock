@@ -38,7 +38,9 @@ typedef enum {
 	AlignVCentre	= 0x08,
 
 	DrawNormal		= 0x000,
-	DrawInverse		= 0x800
+	DrawInverse		= 0x800,
+
+	FillMargin		= 0x1000
 } DrawFlags;
 
 void InitDisplay();

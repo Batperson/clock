@@ -100,11 +100,17 @@ typedef struct
 	uint8_t tickOffset[SOUND_CHANNELS];		// ticks to offset the tempo of each track
 } Song, *PSong;
 
+typedef enum
+{
+	PlayNormal	= 0x00,
+	PlayLoop	= 0x01
+} PlayFlags;
+
 void InitSong();
 void SelectSong(PSong song);
 void SetTempo(uint16_t bpm);
 void IncrementTempo(uint16_t inc);
-void PlaySong();
+void PlaySong(PlayFlags flags);
 void PauseSong();
 void EndSong();
 

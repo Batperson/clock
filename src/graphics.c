@@ -96,6 +96,37 @@ void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, c
 	op.fg			= (flags & DrawInverse) ? bg : fg;
 	op.bg			= (flags & DrawInverse) ? fg : bg;
 
+	if(flags & FillMargin)
+	{
+		if(acth < h)
+		{
+			op.l 	= l;
+			op.t	= t;
+			op.w	= w;
+			op.h	= (h - acth) / 2;
+
+			DrawRectImpl(&op);
+
+			op.t	= t + op.h + acth;
+
+			DrawRectImpl(&op);
+		}
+
+		if(actw < w)
+		{
+			op.l	= l;
+			op.w	= (w - actw) / 2;
+			op.t	= t + ((acth < h) ? ((h - acth) / 2) : 0);
+			op.h	= (acth < h) ? acth : h;
+
+			DrawRectImpl(&op);
+
+			op.l	= l + op.w + actw;
+
+			DrawRectImpl(&op);
+		}
+	}
+
 	switch(flags & (AlignRight | AlignCentre))
 	{
 	case AlignRight:
@@ -124,7 +155,7 @@ void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, c
 		break;
 	case AlignVCentre:
 		op.toff			= (acth > h) ? (acth - h) / 2 : 0;
-		op.t			= (acth > h) ? h : h + (h - acth) / 2;
+		op.t			= (acth > h) ? t : t + (h - acth) / 2;
 		op.h			= (acth > h) ? h : acth;
 		break;
 	default:

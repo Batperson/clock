@@ -258,7 +258,7 @@ void SetPixelImpl(PDrawOp pd)
 void DrawRectImpl(PDrawOp pd)
 {
 	AddressSet(pd->l, pd->t, pd->l + pd->w - 1, pd->t + pd->h - 1);
-	WriteShortRepeat(Data, pd->fg, (pd->w * pd->h));
+	WriteShortRepeat(Data, pd->bg, (pd->w * pd->h));
 }
 
 Colour buf[32];

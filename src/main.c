@@ -1,5 +1,6 @@
 /* Includes */
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <time.h>
 #include <string.h>
@@ -127,7 +128,7 @@ int main(void)
 
 	ClearScreen();
 	SetCurrentMenu(mainMenu);
-	ChangeState(Normal);
+	ChangeState(AlarmRing);
 	LoadConfiguration();
 
 	while(1)
@@ -234,7 +235,7 @@ void OnMenuTimeout(PMenuItem item)
 	if(item->proc == SetAlarmRing)
 	{
 		SelectSong((PSong)item->arg);
-		PlaySong();
+		PlaySong(PlayLoop);
 	}
 }
 
@@ -397,14 +398,8 @@ void FieldLongPressHandler(uint16_t btn, ButtonEventType et)
 
 void SetAlarmLock()
 {
-	int n = clockValues.tm_year + clockValues.tm_mon + clockValues.tm_mday;
 	for(int i=0; i<(sizeof(alarmLock) / sizeof(alarmLock[0])); i++)
-	{
-		int v 	= n % 3;
-		n 		-= v;
-
-		alarmLock[i]	= v;
-	}
+		alarmLock[i]	= rand() % (sizeof(alarmKeys) / sizeof(alarmKeys[0]));
 
 	alarmLockIndex	= 0;
 }
@@ -430,11 +425,10 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 		TriggerRender();
 	}
 
-	if(alarmMode & AlarmSnooze)
+	if((alarmMode & AlarmSnooze) && !(alarmState & AlarmSnoozed))
 	{
 		alarmState |= AlarmSnoozed;
 		SnoozeAlarm(snoozeMinutes);
-		ChangeState(Normal);
 	}
 
 	if(alarmMode & AlarmLock)
@@ -476,11 +470,11 @@ void ChangeState(ClockState state)
 		break;
 
 	case AlarmRing:
-		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
-		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress | ButtonLongDown, AlarmButtonHandler);
-		RegisterTimeoutCallback(TriggerRender, 300, CallbackRepeat);
+		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, (alarmMode & AlarmLock) ? ButtonShortPress : ButtonLongDown, AlarmButtonHandler);
+		//RegisterTimeoutCallback(TriggerRender, 300, CallbackRepeat);
 		SetAlarmLock();
-		PlaySong();
+		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
+		PlaySong(PlayLoop);
 		break;
 
 	case ClockSet:
