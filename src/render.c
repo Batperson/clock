@@ -57,23 +57,26 @@ void RenderTextBanner(char* sz, Colour fg, uint8_t intensity)
 void SpecialDayCallback()
 {
 	const uint8_t 	maxIntensity 	= 8;
-	static uint8_t 	textIndex 		= 0;
 	static uint8_t 	callbackCnt 	= 0;
-	static char* sz					= NULL;
+	static char sz[64];
 
 	if(callbackCnt <= maxIntensity)
 	{
-		if(sz != NULL)
+		if(specialDayTextIndex >= 0)
 			RenderTextBanner(sz, YELLOW, (maxIntensity - callbackCnt));
 
 		if(callbackCnt == maxIntensity)
 		{
-			// todo: move to next string
+			specialDayTextIndex++;
+			if(specialDay->texts[specialDayTextIndex] == NULL)
+				specialDayTextIndex = 0;
+
+			sprintf(sz, specialDay->texts[specialDayTextIndex], specialDayYears);
 		}
 	}
 	else
 	{
-
+		RenderTextBanner(sz, YELLOW, (callbackCnt - maxIntensity));
 	}
 
 	if(callbackCnt++ >= (maxIntensity * 2))
@@ -138,7 +141,7 @@ void RenderAlarm()
 	SetFont(sysFont);
 	DrawText(0, 80, 152, 12, AlignCentre, "TO STOP ALARM PRESS:");
 
-	if(alarmMode & AlarmLock)
+	if(mode & ModeAlarmLock)
 	{
 		uint16_t l	= 4;
 		for(int i=0; i<4; i++)

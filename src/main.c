@@ -12,6 +12,7 @@
 #include "fonts.h"
 #include "sound.h"
 #include "song.h"
+#include "songs.h"
 #include "button.h"
 #include "st7735.h"
 #include "clock.h"
@@ -24,8 +25,8 @@
 
 #define BREG_ALARM_RING				BKP_DR3
 
-extern Song arpeggiator;
-extern Song reveille;
+#define SPECIAL_DAY_TEXT_ROLL_SECS	10
+#define SPECIAL_DAY_FADE_MSECS		60
 
 const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today.", NULL };
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
@@ -54,9 +55,9 @@ const PSong alarmRings[] = {
 MenuItem mainMenu[];
 
 MenuItem alarmMenu[] = {
-	{ "SET ALARM ON", 				SetAlarmMode, 		AlarmEnabled },
-	{ "SET LOCK ON",				SetAlarmMode, 		AlarmLock },
-	{ "SET SNOOZE ON",				SetAlarmMode,		AlarmSnooze },
+	{ "SET ALARM ON", 				SetModeFlags, 		ModeAlarmEnabled },
+	{ "SET LOCK ON",				SetModeFlags, 		ModeAlarmLock },
+	{ "SET SNOOZE ON",				SetModeFlags,		ModeAlarmSnooze },
 	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
 	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
 	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
@@ -68,6 +69,7 @@ MenuItem mainMenu[] = {
 	{ "SET TIME", 					ChangeState, 	ClockSet },
 	{ "SET DATE", 					ChangeState, 	DateSet },
 	{ "SET ALARM", 					SetCurrentMenu,	(uint32_t)alarmMenu },
+	{ "SET 24HOUR ON",				SetModeFlags,	Mode24HourDisplay },
 	{ "ABOUT THIS CLOCK", 			ChangeState, 	About },
 	{ "EXIT", 						ChangeState, 	Normal },
 	{ NULL, NULL, 0 }
@@ -78,11 +80,10 @@ const uint16_t alarmKeys[3] = { BTN_SELECT, BTN_UP, BTN_DOWN };
 PSong			alarmRing			= &reveille;
 ClockState 		clockState 			= Normal;
 ClockSetField 	clockSetField 		= Hour;
-ClockFormat		clockFormat			= Format24Hour;
-AlarmMode		alarmMode			= AlarmLock | AlarmSnooze;
+ClockMode		mode				= ModeAlarmLock | ModeAlarmSnooze;
 AlarmState		alarmState			= AlarmStateNone;
 PSpecialDay		specialDay			= NULL;
-char*			specialDayText		= NULL;
+int16_t			specialDayTextIndex = -1;
 uint16_t		specialDayYears		= 0;
 uint8_t			snoozeMinutes		= 5;
 struct tm 		clockValues;
@@ -107,7 +108,7 @@ void LoadConfiguration()
 	// TODO: Read alarm state etc from backup domain
 	printf("Config read from backup domain\n");
 
-	SetAlarmMode(alarmMode);	// todo: load this from backup domain
+	SetModeFlags(mode);	// todo: load this from backup domain
 }
 
 int main(void)
@@ -139,64 +140,34 @@ int main(void)
 	}
 }
 
-void SetAlarmMode(AlarmMode mode)
+void UpdateModeUIAndBehaviour()
 {
-	alarmMode |= mode;
+	if(mode & ModeAlarmEnabled) SetAlarmFlags(RecurNone); else SetAlarmFlags(RecurWeekend | RecurWeekday);
 
-	if(mode & AlarmEnabled)
-	{
-		alarmMenu[0].text	= "SET ALARM OFF";
-		alarmMenu[0].arg	= AlarmEnabled;
-		alarmMenu[0].proc	= ClearAlarmMode;
-
-		SetAlarmFlags(RecurWeekend | RecurWeekday);
-	}
-
-	if(mode & AlarmLock)
-	{
-		alarmMenu[1].text	= "SET LOCK OFF";
-		alarmMenu[1].arg	= AlarmLock;
-		alarmMenu[1].proc	= ClearAlarmMode;
-	}
-
-	if(mode & AlarmSnooze)
-	{
-		alarmMenu[1].text	= "SET SNOOZE OFF";
-		alarmMenu[1].arg	= AlarmSnooze;
-		alarmMenu[1].proc	= ClearAlarmMode;
-	}
+	alarmMenu[0].text		= (mode & ModeAlarmEnabled) ? "SET ALARM OFF" : "SET ALARM ON";
+	alarmMenu[0].proc		= (mode & ModeAlarmEnabled) ? ClearModeFlags : SetModeFlags;
+	alarmMenu[1].text		= (mode & ModeAlarmLock) ? "SET LOCK OFF": "SET LOCK ON";
+	alarmMenu[1].proc		= (mode & ModeAlarmLock) ? ClearModeFlags : SetModeFlags;
+	alarmMenu[2].text		= (mode & ModeAlarmSnooze) ? "SET SNOOZE OFF": "SET SNOOZE ON";
+	alarmMenu[2].proc		= (mode & ModeAlarmSnooze) ? ClearModeFlags : SetModeFlags;
+	mainMenu[3].text		= (mode & Mode24HourDisplay) ? "SET 24HOUR OFF": "SET 24HOUR ON";
+	mainMenu[3].proc		= (mode & Mode24HourDisplay) ? ClearModeFlags : SetModeFlags;
 
 	TriggerRender();
 }
 
-void ClearAlarmMode(AlarmMode mode)
+void SetModeFlags(ClockMode setMode)
 {
-	alarmMode &= ~mode;
+	mode |= setMode;
 
-	if(mode & AlarmEnabled)
-	{
-		alarmMenu[0].text	= "SET ALARM ON";
-		alarmMenu[0].arg	= AlarmEnabled;
-		alarmMenu[0].proc	= SetAlarmMode;
+	UpdateModeUIAndBehaviour();
+}
 
-		SetAlarmFlags(RecurNone);
-	}
+void ClearModeFlags(ClockMode clearMode)
+{
+	mode &= ~clearMode;
 
-	if(mode & AlarmLock)
-	{
-		alarmMenu[1].text	= "SET LOCK ON";
-		alarmMenu[1].arg	= AlarmLock;
-		alarmMenu[1].proc	= SetAlarmMode;
-	}
-
-	if(mode & AlarmSnooze)
-	{
-		alarmMenu[1].text	= "SET SNOOZE ON";
-		alarmMenu[1].arg	= AlarmSnooze;
-		alarmMenu[1].proc	= SetAlarmMode;
-	}
-
-	TriggerRender();
+	UpdateModeUIAndBehaviour();
 }
 
 void AboutHandler(uint16_t btn, ButtonEventType et)
@@ -425,13 +396,13 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 		TriggerRender();
 	}
 
-	if((alarmMode & AlarmSnooze) && !(alarmState & AlarmSnoozed))
+	if((mode & ModeAlarmSnooze) && !(alarmState & AlarmSnoozed))
 	{
 		alarmState |= AlarmSnoozed;
 		SnoozeAlarm(snoozeMinutes);
 	}
 
-	if(alarmMode & AlarmLock)
+	if(mode & ModeAlarmLock)
 	{
 		if(et == ButtonShortPress && getAlarmKeyIndex(btn) == alarmLock[alarmLockIndex])
 		{
@@ -470,7 +441,7 @@ void ChangeState(ClockState state)
 		break;
 
 	case AlarmRing:
-		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, (alarmMode & AlarmLock) ? ButtonShortPress : ButtonLongDown, AlarmButtonHandler);
+		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, (mode & ModeAlarmLock) ? ButtonShortPress : ButtonLongDown, AlarmButtonHandler);
 		//RegisterTimeoutCallback(TriggerRender, 300, CallbackRepeat);
 		SetAlarmLock();
 		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
@@ -544,23 +515,24 @@ void OnRtcSecond()
 	static int yday = -1;
 	if(clockValues.tm_yday != yday)
 	{
-		yday = clockValues.tm_yday;
-
+		yday 			= clockValues.tm_yday;
 		specialDay 		= NULL;
-		specialDayText	= NULL;
 
 		for(int i=0; i<sizeof(specialDays) / sizeof(SpecialDay); i++)
 		{
 			struct tm* ptm = localtime(&specialDays[i].time);
 			if(ptm->tm_mday == clockValues.tm_mday && ptm->tm_mon == clockValues.tm_mon)
 			{
-				specialDay 		= (PSpecialDay)&specialDays[i];
-				specialDayText	= (char*)*specialDay->texts;
-				specialDayYears = clockValues.tm_year - ptm->tm_year;
+				specialDay 			= (PSpecialDay)&specialDays[i];
+				specialDayTextIndex	= -1;
+				specialDayYears 	= clockValues.tm_year - ptm->tm_year;
 				break;
 			}
 		}
 	}
+
+	if(specialDay != NULL && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
+		RegisterTimeoutCallback(TriggerRender, SPECIAL_DAY_FADE_MSECS, CallbackNone);
 }
 
 void OnRtcAlarm()

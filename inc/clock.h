@@ -38,16 +38,12 @@ typedef enum {
 } AlarmState;
 
 typedef enum {
-	AlarmModeNone	= 0x00,
-	AlarmEnabled	= 0x01,
-	AlarmLock		= 0x02,
-	AlarmSnooze		= 0x04
-} AlarmMode;
-
-typedef enum {
-	Format24Hour,
-	Format12Hour
-} ClockFormat;
+	ModeNone			= 0x00,
+	ModeAlarmEnabled	= 0x01,
+	ModeAlarmLock		= 0x02,
+	ModeAlarmSnooze		= 0x04,
+	Mode24HourDisplay	= 0x10
+} ClockMode;
 
 typedef struct {
 	time_t 			time;
@@ -56,21 +52,21 @@ typedef struct {
 } SpecialDay, *PSpecialDay;
 
 extern PSpecialDay		specialDay;
+extern int16_t			specialDayTextIndex;
 extern uint16_t			specialDayYears;
 extern char*			specialDayText;
 extern ClockState 		clockState;
 extern ClockSetField 	clockSetField;
-extern ClockFormat		clockFormat;
 extern AlarmState		alarmState;
-extern AlarmMode		alarmMode;
+extern ClockMode		mode;
 extern struct tm 		clockValues;
 extern struct tm 		clockSetValues;
 extern uint8_t			alarmLock[4];
 extern uint8_t			alarmLockIndex;
 
 void SetAlarmRing(uint32_t index);
-void SetAlarmMode(AlarmMode mode);
-void ClearAlarmMode(AlarmMode mode);
+void SetModeFlags(ClockMode mode);
+void ClearModeFlags(ClockMode mode);
 void ChangeState(ClockState state);
 
 #endif /* CLOCK_H_ */
