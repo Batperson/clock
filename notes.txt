@@ -72,3 +72,9 @@ Next tasks to complete:
 * Special Day messages need to be implemented
 * About screen needs to be implemented
 * Too much voltage drop causing screen to go dark, and blinking when rendering
+* Need to support save/restore of settings in backup domain
+
+23/12/2019
+Save/restore settings implemented.
+A hard fault is occurring when doing sample playback of alarm rings in the menu. 
+Special Days functionality appears to be activating at incorrect times and showing garbage.

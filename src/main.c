@@ -24,6 +24,7 @@
 #define BTN_DOWN					GPIO_Pin_1
 
 #define BREG_ALARM_RING				BKP_DR3
+#define BREG_CLOCK_MODE				BKP_DR4
 
 #define SPECIAL_DAY_TEXT_ROLL_SECS	10
 #define SPECIAL_DAY_FADE_MSECS		60
@@ -38,13 +39,14 @@ const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", "Celebrate your f
 const char* anzacDayTexts[]				= { "They shall not grow old", "As we that are left grow old", "Age shall not weary them", "Nor the years condemn.", "But at the going down of the sun", "And in the morning", "We will remember them.", NULL };
 
 const SpecialDay specialDays[] = {
-	{ 65535, 	NULL, 			birthdayChristopherTexts },
-	{ 65535, 	NULL, 			birthdayRosieTexts },
-	{ 65535, 	NULL, 			birthdayXiaTexts },
-	{ 65535, 	NULL, 			birthdayPeterTexts },
-	{ 65535, 	NULL, 			christmasTexts },
-	{ 0, 		NULL, 			newYearTexts },
-	{ 65535, 	NULL, 			waitangiDayTexts }
+	{ 1093392000, 	NULL, 			birthdayChristopherTexts },
+	{ 1398988800, 	NULL, 			birthdayRosieTexts },
+	{ 237427200, 	NULL, 			birthdayXiaTexts },
+	{ 184377600, 	NULL, 			birthdayPeterTexts },
+	{ 1010793600, 	NULL, 			christmasTexts },
+	{ 946684800, 	NULL, 			newYearTexts },
+	{ 959904000, 	NULL, 			waitangiDayTexts },
+	{ 1010102400, 	NULL,			anzacDayTexts }
 };
 
 const PSong alarmRings[] = {
@@ -103,43 +105,6 @@ uint8_t			alarmLockIndex		= 0;
 //	A1				Button (Down)
 //	A0				Button (Up)
 
-void LoadConfiguration()
-{
-	// TODO: Read alarm state etc from backup domain
-	printf("Config read from backup domain\n");
-
-	SetModeFlags(mode);	// todo: load this from backup domain
-}
-
-int main(void)
-{
-	printf("STM32F103 RTC Alarm Clock v0.01 by Weka Workshop\n");
-
-	// Use all priority bits for pre-emption priority. We want the DMA interrupt for waveform generation
-	// to be able to pre-empt everything else.
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-
-	InitClock();
-	InitSystem();
-	InitDisplay();
-	InitSound();
-	InitSong();
-	InitButton();
-	InitRender();
-
-	ClearScreen();
-	SetCurrentMenu(mainMenu);
-	ChangeState(AlarmRing);
-	LoadConfiguration();
-
-	while(1)
-	{
-		// Stop the CPU clock until there is something to do
-		// Maybe this will save some milliamps?
-		//__WFI();
-	}
-}
-
 void UpdateModeUIAndBehaviour()
 {
 	if(mode & ModeAlarmEnabled) SetAlarmFlags(RecurNone); else SetAlarmFlags(RecurWeekend | RecurWeekday);
@@ -156,10 +121,63 @@ void UpdateModeUIAndBehaviour()
 	TriggerRender();
 }
 
+void OnInitBackupDomain()
+{
+	// Initialize stored settings. This will only be called when the clock is started for the first time,
+	// or if the backup battery goes flat and is replaced.
+
+	BKP_WriteBackupRegister(BREG_CLOCK_MODE, ModeAlarmLock | ModeAlarmSnooze);
+	BKP_WriteBackupRegister(BREG_ALARM_RING, 0);
+}
+
+void LoadConfiguration()
+{
+	mode			= BKP_ReadBackupRegister(BREG_CLOCK_MODE);
+
+	UpdateModeUIAndBehaviour();
+
+	uint16_t ari	= BKP_ReadBackupRegister(BREG_ALARM_RING);
+	if(ari < sizeof(alarmRings) / sizeof(alarmRings[0]))
+		alarmRing		= alarmRings[ari];
+
+	printf("Config read from backup domain\n");
+}
+
+int main(void)
+{
+	printf("STM32F103 RTC Alarm Clock v0.01 by Weka Workshop\n");
+
+	// Use all priority bits for pre-emption priority. We want the DMA interrupt for waveform generation
+	// to be able to pre-empt everything else.
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
+	InitClock();
+	srand(RTC_GetCounter());
+	InitSystem();
+	InitDisplay();
+	InitSound();
+	InitSong();
+	InitButton();
+	InitRender();
+
+	ClearScreen();
+	SetCurrentMenu(mainMenu);
+	ChangeState(Normal);
+	LoadConfiguration();
+
+	while(1)
+	{
+		// Stop the CPU clock until there is something to do
+		// Maybe this will save some milliamps?
+		__WFI();
+	}
+}
+
 void SetModeFlags(ClockMode setMode)
 {
 	mode |= setMode;
 
+	BKP_WriteBackupRegister(BREG_CLOCK_MODE, mode);
 	UpdateModeUIAndBehaviour();
 }
 
@@ -167,6 +185,7 @@ void ClearModeFlags(ClockMode clearMode)
 {
 	mode &= ~clearMode;
 
+	BKP_WriteBackupRegister(BREG_CLOCK_MODE, mode);
 	UpdateModeUIAndBehaviour();
 }
 

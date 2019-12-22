@@ -123,6 +123,11 @@ void SetNextAlarm()
 	}
 }
 
+void WEAKREF OnInitBackupDomain()
+{
+
+}
+
 void InitClock()
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
@@ -137,6 +142,7 @@ void InitClock()
 		printf("Initializing RTC and backup domain\n");
 
 	    InitRTCOneTimeConfig();
+	    OnInitBackupDomain();
 
 	    BKP_WriteBackupRegister(BREG_ONETIMECONFIG, RTC_ONETIME_VAL);
 	    BKP_WriteBackupRegister(BREG_ALARM, 0);
