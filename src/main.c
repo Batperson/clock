@@ -26,15 +26,12 @@
 #define BREG_ALARM_RING				BKP_DR3
 #define BREG_CLOCK_MODE				BKP_DR4
 
-#define SPECIAL_DAY_TEXT_ROLL_SECS	10
-#define SPECIAL_DAY_FADE_MSECS		60
-
 const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today.", NULL };
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
 const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", NULL };
 const char* birthdayPeterTexts[]		= { "It's Dad's birthday!", "He is %d today.", "Give him a handshake!", NULL };
 const char* christmasTexts[]			= { "Around this day in Palestine", "Speaking very approximately", "A child was born", "And the world changed.", "Merry Christmas!", NULL };
-const char* newYearTexts[]				= { "Happy New Year!", NULL };
+const char* newYearTexts[]				= { "HAPPY NEW YEAR!", "MAKE IT A GOOD ONE!", NULL };
 const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", "Celebrate your freedoms", "And appreciate your country.", "Remember the past", "And look to the future.", NULL };
 const char* anzacDayTexts[]				= { "They shall not grow old", "As we that are left grow old", "Age shall not weary them", "Nor the years condemn.", "But at the going down of the sun", "And in the morning", "We will remember them.", NULL };
 
@@ -537,6 +534,9 @@ void OnRtcSecond()
 		yday 			= clockValues.tm_yday;
 		specialDay 		= NULL;
 
+		// Clear the text banner area
+		DrawRect(0, 94, 162, 12, DrawNormal);
+
 		for(int i=0; i<sizeof(specialDays) / sizeof(SpecialDay); i++)
 		{
 			struct tm* ptm = localtime(&specialDays[i].time);
@@ -549,9 +549,6 @@ void OnRtcSecond()
 			}
 		}
 	}
-
-	if(specialDay != NULL && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
-		RegisterTimeoutCallback(TriggerRender, SPECIAL_DAY_FADE_MSECS, CallbackNone);
 }
 
 void OnRtcAlarm()

@@ -78,3 +78,7 @@ Next tasks to complete:
 Save/restore settings implemented.
 A hard fault is occurring when doing sample playback of alarm rings in the menu. 
 Special Days functionality appears to be activating at incorrect times and showing garbage.
+
+24/12/2019
+Special Day messages now appearing. Some screen garbage and incorrect colours are likely the result of re-entrancy between the render callback which fires every second
+and the special day banner callback which fires every 120ms.

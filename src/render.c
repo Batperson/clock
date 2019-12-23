@@ -21,6 +21,9 @@
 
 static const char* szAlarmKeys[] 		= { "SEL", "UP", "DN" };
 
+#define SPECIAL_DAY_TEXT_ROLL_SECS	10
+#define SPECIAL_DAY_FADE_MSECS		120
+
 void InitRender()
 {
 	// No need to use NVIC_Init to enable this system interrupt but we do want to set the priority.
@@ -52,7 +55,6 @@ void RenderTextBanner(char* sz, Colour fg, uint8_t intensity)
 	SetFont(sysFont);
 	DrawText(0, 94, 162, 12, AlignCentre | AlignVCentre, sz);
 }
-
 
 void SpecialDayCallback()
 {
@@ -105,17 +107,11 @@ void RenderNormal()
 	DrawText(0, 80, 152, 12, AlignCentre, sz);
 
 	uint16_t top 	= 40;
-	SetForegroundColour(BLACK);
-	DrawRect(153, top, 8, clockValues.tm_sec, DrawNormal);
-	DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
+	//DrawRect(153, top, 8, clockValues.tm_sec, DrawNormal);
+	//DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
 
-	if(specialDay != NULL && clockValues.tm_min & 0x04)
-	{
-		SetForegroundColour(BLACK);
-		DrawRect(0, 94, 162, 12, DrawNormal);
-
-		RegisterTimeoutCallback(SpecialDayCallback, 20, CallbackRepeat);
-	}
+	if(specialDay != NULL && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
+		RegisterTimeoutCallback(SpecialDayCallback, SPECIAL_DAY_FADE_MSECS, CallbackRepeat);
 }
 
 void RenderAlarm()
