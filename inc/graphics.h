@@ -58,5 +58,6 @@ void DrawGradientVertical(uint16_t l, uint16_t t, uint16_t w, uint16_t h, uint16
 void DrawGradientHorizontal(uint16_t l, uint16_t t, uint16_t w, uint16_t h, uint16_t ofs);
 
 Colour Gradient(double ratio);
+Colour FadeColour(Colour fg, uint8_t intensity);
 
 #endif /* GRAPHICS_H_ */

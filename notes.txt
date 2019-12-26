@@ -82,3 +82,6 @@ Special Days functionality appears to be activating at incorrect times and showi
 24/12/2019
 Special Day messages now appearing. Some screen garbage and incorrect colours are likely the result of re-entrancy between the render callback which fires every second
 and the special day banner callback which fires every 120ms.
+
+27/12/2019
+Re-entrancy issue fixed. Next task is to fix the hard fault when doing sample playback of alarm rings.
