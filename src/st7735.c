@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "stm32f10x.h"
+#include "core_cmInstr.h"
 #include "macros.h"
 #include "system.h"
 #include "graphics.h"
@@ -80,8 +81,6 @@ InitStruct is[] =
 #define CL_PIN			GPIO_Pin_5
 #define SD_PIN			GPIO_Pin_7
 
-uint16_t ALWAYS_INLINE swap(uint16_t v) { return (v << 8) | (v >> 8); }
-
 void WriteBuffer(enum DataCmd dc, void* pdata, uint16_t len)
 {
 	GPIO_WriteBit(GPIOA, DC_PIN, dc);
@@ -126,14 +125,14 @@ void WriteShortRepeat(enum DataCmd dc, uint16_t data, uint16_t len)
 	SPI_DataSizeConfig(SPI1, SPI_DataSize_8b);
 }
 
-ALWAYS_INLINE void WriteByte(enum DataCmd dc, uint8_t data)
+static ALWAYS_INLINE void WriteByte(enum DataCmd dc, uint8_t data)
 {
 	WriteBuffer(dc, &data, 1);
 }
 
-ALWAYS_INLINE void WriteShort(enum DataCmd dc, uint16_t data)
+static ALWAYS_INLINE void WriteShort(enum DataCmd dc, uint16_t data)
 {
-	uint16_t d = swap(data);
+	uint16_t d = __REV16(data);
 	WriteBuffer(dc, &d, 2);
 }
 
@@ -230,12 +229,12 @@ void SetIdleMode(enum Mode id)
 
 void AddressSet(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
 {
-	uint16_t buf[] = { swap(xs), swap(xe) };
+	uint16_t buf[] = { __REV16(xs), __REV16(xe) };
 
 	WriteByte(Cmd, 0x2a);	// Column address
 	WriteBuffer(Data, buf, sizeof(buf));
 
-	uint16_t buf2[] = { swap(ys), swap(ye) };
+	uint16_t buf2[] = { __REV16(ys), __REV16(ye) };
 
 	WriteByte(Cmd, 0x2b);	// Row address
 	WriteBuffer(Data, buf2, sizeof(buf2));
@@ -277,8 +276,8 @@ void BlitLine1BPP(uint8_t* psrc, uint16_t ofs, uint16_t cnt, uint32_t colours)
 {
 	uint8_t bcnt 	= 7;
 	uint8_t src 	= *psrc++;
-	uint16_t f		= swap(colours >> 16);
-	uint16_t b 		= swap(colours & 0xFFFF);
+	uint16_t f		= __REV16(colours >> 16);
+	uint16_t b 		= __REV16(colours & 0xFFFF);
 
 	while(cnt--)
 	{
