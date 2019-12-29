@@ -253,7 +253,8 @@ void Render()
 		RenderFieldSet();
 		break;
 	case Menu:
-		RenderMenu();
+		if(renderPart == RenderAll)
+			RenderMenu();
 		break;
 	case About:
 		RenderAbout();

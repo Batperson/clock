@@ -60,7 +60,7 @@ Colour FadeColour(Colour fg, uint8_t intensity)
 	uint32_t		g	= (((fg >> 5)  	& 0x3F) * intensity) / 16;
 	uint32_t		b	= ((fg 			& 0x1F) * intensity) / 16;
 
-	return RGB(r, g, b);
+	return (r << 11) | (g << 5) | b;
 }
 
 void MeasureChar(char c, uint16_t* w, uint16_t* h)
