@@ -7,8 +7,8 @@
 #ifndef ST7735_H_
 #define ST7735_H_
 
-#define SCREEN_WIDTH	162
-#define SCREEN_HEIGHT	106
+#define SCREEN_WIDTH	160
+#define SCREEN_HEIGHT	128
 
 enum Mode
 {

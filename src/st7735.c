@@ -28,7 +28,7 @@ typedef struct
 	uint8_t		data[16];
 } InitStruct, *PInitStruct;
 
-InitStruct is[] =
+const InitStruct is[] =
 {
 		// Software reset
 		{ 0x01, 150, 	0, 	{ 0 } },
@@ -52,16 +52,12 @@ InitStruct is[] =
 		// PWRCTR5, VMCTR1 Power control
 		{ 0xC4,  0, 	2, 	{ 0x8A, 0xEE} },
 		{ 0xC5,  0, 	1, 	{ 0x0E } },
-		// INVON Invert the display -- this effectively turns inversion OFF!
-		{ 0x21,  0, 	0, 	{ 0 } },
-		// Memory access directions. row address/col address, bottom to top refesh (10.1.27)
-		{ 0x36,  0, 	1, 	{ 0x6C } },
+		// INVOFF - no inversion
+		{ 0x20,  0,		0, { 0 } },
+		// MADCTL Memory access directions. row address/col address, bottom to top refesh (10.1.27)
+		{ 0x36,  0, 	1, 	{ 0xA0 } },
 		// Color mode 16 bit (10.1.30
 		{ 0x3A, 0, 		1, 	{ 0x05} },
-		// Column address set 0..79
-		//{ 0x2A, 0, 		4, 	{ 0x00, 0x00, 0x00, 0x9F /* 0x7F */ } },
-		// Row address set 0..159
-		//{ 0x2B, 0, 		4, 	{ 0x00, 0x00, 0x00, 0x4F } },
 		// GMCTRP1 Gamma correction
 		{ 0xE0, 0, 		16, { 0x02, 0x1C, 0x07, 0x12, 0x37, 0x32, 0x29, 0x2D, 0x29, 0x25, 0x2B, 0x39, 0x00, 0x01, 0x03, 0x10 } },
 		// GMCTRP2 Gamma Polarity correction
@@ -186,7 +182,7 @@ void InitDisplay()
 	GPIO_SetBits(GPIOA, RS_PIN);
 	sleep(10);
 
-	for(PInitStruct ps = is; ps->cmd != 0; ps++)
+	for(PInitStruct ps = (PInitStruct)is; ps->cmd != 0; ps++)
 	{
 		WriteByte(Cmd, ps->cmd);
 
@@ -240,6 +236,12 @@ void AddressSet(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
 	WriteBuffer(Data, buf2, sizeof(buf2));
 
 	WriteByte(Cmd, 0x2c);	// Memory write
+}
+
+void MeasureDisplay(uint16_t* w, uint16_t* h)
+{
+	*w	= SCREEN_WIDTH;
+	*h	= SCREEN_HEIGHT;
 }
 
 void ClearScreen()

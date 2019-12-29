@@ -7,7 +7,8 @@
 #ifndef MENU_H_
 #define MENU_H_
 
-#define MENU_TIMEOUT_MILLIS	1500
+#define MENU_TIMEOUT_MILLIS			1500
+#define MAX_RENDER_MENU_ITEMS		12
 
 typedef void (*PMenuProc)(uint32_t);
 
