@@ -50,6 +50,7 @@ void SetBackgroundColour(Colour bg);
 void SetFont(PFont pf);
 void SetPixel(uint16_t l, uint16_t t, DrawFlags flags);
 void SetTextRangeColour(uint16_t st, uint16_t len, Colour fg);
+void MeasureDisplay(uint16_t* w, uint16_t* h);
 void MeasureChar(char c, uint16_t* w, uint16_t* h);
 void MeasureText(const char* psz, uint16_t* w, uint16_t* h);
 void DrawRect(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags);
