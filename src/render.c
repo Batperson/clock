@@ -95,14 +95,14 @@ void RenderNormal()
 		SetBackgroundColour(BLACK);
 		SetForegroundColour(CYAN);
 		SetFont(lcdFont);
-		DrawText(0, 36, 152, 36, AlignCentre, sz);
+		DrawText(0, 36, 160, 36, AlignCentre, sz);
 
 		strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
 		strupr(sz);
 
 		SetForegroundColour(BLUE);
 		SetFont(sysFont);
-		DrawText(0, 80, 152, 12, AlignCentre, sz);
+		DrawText(0, 80, 160, 12, AlignCentre, sz);
 
 		if(specialDay != NULL && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
 			RegisterTimeoutCallback(SpecialDayCallback, SPECIAL_DAY_FADE_MSECS, CallbackRepeat);
@@ -124,13 +124,13 @@ void RenderNormal()
 			if(specialDayTextIndex >= 0)
 			{
 				SetForegroundColour(FadeColour(YELLOW, (maxIntensity - callbackCnt)));
-				DrawText(0, 94, 162, 12, AlignCentre | AlignVCentre, szBanner);
+				DrawText(0, 94, 160, 12, AlignCentre | AlignVCentre, szBanner);
 			}
 		}
 		else
 		{
 			SetForegroundColour(FadeColour(YELLOW, (callbackCnt - maxIntensity)));
-			DrawText(0, 94, 162, 12, AlignCentre | AlignVCentre, szBanner);
+			DrawText(0, 94, 160, 12, AlignCentre | AlignVCentre, szBanner);
 		}
 	}
 
