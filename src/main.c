@@ -53,24 +53,25 @@ const PSong alarmRings[] = {
 
 MenuItem mainMenu[];
 
+// Max 20 chars per menu item text
 MenuItem alarmMenu[] = {
-	{ "SET ALARM ON", 				SetModeFlags, 		ModeAlarmEnabled },
-	{ "SET LOCK ON",				SetModeFlags, 		ModeAlarmLock },
-	{ "SET SNOOZE ON",				SetModeFlags,		ModeAlarmSnooze },
-	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
-	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
-	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
-	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
+	{ " RING: REVEILLE", 			SetAlarmRing, 		0  },
+	{ " RING: ARPEGGIATOR", 		SetAlarmRing, 		1 },
+	{ " BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
 	{ NULL, NULL, 0 }
 };
 
 MenuItem mainMenu[] = {
-	{ "SET TIME", 					ChangeState, 	ClockSet },
-	{ "SET DATE", 					ChangeState, 	DateSet },
-	{ "SET ALARM", 					SetCurrentMenu,	(uint32_t)alarmMenu },
-	{ "SET 24HOUR ON",				SetModeFlags,	Mode24HourDisplay },
-	{ "ABOUT THIS CLOCK", 			ChangeState, 	About },
-	{ "EXIT", 						ChangeState, 	Normal },
+	{ " SET TIME", 					ChangeState, 		ClockSet },
+	{ " SET DATE", 					ChangeState, 		DateSet },
+	{ " SET ALARM TIME", 			ChangeState, 		AlarmSet  },
+	{ " SELECT ALARM TONE", 		SetCurrentMenu,		(uint32_t)alarmMenu },
+	{ " ALARM RING", 				SetModeFlags, 		ModeAlarmEnabled },
+	{ " ALARM SNOOZE",				SetModeFlags,		ModeAlarmSnooze },
+	{ " ALARM LOCK",				SetModeFlags, 		ModeAlarmLock },
+	{ " 24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
+	{ " ABOUT THIS CLOCK", 			ChangeState, 		About },
+	{ " EXIT", 						ChangeState, 		Normal },
 	{ NULL, NULL, 0 }
 };
 
@@ -106,14 +107,14 @@ void UpdateModeUIAndBehaviour()
 {
 	if(mode & ModeAlarmEnabled) SetAlarmFlags(RecurNone); else SetAlarmFlags(RecurWeekend | RecurWeekday);
 
-	alarmMenu[0].text		= (mode & ModeAlarmEnabled) ? "SET ALARM OFF" : "SET ALARM ON";
-	alarmMenu[0].proc		= (mode & ModeAlarmEnabled) ? ClearModeFlags : SetModeFlags;
-	alarmMenu[1].text		= (mode & ModeAlarmLock) ? "SET LOCK OFF": "SET LOCK ON";
-	alarmMenu[1].proc		= (mode & ModeAlarmLock) ? ClearModeFlags : SetModeFlags;
-	alarmMenu[2].text		= (mode & ModeAlarmSnooze) ? "SET SNOOZE OFF": "SET SNOOZE ON";
-	alarmMenu[2].proc		= (mode & ModeAlarmSnooze) ? ClearModeFlags : SetModeFlags;
-	mainMenu[3].text		= (mode & Mode24HourDisplay) ? "SET 24HOUR OFF": "SET 24HOUR ON";
-	mainMenu[3].proc		= (mode & Mode24HourDisplay) ? ClearModeFlags : SetModeFlags;
+	mainMenu[4].text		= (mode & ModeAlarmEnabled) ? "*ALARM RING" : " ALARM RING";
+	mainMenu[4].proc		= (mode & ModeAlarmEnabled) ? ClearModeFlags : SetModeFlags;
+	mainMenu[5].text		= (mode & ModeAlarmSnooze) ? "*ALARM SNOOZE" : " ALARM SNOOZE";
+	mainMenu[5].proc		= (mode & ModeAlarmSnooze) ? ClearModeFlags : SetModeFlags;
+	mainMenu[6].text		= (mode & ModeAlarmLock) ? "*ALARM LOCK" : " ALARM LOCK";
+	mainMenu[6].proc		= (mode & ModeAlarmLock) ? ClearModeFlags : SetModeFlags;
+	mainMenu[7].text		= (mode & Mode24HourDisplay) ? "*24HOUR MODE" : " 24HOUR MODE";
+	mainMenu[7].proc		= (mode & Mode24HourDisplay) ? ClearModeFlags : SetModeFlags;
 
 	TriggerRender();
 }

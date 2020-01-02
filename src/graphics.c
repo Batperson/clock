@@ -113,27 +113,61 @@ void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, c
 			op.l 	= l;
 			op.t	= t;
 			op.w	= w;
-			op.h	= (h - acth) / 2;
+			op.h	= h - acth;
 
-			DrawRectImpl(&op);
+			switch(flags & (AlignBottom | AlignVCentre))
+			{
+			case AlignBottom:
+				DrawRectImpl(&op);
+				break;
 
-			op.t	= t + op.h + acth;
+			case AlignVCentre:
+				op.h	= (h - acth) / 2;
+				DrawRectImpl(&op);
 
-			DrawRectImpl(&op);
+				op.t	= t + op.h + acth;
+				if((h - acth) & 0x01)
+					op.h += 1;
+
+				DrawRectImpl(&op);
+				break;
+
+			default:
+				op.t	= t + acth;
+				DrawRectImpl(&op);
+				break;
+			}
 		}
 
 		if(actw < w)
 		{
 			op.l	= l;
-			op.w	= (w - actw) / 2;
-			op.t	= t + ((acth < h) ? ((h - acth) / 2) : 0);
-			op.h	= (acth < h) ? acth : h;
+			op.t	= t;
+			op.h	= h;
+			op.w	= w - actw;
 
-			DrawRectImpl(&op);
+			switch(flags & (AlignRight | AlignCentre))
+			{
+			case AlignRight:
+				DrawRectImpl(&op);
+				break;
 
-			op.l	= l + op.w + actw;
+			case AlignCentre:
+				op.w	= (w - actw) / 2;
+				DrawRectImpl(&op);
 
-			DrawRectImpl(&op);
+				op.l	= l + op.w + actw;
+				if((w - actw) & 0x01)
+					op.w += 1;
+
+				DrawRectImpl(&op);
+				break;
+
+			default:
+				op.l	= l + actw;
+				DrawRectImpl(&op);
+				break;
+			}
 		}
 	}
 
