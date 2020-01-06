@@ -66,7 +66,8 @@ static char szBanner[64];
 
 void SpecialDayCallback()
 {
-	TriggerRenderPart(RenderSpecialDayBanner);
+	if(clockState == Normal)
+		TriggerRenderPart(RenderSpecialDayBanner);
 
 	if(callbackCnt++ == maxIntensity)
 	{
@@ -90,7 +91,15 @@ void RenderNormal()
 	if(renderPart & RenderTimeDate)
 	{
 		char sz[24];
-		strftime(sz, sizeof(sz), "%I:%M", &clockValues);	// %H = 12 hour, %I = 24 hour, %p = AM/PM
+		if(mode & Mode24HourDisplay)
+		{
+			strftime(sz, sizeof(sz), "%H:%M", &clockValues);	// %H = 24 hour, %I = 12 hour, %p = AM/PM
+		}
+		else
+		{
+			strftime(sz, sizeof(sz), "%I:%M", &clockValues);
+			strcat(sz, (clockValues.tm_hour >= 12) ? "<" : ";");
+		}
 
 		SetBackgroundColour(BLACK);
 		SetForegroundColour(CYAN);
@@ -140,7 +149,15 @@ void RenderNormal()
 void RenderAlarm()
 {
 	char sz[24];
-	strftime(sz, sizeof(sz), "%I:%M", &clockValues);	// %H = 12 hour, %I = 24 hour, %p = AM/PM
+	if(mode & Mode24HourDisplay)
+	{
+		strftime(sz, sizeof(sz), "%H:%M", &clockValues);	// %H = 24 hour, %I = 12 hour, %p = AM/PM
+	}
+	else
+	{
+		strftime(sz, sizeof(sz), "%I:%M", &clockValues);
+		strcat(sz, (clockValues.tm_hour >= 12) ? "<" : ";");
+	}
 
 	uint8_t r		= 255; //rand() % 256;
 	uint8_t g		= 0; //rand() % 256;
@@ -181,7 +198,15 @@ void RenderFieldSet()
 	switch(clockSetField)
 	{
 	case Hour:
-		strftime(sz, sizeof(sz), "%I", &clockSetValues);
+		if(mode & Mode24HourDisplay)
+		{
+			strftime(sz, sizeof(sz), "%H", &clockSetValues);
+		}
+		else
+		{
+			strftime(sz, sizeof(sz), "%I", &clockSetValues);
+			strcat(sz, (clockSetValues.tm_hour >= 12) ? "<" : ";");
+		}
 		break;
 	case Minute:
 		strftime(sz, sizeof(sz), "%M", &clockSetValues);
@@ -253,8 +278,7 @@ void Render()
 		RenderFieldSet();
 		break;
 	case Menu:
-		if(renderPart == RenderAll)
-			RenderMenu();
+		RenderMenu();
 		break;
 	case About:
 		RenderAbout();
