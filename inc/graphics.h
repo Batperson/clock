@@ -29,7 +29,22 @@ typedef struct
 	uint8_t data[];
 } Font, *PFont;
 
-typedef enum {
+typedef enum
+{
+	Colour1Bpp 	= 1,
+	Colour16Bpp	= 16,
+} ColourDepth;
+
+typedef struct
+{
+	uint16_t 	width;
+	uint16_t 	height;
+	ColourDepth	colour;
+	void*		data;
+} Bitmap, *PBitmap;
+
+typedef enum
+{
 	AlignLeft		= 0x00,
 	AlignRight		= 0x01,
 	AlignCentre		= 0x02,
@@ -57,6 +72,7 @@ void DrawRect(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags);
 void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, const char* psz);
 void DrawGradientVertical(uint16_t l, uint16_t t, uint16_t w, uint16_t h, uint16_t ofs);
 void DrawGradientHorizontal(uint16_t l, uint16_t t, uint16_t w, uint16_t h, uint16_t ofs);
+void DrawBitmap(uint16_t l, uint16_t t, DrawFlags flags, PBitmap bm);
 
 Colour Gradient(double ratio);
 Colour FadeColour(Colour fg, uint8_t intensity);

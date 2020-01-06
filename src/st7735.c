@@ -297,6 +297,17 @@ void BlitLine1BPP(uint8_t* psrc, uint16_t ofs, uint16_t cnt, uint32_t colours)
 	}
 }
 
+void BlitLine16BPP(uint16_t* psrc, uint16_t ofs, uint16_t cnt)
+{
+	while(cnt--)
+	{
+		buf[bufind++]	= __REV16(*psrc++);
+
+		if(bufind >= (sizeof(buf) / sizeof(Colour)))
+			FlushBuf();
+	}
+}
+
 void DrawTextImpl(PDrawOp pd, const char* psz)
 {
 	AddressSet(pd->l, pd->t, (pd->l + pd->w) - 1, (pd->t + pd->h) - 1);
@@ -331,3 +342,23 @@ void DrawGradientVertical(uint16_t l, uint16_t t, uint16_t w, uint16_t h, uint16
 		WriteShortRepeat(Data, Gradient(i / r), w);
 }
 
+void DrawBitmapImpl(PDrawOp pd, uint16_t l, uint16_t t, PBitmap bm)
+{
+	uint32_t clr		= (uint32_t)pd->fg << 16 | pd->bg;
+
+	AddressSet(l, t, (l + bm->width) - 1, (t + bm->height) - 1);
+
+	switch(bm->colour)
+	{
+	case Colour1Bpp:
+		BlitLine1BPP(bm->data, 0, (bm->width * bm->height), clr);
+		FlushBuf();
+		break;
+	case Colour16Bpp:
+		BlitLine16BPP(bm->data, 0, (bm->width * bm->height));
+		FlushBuf();
+		break;
+	default:
+		break;
+	}
+}

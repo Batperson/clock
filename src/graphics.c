@@ -223,3 +223,11 @@ void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, c
 
 	DrawTextImpl(&op, psz);
 }
+
+void DrawBitmap(uint16_t l, uint16_t t, DrawFlags flags, PBitmap bm)
+{
+	op.fg			= (flags & DrawInverse) ? bg : fg;
+	op.bg			= (flags & DrawInverse) ? fg : bg;
+
+	DrawBitmapImpl(&op, l, t, bm);
+}
