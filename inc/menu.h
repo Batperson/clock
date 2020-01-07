@@ -12,10 +12,16 @@
 
 typedef void (*PMenuProc)(uint32_t);
 
+typedef enum {
+	MenuNone		= 0x00,
+	MenuSelected	= 0x01
+} MenuFlags;
+
 typedef struct {
 	char* 					text;
 	void*					proc;
 	uint32_t				arg;
+	MenuFlags				flags;
 } MenuItem, *PMenuItem;
 
 void MenuUp();

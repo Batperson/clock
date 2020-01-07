@@ -55,23 +55,23 @@ MenuItem mainMenu[];
 
 // Max 20 chars per menu item text
 MenuItem alarmMenu[] = {
-	{ " RING: REVEILLE", 			SetAlarmRing, 		0  },
-	{ " RING: ARPEGGIATOR", 		SetAlarmRing, 		1 },
-	{ " BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
+	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
+	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
+	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
 	{ NULL, NULL, 0 }
 };
 
 MenuItem mainMenu[] = {
-	{ " SET TIME", 					ChangeState, 		ClockSet },
-	{ " SET DATE", 					ChangeState, 		DateSet },
-	{ " SET ALARM TIME", 			ChangeState, 		AlarmSet  },
-	{ " SELECT ALARM TONE", 		SetCurrentMenu,		(uint32_t)alarmMenu },
-	{ " ALARM RING", 				SetModeFlags, 		ModeAlarmEnabled },
-	{ " ALARM SNOOZE",				SetModeFlags,		ModeAlarmSnooze },
-	{ " ALARM LOCK",				SetModeFlags, 		ModeAlarmLock },
-	{ " 24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
-	{ " ABOUT THIS CLOCK", 			ChangeState, 		About },
-	{ " EXIT", 						ChangeState, 		Normal },
+	{ "SET TIME", 					ChangeState, 		ClockSet },
+	{ "SET DATE", 					ChangeState, 		DateSet },
+	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
+	{ "SELECT ALARM TONE", 			SetCurrentMenu,		(uint32_t)alarmMenu },
+	{ "ALARM RING", 				SetModeFlags, 		ModeAlarmEnabled },
+	{ "ALARM SNOOZE",				SetModeFlags,		ModeAlarmSnooze },
+	{ "ALARM LOCK",					SetModeFlags, 		ModeAlarmLock },
+	{ "24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
+	{ "ABOUT THIS CLOCK", 			ChangeState, 		About },
+	{ "EXIT", 						ChangeState, 		Normal },
 	{ NULL, NULL, 0 }
 };
 
@@ -107,14 +107,17 @@ void UpdateModeUIAndBehaviour()
 {
 	if(mode & ModeAlarmEnabled) SetAlarmFlags(RecurNone); else SetAlarmFlags(RecurWeekend | RecurWeekday);
 
-	mainMenu[4].text		= (mode & ModeAlarmEnabled) ? "*ALARM RING" : " ALARM RING";
+	mainMenu[4].flags		= (mode & ModeAlarmEnabled) ? MenuSelected : MenuNone;
 	mainMenu[4].proc		= (mode & ModeAlarmEnabled) ? ClearModeFlags : SetModeFlags;
-	mainMenu[5].text		= (mode & ModeAlarmSnooze) ? "*ALARM SNOOZE" : " ALARM SNOOZE";
+	mainMenu[5].flags		= (mode & ModeAlarmSnooze) ? MenuSelected : MenuNone;
 	mainMenu[5].proc		= (mode & ModeAlarmSnooze) ? ClearModeFlags : SetModeFlags;
-	mainMenu[6].text		= (mode & ModeAlarmLock) ? "*ALARM LOCK" : " ALARM LOCK";
+	mainMenu[6].flags		= (mode & ModeAlarmLock) ? MenuSelected : MenuNone;
 	mainMenu[6].proc		= (mode & ModeAlarmLock) ? ClearModeFlags : SetModeFlags;
-	mainMenu[7].text		= (mode & Mode24HourDisplay) ? "*24HOUR MODE" : " 24HOUR MODE";
+	mainMenu[7].flags		= (mode & Mode24HourDisplay) ? MenuSelected : MenuNone;
 	mainMenu[7].proc		= (mode & Mode24HourDisplay) ? ClearModeFlags : SetModeFlags;
+
+	for(int i=0; i < sizeof(alarmRings) / sizeof(PSong); i++)
+		alarmMenu[i].flags = (alarmRings[i] == alarmRing) ? MenuSelected : MenuNone;
 
 	TriggerRender();
 }
@@ -222,7 +225,9 @@ void OnMenuTimeout(PMenuItem item)
 {
 	if(item->proc == SetAlarmRing)
 	{
-		SelectSong((PSong)item->arg);
+		PSong song = alarmRings[item->arg];
+
+		SelectSong(song);
 		PlaySong(PlayLoop);
 	}
 }
@@ -505,6 +510,9 @@ void SetAlarmRing(uint32_t index)
 		BKP_WriteBackupRegister(BREG_ALARM_RING, index);
 
 		TriggerRender();
+
+		for(int i=0; i < sizeof(alarmRings) / sizeof(PSong); i++)
+			alarmMenu[i].flags = (i == index) ? MenuSelected : MenuNone;
 	}
 }
 

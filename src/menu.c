@@ -122,7 +122,8 @@ void RenderMenu()
 	{
 		SetForegroundColour(GREEN);
 		SetBackgroundColour(BLACK);
-		DrawText(left, top, width, h, FillMargin | ((i == menuIndex) ? DrawInverse : DrawNormal), currentMenu[i].text);
+		DrawText(left, top, w, h, FillMargin | ((i == menuIndex) ? DrawInverse : DrawNormal), (currentMenu[i].flags & MenuSelected) ? "*" : " ");
+		DrawText(left + w, top, width - w, h, FillMargin | ((i == menuIndex) ? DrawInverse : DrawNormal), currentMenu[i].text);
 
 		top += h + 1;
 	}
