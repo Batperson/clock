@@ -88,3 +88,9 @@ Re-entrancy issue fixed. Next task is to fix the hard fault when doing sample pl
 
 03/01/2019
 Fully implemented FillMargin behaviour
+
+08/01/2019
+Implemented alarm, snooze and no-alarm icons.
+Hard fault during sample playback fixed. 
+Sometimes, sample playback initiates twice in succession. Sample playback does not start when first showing
+the alarm ring menu.

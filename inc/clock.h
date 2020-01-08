@@ -39,7 +39,7 @@ typedef enum {
 
 typedef enum {
 	ModeNone			= 0x00,
-	ModeAlarmEnabled	= 0x01,
+	ModeAlarm			= 0x01,
 	ModeAlarmLock		= 0x02,
 	ModeAlarmSnooze		= 0x04,
 	Mode24HourDisplay	= 0x10

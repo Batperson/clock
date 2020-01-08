@@ -66,7 +66,7 @@ MenuItem mainMenu[] = {
 	{ "SET DATE", 					ChangeState, 		DateSet },
 	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
 	{ "SELECT ALARM TONE", 			SetCurrentMenu,		(uint32_t)alarmMenu },
-	{ "ALARM RING", 				SetModeFlags, 		ModeAlarmEnabled },
+	{ "ALARM RING", 				SetModeFlags, 		ModeAlarm },
 	{ "ALARM SNOOZE",				SetModeFlags,		ModeAlarmSnooze },
 	{ "ALARM LOCK",					SetModeFlags, 		ModeAlarmLock },
 	{ "24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
@@ -105,10 +105,10 @@ uint8_t			alarmLockIndex		= 0;
 
 void UpdateModeUIAndBehaviour()
 {
-	if(mode & ModeAlarmEnabled) SetAlarmFlags(RecurNone); else SetAlarmFlags(RecurWeekend | RecurWeekday);
+	if(mode & ModeAlarm) SetAlarmFlags(RecurNone); else SetAlarmFlags(RecurWeekend | RecurWeekday);
 
-	mainMenu[4].flags		= (mode & ModeAlarmEnabled) ? MenuSelected : MenuNone;
-	mainMenu[4].proc		= (mode & ModeAlarmEnabled) ? ClearModeFlags : SetModeFlags;
+	mainMenu[4].flags		= (mode & ModeAlarm) ? MenuSelected : MenuNone;
+	mainMenu[4].proc		= (mode & ModeAlarm) ? ClearModeFlags : SetModeFlags;
 	mainMenu[5].flags		= (mode & ModeAlarmSnooze) ? MenuSelected : MenuNone;
 	mainMenu[5].proc		= (mode & ModeAlarmSnooze) ? ClearModeFlags : SetModeFlags;
 	mainMenu[6].flags		= (mode & ModeAlarmLock) ? MenuSelected : MenuNone;

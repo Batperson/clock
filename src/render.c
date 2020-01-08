@@ -16,6 +16,7 @@
 #include "sound.h"
 #include "song.h"
 #include "fonts.h"
+#include "icons.h"
 #include "st7735.h"
 #include "clock.h"
 #include "menu.h"
@@ -104,12 +105,20 @@ void RenderNormal()
 		SetBackgroundColour(BLACK);
 		SetForegroundColour(CYAN);
 		SetFont(lcdFont);
+
+		PBitmap bm = bellSlash;
+		if(alarmState & AlarmSnoozed)
+			bm = bellSnooze;
+		else if(mode & ModeAlarm)
+			bm = bell;
+
+		DrawBitmap(36, 12, DrawNormal, bm);
 		DrawText(0, 36, 160, 36, AlignCentre, sz);
 
 		strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
 		strupr(sz);
 
-		SetForegroundColour(BLUE);
+		//SetForegroundColour(BLUE);
 		SetFont(sysFont);
 		DrawText(0, 80, 160, 12, AlignCentre, sz);
 
@@ -169,9 +178,6 @@ void RenderAlarm()
 	SetFont(lcdFont);
 
 	DrawText(0, 36, 152, 36, AlignCentre, sz);
-
-	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
-	strupr(sz);
 
 	SetForegroundColour(YELLOW);
 	SetFont(sysFont);

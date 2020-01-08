@@ -12,7 +12,7 @@
 extern Voice sine;
 extern Voice saw;
 
-Track arpeg_track_1 = {
+const Track arpeg_track_1 = {
 	255,
 	6,
 	&saw,
@@ -37,7 +37,7 @@ Track arpeg_track_1 = {
 	}
 };
 
-Track arpeg_track_2 = {
+const Track arpeg_track_2 = {
 	255,
 	0,
 	&sine,
@@ -55,7 +55,7 @@ Track arpeg_track_2 = {
 	}
 };
 
-Track arpeg_track_3 = {
+const Track arpeg_track_3 = {
 	255,
 	0,
 	&sine,
@@ -74,13 +74,13 @@ Track arpeg_track_3 = {
 };
 
 
-Song arpeggiator = {
+const Song arpeggiator = {
 	230,
-	{ &arpeg_track_1, &arpeg_track_2, &arpeg_track_3, NULL },
+	{ (PTrack)&arpeg_track_1, (PTrack)&arpeg_track_2, (PTrack)&arpeg_track_3, NULL },
 	{ 0, 0, 0, 0 }
 };
 
-Track reveille_track_1 = {
+const Track reveille_track_1 = {
 	255,
 	6,
 	&saw,
@@ -117,8 +117,8 @@ Track reveille_track_1 = {
 	}
 };
 
-Song reveille = {
+const Song reveille = {
 	340,
-	{ &reveille_track_1, &reveille_track_1, &reveille_track_1 },
+	{ (PTrack)&reveille_track_1, (PTrack)&reveille_track_1, (PTrack)&reveille_track_1 },
 	{ 0, 3, 9, 0 }
 };
