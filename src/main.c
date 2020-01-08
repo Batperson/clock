@@ -216,6 +216,30 @@ void MenuHandler(uint16_t btn, ButtonEventType et)
 	}
 }
 
+static uint16_t lngpress 	= 0;
+
+void MenuLongPressActive()
+{
+	Beep(88000, 30, 90);
+	MenuHandler(lngpress, ButtonShortPress);
+}
+
+void MenuLongPressHandler(uint16_t btn, ButtonEventType et)
+{
+	switch(et)
+	{
+	case ButtonLongDown:
+		lngpress = btn;
+		RegisterTimeoutCallback(MenuLongPressActive, 70, CallbackRepeat);
+		break;
+	case ButtonLongPress:
+		DeregisterCallback(MenuLongPressActive);
+		break;
+	default:
+		break;
+	}
+}
+
 void OnMenuHighlight(PMenuItem item)
 {
 	EndSong();
@@ -323,7 +347,8 @@ void FieldMoveNext()
 		if(clockSetField++ >= Second)
 		{
 			SetTime(&clockSetValues);
-			GetTime(&clockValues);
+			memcpy(&clockValues, &clockSetValues, sizeof(struct tm));
+
 			ChangeState(Normal);
 		}
 		break;
@@ -331,7 +356,8 @@ void FieldMoveNext()
 		if(clockSetField++ >= Day)
 		{
 			SetTime(&clockSetValues);
-			GetTime(&clockValues);
+			memcpy(&clockValues, &clockSetValues, sizeof(struct tm));
+
 			ChangeState(Normal);
 		}
 		break;
@@ -365,8 +391,6 @@ void FieldPressHandler(uint16_t btn, ButtonEventType et)
 		break;
 	}
 }
-
-static uint16_t lngpress 	= 0;
 void FieldLongPressActive()
 {
 	Beep(88000, 30, 90);
@@ -460,6 +484,7 @@ void ChangeState(ClockState state)
 
 	case Menu:
 		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress, MenuHandler);
+		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, MenuLongPressHandler);
 		break;
 
 	case AlarmRing:
