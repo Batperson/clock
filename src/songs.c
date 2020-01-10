@@ -73,13 +73,6 @@ const Track arpeg_track_3 = {
 	}
 };
 
-
-const Song arpeggiator = {
-	230,
-	{ (PTrack)&arpeg_track_1, (PTrack)&arpeg_track_2, (PTrack)&arpeg_track_3, NULL },
-	{ 0, 0, 0, 0 }
-};
-
 const Track reveille_track_1 = {
 	255,
 	6,
@@ -117,8 +110,83 @@ const Track reveille_track_1 = {
 	}
 };
 
+const Track bbshark_track_1 = {
+	255,
+	6,
+	&saw,
+	{
+		{ D4, QRT }, { E4, QRT },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { G4, EGH }, { G4, EGH },
+		{ F4s, HLF },
+
+		{ 0,  0 }
+	}
+};
+
+const Track bbshark_track_2 = {
+	255,
+	6,
+	&sine,
+	{
+		{  0, HLF },
+		{ D4, WHL },
+		{ E4, WHL },
+		{ D4, WHL },
+		{ F3s, HLF },
+
+		{ 0,  0 }
+	}
+};
+
+const Track bbshark_track_3 = {
+	255,
+	6,
+	&sine,
+	{
+		{  0, HLF },
+		{ G4, WHL },
+		{ G4, WHL },
+		{ G4, WHL },
+		{ A4, HLF },
+
+		{ 0,  0 }
+	}
+};
+
+const Track bbshark_track_4 = {
+	255,
+	6,
+	&sine,
+	{
+		{  0, HLF },
+		{ B4, WHL },
+		{ C5, WHL },
+		{ B4, WHL },
+		{ D4, HLF },
+
+		{ 0,  0 }
+	}
+};
+
+const Song arpeggiator = {
+	230,
+	{ (PTrack)&arpeg_track_1, (PTrack)&arpeg_track_2, (PTrack)&arpeg_track_3, NULL },
+	{ 0, 0, 0, 0 }
+};
+
 const Song reveille = {
 	340,
-	{ (PTrack)&reveille_track_1, (PTrack)&reveille_track_1, (PTrack)&reveille_track_1 },
+	{ (PTrack)&reveille_track_1, (PTrack)&reveille_track_1, (PTrack)&reveille_track_1, NULL },
 	{ 0, 3, 9, 0 }
+};
+
+const Song bbshark = {
+	160,
+	{ (PTrack)&bbshark_track_1, (PTrack)&bbshark_track_2, (PTrack)&bbshark_track_3, (PTrack)&bbshark_track_4},
+	{ 0, 0, 0, 0 }
 };

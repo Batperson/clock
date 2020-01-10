@@ -9,5 +9,6 @@
 
 extern Song arpeggiator;
 extern Song reveille;
+extern Song bbshark;
 
 #endif /* SONGS_H_ */

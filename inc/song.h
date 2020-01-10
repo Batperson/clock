@@ -25,6 +25,17 @@
 #define		EGHX				EGHT * 2			// double triplet quaver
 
 // Note frequencies, Equal Temperament
+#define 	B2					12347
+#define		C3					13081
+#define		C3s					13859
+#define		D3f					C3s
+#define		D3					14683
+#define		D3s					15556
+#define		E3f					D3s
+#define		E3					16481
+#define		F3					17461
+#define		F3s					18500
+#define		G3f					F3s
 #define		G3					19600
 #define		G3s					20765
 #define		A3f					G3s
