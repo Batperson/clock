@@ -94,3 +94,7 @@ Implemented alarm, snooze and no-alarm icons.
 Hard fault during sample playback fixed. 
 Sometimes, sample playback initiates twice in succession. Sample playback does not start when first showing
 the alarm ring menu.
+
+11/01/2019
+Fixed the double-playback of alarm rings when previewing in the menu.
+Added new ring: Baby Shark.

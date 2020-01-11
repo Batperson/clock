@@ -64,6 +64,7 @@ void MenuUp()
 	if(menuIndex > 0)
 	{
 		menuIndex--;
+		DeregisterCallback(MenuTimeoutHandler);
 		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS, CallbackNone);
 		OnMenuHighlight(&currentMenu[menuIndex]);
 
@@ -76,6 +77,7 @@ void MenuDown()
 	if(menuIndex < menuLength - 1)
 	{
 		menuIndex++;
+		DeregisterCallback(MenuTimeoutHandler);
 		RegisterTimeoutCallback(MenuTimeoutHandler, MENU_TIMEOUT_MILLIS, CallbackNone);
 		OnMenuHighlight(&currentMenu[menuIndex]);
 
