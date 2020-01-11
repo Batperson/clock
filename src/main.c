@@ -48,7 +48,8 @@ const SpecialDay specialDays[] = {
 
 const PSong alarmRings[] = {
 	&reveille,
-	&arpeggiator
+	&arpeggiator,
+	&bbshark
 };
 
 MenuItem mainMenu[];
@@ -57,6 +58,7 @@ MenuItem mainMenu[];
 MenuItem alarmMenu[] = {
 	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
 	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
+	{ "RING: BABY SHARK", 			SetAlarmRing, 		2 },
 	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
 	{ NULL, NULL, 0 }
 };

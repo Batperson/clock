@@ -124,6 +124,33 @@ const Track bbshark_track_1 = {
 		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { G4, EGH }, { G4, EGH },
 		{ F4s, HLF },
 
+		{ D4, QRT }, { E4, QRT },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { G4, EGH }, { G4, EGH },
+		{ F4s, HLF },
+
+		{ D4, QRT }, { E4, QRT },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { G4, EGH }, { G4, EGH },
+		{ F4s, HLF },
+
+		{ D4, QRT }, { E4, QRT },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { D4, EGH }, { E4, EGH },
+		{ G4, EGH }, { G4, EGH }, { G4, EGH }, { G4, SXT }, { G4, SXT},
+		{ G4, SXT }, { G4, SXT }, { G4, EGH }, { G4, EGH }, { G4, EGH },
+		{ F4s, HLF },
+
 		{ 0,  0 }
 	}
 };
@@ -136,8 +163,35 @@ const Track bbshark_track_2 = {
 		{  0, HLF },
 		{ D4, WHL },
 		{ E4, WHL },
-		{ D4, WHL },
-		{ F3s, HLF },
+		{ G4, WHL },
+		{ F4s, HLF },
+
+		{  0, HLF },
+		{ G3, EGH }, { G4, EGH }, { G3, EGH }, { G4, EGH },
+		{ G3, EGH }, { G4, EGH }, { G3, EGH }, { G4, EGH },
+		{ C4, EGH }, { C5, EGH }, { C4, EGH }, { C5, EGH },
+		{ C4, EGH }, { C5, EGH }, { C4, EGH }, { C5, EGH },
+		{ E4, EGH }, { E5, EGH }, { E4, EGH }, { E5, EGH },
+		{ E4, EGH }, { E5, EGH }, { E4, EGH }, { E5, EGH },
+		{ D4, EGH }, { C4, EGH }, { B3, EGH }, { A3, EGH },
+
+		{ G3, HLF },
+		{ G3, EGH }, { G4, EGH }, { G3, EGH }, { G4, EGH },
+		{ G3, EGH }, { G4, EGH }, { G3, EGH }, { G4, EGH },
+		{ C4, EGH }, { C5, EGH }, { C4, EGH }, { C5, EGH },
+		{ C4, EGH }, { C5, EGH }, { C4, EGH }, { C5, EGH },
+		{ E4, EGH }, { E5, EGH }, { E4, EGH }, { E5, EGH },
+		{ E4, EGH }, { E5, EGH }, { E4, EGH }, { E5, EGH },
+		{ D4, HLF },
+
+		{ G3, HLF },
+		{ G3, HLF },
+		{ G3, EGH }, { B3, EGH }, { D3, EGH }, { G4, EGH },
+		{ C4, HLF },
+		{ C4, EGH }, { E4, EGH }, { G4, EGH }, { C5, EGH },
+		{ E4, HLF },
+		{ E4, EGH }, { G4, EGH }, { C5, EGH }, { E5, EGH },
+		{ D4, HLF },
 
 		{ 0,  0 }
 	}
@@ -151,7 +205,19 @@ const Track bbshark_track_3 = {
 		{  0, HLF },
 		{ G4, WHL },
 		{ G4, WHL },
-		{ G4, WHL },
+		{ C5 /*B4*/, WHL },
+		{ A4, HLF },
+
+		{  0, HLF },
+		{  0, WHL }, {  0, WHL }, {  0, WHL },
+		{  0, HLF },
+
+		{ G4, HLF },
+		{  0, WHL }, {  0, WHL }, {  0, WHL },
+		{  0, HLF },
+
+		{ G4, HLF },	// final
+		{  0, WHL }, {  0, WHL }, {  0, WHL },
 		{ A4, HLF },
 
 		{ 0,  0 }
@@ -166,7 +232,19 @@ const Track bbshark_track_4 = {
 		{  0, HLF },
 		{ B4, WHL },
 		{ C5, WHL },
-		{ B4, WHL },
+		{ E5, WHL },
+		{ D5, HLF },
+
+		{  0, HLF },
+		{  0, WHL }, {  0, WHL }, {  0, WHL },
+		{  0, HLF },
+
+		{ G4, HLF },
+		{  0, WHL }, {  0, WHL }, {  0, WHL },
+		{  0, HLF },
+
+		{  0, HLF },
+		{  0, WHL }, {  0, WHL }, {  0, WHL },
 		{ D4, HLF },
 
 		{ 0,  0 }
@@ -186,7 +264,7 @@ const Song reveille = {
 };
 
 const Song bbshark = {
-	160,
+	120,
 	{ (PTrack)&bbshark_track_1, (PTrack)&bbshark_track_2, (PTrack)&bbshark_track_3, (PTrack)&bbshark_track_4},
 	{ 0, 0, 0, 0 }
 };
