@@ -25,6 +25,36 @@
 #define		EGHX				EGHT * 2			// double triplet quaver
 
 // Note frequencies, Equal Temperament
+#define		C1					3270
+#define		C1s					3465
+#define		D1f					C1s
+#define		D1					3671
+#define		D1s					3889
+#define		E1f					D1s
+#define		E1					4120
+#define		F1					4365
+#define		F1s					4625
+#define		G1f					F1s
+#define		G1					4900
+#define		G1s					5191
+#define		A1f					G1s
+#define		A1					5500
+#define		A1s					5827
+#define		B1f					A1s
+#define		B1					6174
+#define		C2					6541
+#define		C2s					6930
+#define		D2f					C2s
+#define		D2					7342
+#define		D2s					7778
+#define		E2f					D2s
+#define		E2					8241
+#define		F2					8731
+#define		F2s					9250
+#define		G2f					F2s
+#define		G2					9800
+#define		G2s					10383
+#define		A2f					G2s
 #define 	A2					11000
 #define 	A2s					11654
 #define		B2f					A2s
@@ -95,8 +125,8 @@
 
 typedef struct
 {
-	uint32_t pitch;		// Note pitch in hertz * 100
-	uint8_t interval;	// 1 = whole note (semibreve), 2 = half note (minim), 4 = quarter (crotchet) etc
+	uint32_t pitch;		// Note pitch in hertz * 100. Use defined notes (C4, D4, E4 etc).
+	uint8_t interval;	// Number of ticks. Use defined intervals from above (QRT, WHL, EGH etc).
 } Note, *PNote;
 
 typedef struct

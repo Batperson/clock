@@ -251,6 +251,121 @@ const Track bbshark_track_4 = {
 	}
 };
 
+const Track gravity_track_1 = {
+	255,
+	6,
+	&sine,
+	{
+		{ F3,  EGH }, { D3,  EGH }, { A2,  EGH }, { D3,  EGH }, { F3,  EGH }, { D3,  EGH }, { A2,  EGH }, { D3,  EGH },
+		{ F3,  EGH }, { C3,  EGH }, { A2,  EGH }, { C3,  EGH }, { F3,  EGH }, { C3,  EGH }, { A2,  EGH }, { C3,  EGH },
+		{ E3,  EGH }, { D3f, EGH }, { A2,  EGH }, { D3f, EGH }, { E3,  EGH }, { D3f, EGH }, { A2,  EGH }, { D3f, EGH },
+		{ E3,  EGH }, { D3f, EGH }, { A2,  EGH }, { D3f, EGH }, { E3,  EGH }, { D3f, EGH }, { A2,  QRT },
+
+		{ D2,  EGH }, { A3,  EGH }, { D3,  EGH }, { A3,  EGH }, { D2,  EGH }, { A3,  EGH }, { D3,  EGH }, { A3,  EGH },
+		{ D2,  EGH }, { A3,  EGH }, { D3,  EGH }, { A3,  EGH }, { D2,  EGH }, { A3,  EGH }, { D3,  QRT },
+		{ F2,  EGH }, { C3,  EGH }, { D3,  EGH }, { C3,  EGH }, { F2,  EGH }, { C3,  EGH }, { D3,  EGH }, { C3,  EGH },
+		{ F2,  EGH }, { C3,  EGH }, { D3,  EGH }, { C3,  EGH }, { F2,  QRT }, { E2,  QRT },
+
+		{ B1f, EGH }, { F2,  EGH }, { B2f, EGH }, { F2,  EGH }, { B1f, EGH }, { F2,  EGH }, { B2f, EGH }, { F2,  EGH },
+		{ B1f, EGH }, { F2,  EGH }, { B2f, EGH }, { F2,  EGH }, { B1f, EGH }, { F2,  EGH }, { B2f, QRT },
+		{ C2,  EGH }, { G2,  EGH }, { C3,  EGH }, { G2,  EGH }, { C2,  EGH }, { G2,  EGH }, { C3,  QRT },
+		{ A2,  EGH }, { E3,  EGH }, { A3,  EGH }, { E3,  EGH }, { A2,  EGH }, { E3,  EGH }, { A3,  QRT },
+
+		{ D2,  EGH }, { A3,  EGH }, { D3,  EGH }, { A3,  EGH }, { D2,  EGH }, { A3,  EGH }, { D3,  QRT },
+		{ D2,  EGH }, { A3,  EGH }, { D3,  EGH }, { A3,  EGH }, { D2,  EGH }, { A3,  EGH }, { D3,  QRT },
+		{ F2,  EGH }, { C3,  EGH }, { D3,  EGH }, { C3,  EGH }, { F2,  EGH }, { C3,  EGH }, { D3,  QRT },
+		{ F2,  EGH }, { C3,  EGH }, { D3,  EGH }, { C3,  EGH }, { F2,  EGH }, { C3,  EGH }, { D3,  QRT },
+
+		{ B1f, EGH }, { F2,  EGH }, { B2f, EGH }, { F2,  EGH }, { B1f, EGH }, { F2,  EGH }, { B2f, QRT },
+		{ B1f, EGH }, { F2,  EGH }, { B2f, EGH }, { F2,  EGH }, { B1f, EGH }, { F2,  EGH }, { B2f, QRT },
+		{ C2,  EGH }, { G2,  EGH }, { C3,  EGH }, { G2,  EGH }, { C2,  EGH }, { G2,  EGH }, { C3,  QRT },
+		{ C2,  EGH }, { G2,  EGH }, { C3,  EGH }, { G2,  EGH }, { C2,  EGH }, { G2,  EGH }, { C3,  QRT },
+
+		{ D2,  EGH }, { A3,  EGH }, { D3,  EGH }, { A3,  EGH }, { D2,  EGH }, { A3,  EGH }, { D3,  QRT },
+		{ F2,  EGH }, { C3,  EGH }, { D3,  EGH }, { C3,  EGH }, { F2,  EGH }, { C3,  EGH }, { D3,  QRT },
+		{ B1f, EGH }, { F2,  EGH }, { B2f, EGH }, { F2,  EGH }, { B1f, EGH }, { F2,  EGH }, { B2f, QRT },
+		{ C2,  EGH }, { G2,  EGH }, { C3,  EGH }, { G2,  EGH }, { C2,  HLF },
+
+		{ A1,  EGH }, { E2,  EGH }, { A2,  EGH }, { E2,  EGH }, { A1,  HLF },
+		{ D2,  EGH }, { A2,  EGH }, { D3,  EGH }, { A2,  EGH }, { D2,  HLF },
+		{ D2,  QRT }, { 0,   QRT }, { D1,  QRT }, { 0,   QRT },
+
+		{ 0,  0 }
+	}
+};
+
+const Track gravity_track_2 = {
+	255,
+	6,
+	&sine,
+	{
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  HLF }, { C3, HLF },
+		{ 0,  HLF }, { A2, HLF },
+		{ 0,  HLF }, { D3, HLF },
+		{ 0,  HLF }, { D3, QRT }, { 0, QRT },
+
+		{ 0,  0 }
+	}
+};
+
+const Track gravity_track_3 = {
+	255,
+	6,
+	&sine,
+	{
+		{ 0,   WHL  }, { 0,   WHL  }, { 0,   WHL  }, { 0,   WHL  },
+		{ D4,  HLFD }, { E4,  QRT },
+		{ F4,  WHL  },
+		{ A4,  QRTD }, { G4,  QRTD }, { A4,  QRT },
+		{ C4,  WHL  },
+		{ D4,  HLFD }, { E4,  QRT  },
+		{ F4,  HLF  }, { E4,  HLF  },
+		{ G4,  HLF  }, { A4,  HLF  },
+		{ G4,  HLF  }, { F4,  HLF  },
+		{ 0,   QRT  }, { F4,  QRT  }, { F4,  QRT  }, { F4,  QRT  },
+		{ A4,  QRT  }, { A4,  QRT  }, { G4,  QRT  }, { F4,  QRT  },
+		{ 0,   QRT  }, { A4,  QRT  }, { A4,  QRT  }, { A4,  QRT  },
+		{ G4,  QRT  }, { A4,  QRT  }, { G4,  QRT  }, { F4,  QRT  },
+		{ 0,   QRT  }, { F4,  QRT  }, { F4,  QRT  }, { F4,  QRT  },
+		{ A4,  QRT  }, { A4,  QRT  }, { G4,  QRT  }, { F4,  QRT  },
+		{ 0,   QRT  }, { A4,  QRT  }, { A4,  QRT  }, { A4,  QRT  },
+		{ 0,   QRT  }, { C5s, QRT  }, { C5s, QRT  }, { C5s, QRT  },
+		{ 0,   QRT  }, { F4,  QRT  }, { F4,  QRT  }, { F4,  QRT  },
+		{ A4,  QRT  }, { A4,  QRT  }, { G4,  QRT  }, { F4,  QRT  },
+		{ 0,   QRT  }, { B4f, QRT  }, { B4f, QRT  }, { B4f, QRT  },
+		{ G4,  HLF  }, { C5,  HLF  },
+		{ A4,  HLF  }, { C5s, HLF  },
+		{ F5,  EGH  }, { D5,  EGH  }, { F5,  EGH  }, { D5,  EGH  }, { A4,  EGH }, { C5s,  EGH }, { E5,  EGH }, { C5s,  EGH },
+		{ D5,  QRT  }, { 0,   QRT  }, { D5,  QRT  }, { 0,   QRT  },
+
+		{ 0,  0 }
+	}
+};
+
+const Track gravity_track_4 = {
+	255,
+	6,
+	&sine,
+	{
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
+		{ 0,  WHL }, { 0,  WHL },
+		{ 0,  HLF }, { D4, QRT }, { 0, QRT },
+
+		{ 0,  0 }
+	}
+};
+
 const Song arpeggiator = {
 	230,
 	{ (PTrack)&arpeg_track_1, (PTrack)&arpeg_track_2, (PTrack)&arpeg_track_3, NULL },
@@ -266,5 +381,11 @@ const Song reveille = {
 const Song bbshark = {
 	120,
 	{ (PTrack)&bbshark_track_1, (PTrack)&bbshark_track_2, (PTrack)&bbshark_track_3, (PTrack)&bbshark_track_4},
+	{ 0, 0, 0, 0 }
+};
+
+const Song gravity = {
+	165,
+	{ (PTrack)&gravity_track_1, (PTrack)&gravity_track_2, (PTrack)&gravity_track_3, (PTrack)&gravity_track_4 },
 	{ 0, 0, 0, 0 }
 };
