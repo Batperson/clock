@@ -366,6 +366,25 @@ const Track gravity_track_4 = {
 	}
 };
 
+const Track birthday_track_1 = {
+	255,
+	6,
+	&saw,
+	{
+	                   { G3,  EGHD }, { G3,  SXT  },
+		{ A3,  QRT  }, { G3,  QRT  }, { C4,  QRT  },
+		{ B3,  HLF  }, { G3,  EGHD }, { G3,  SXT  },
+		{ A3,  QRT  }, { G3,  QRT  }, { D4,  QRT  },
+		{ C4,  HLF  }, { G3,  QRTD }, { G3,  EGH  },
+		{ G4,  QRT  }, { E4,  QRT  }, { C4,  QRT  },
+		{ B3,  QRT  }, { A3,  QRT  }, { F4,  HLFD }, { F4,  EGHD }, { F4,  SXT  },
+		{ E4,  QRT  }, { C4,  QRT  }, { D4,  QRT  },
+		{ C4,  QRT  },
+
+		{ 0,  0 }
+	}
+};
+
 const Song arpeggiator = {
 	230,
 	{ (PTrack)&arpeg_track_1, (PTrack)&arpeg_track_2, (PTrack)&arpeg_track_3, NULL },
@@ -387,5 +406,11 @@ const Song bbshark = {
 const Song gravity = {
 	165,
 	{ (PTrack)&gravity_track_1, (PTrack)&gravity_track_2, (PTrack)&gravity_track_3, (PTrack)&gravity_track_4 },
+	{ 0, 0, 0, 0 }
+};
+
+const Song birthday = {
+	165,
+	{ (PTrack)&birthday_track_1, NULL },
 	{ 0, 0, 0, 0 }
 };
