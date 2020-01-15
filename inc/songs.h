@@ -10,5 +10,8 @@
 extern Song arpeggiator;
 extern Song reveille;
 extern Song bbshark;
+extern Song gravity;
+extern Song birthday;
+extern Song anthem;
 
 #endif /* SONGS_H_ */

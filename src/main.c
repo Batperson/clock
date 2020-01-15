@@ -36,13 +36,13 @@ const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", "Celebrate your f
 const char* anzacDayTexts[]				= { "They shall not grow old", "As we that are left grow old", "Age shall not weary them", "Nor the years condemn.", "But at the going down of the sun", "And in the morning", "We will remember them.", NULL };
 
 const SpecialDay specialDays[] = {
-	{ 1093392000, 	NULL, 			birthdayChristopherTexts },
+	{ 1093392000, 	&birthday, 		birthdayChristopherTexts },
 	{ 1398988800, 	NULL, 			birthdayRosieTexts },
 	{ 237427200, 	NULL, 			birthdayXiaTexts },
 	{ 184377600, 	NULL, 			birthdayPeterTexts },
 	{ 1010793600, 	NULL, 			christmasTexts },
 	{ 946684800, 	NULL, 			newYearTexts },
-	{ 959904000, 	NULL, 			waitangiDayTexts },
+	{ 959904000, 	&anthem,		waitangiDayTexts },
 	{ 1010102400, 	NULL,			anzacDayTexts }
 };
 

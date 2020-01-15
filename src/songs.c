@@ -371,17 +371,146 @@ const Track birthday_track_1 = {
 	6,
 	&saw,
 	{
-	                   { G3,  EGHD }, { G3,  SXT  },
+	                   	   	   	   	  { G3,  EGHD }, { G3,  SXT  },
 		{ A3,  QRT  }, { G3,  QRT  }, { C4,  QRT  },
 		{ B3,  HLF  }, { G3,  EGHD }, { G3,  SXT  },
 		{ A3,  QRT  }, { G3,  QRT  }, { D4,  QRT  },
 		{ C4,  HLF  }, { G3,  QRTD }, { G3,  EGH  },
 		{ G4,  QRT  }, { E4,  QRT  }, { C4,  QRT  },
-		{ B3,  QRT  }, { A3,  QRT  }, { F4,  HLFD }, { F4,  EGHD }, { F4,  SXT  },
+		{ B3,  QRT  }, { A3,  QRT  }, { F4,  EGHD }, { F4,  SXT  },
 		{ E4,  QRT  }, { C4,  QRT  }, { D4,  QRT  },
 		{ C4,  QRT  },
 
 		{ 0,  0 }
+	}
+};
+
+const Track birthday_track_2 = {
+	255,
+	6,
+	&sine,
+	{
+		{ 0,   HLFD },
+		{ 0,   HLFD },
+		{ G2,  HLFD },
+		{ 0,   HLFD },
+		{ C3,  HLFD },
+		{ C3,  HLF  }, { C3,  HLF }, { F3,  HLF  },
+		{ C3,  HLF  }, { G2,  QRT },
+		{ C3,  QRT  },
+
+		{ 0,  0 }
+	}
+};
+
+const Track birthday_track_3 = {
+	255,
+	6,
+	&sine,
+	{
+		{ 0,   HLFD },
+		{ 0,   HLFD },
+		{ B2,  HLFD },
+		{ 0,   HLFD },
+		{ E3,  HLFD },
+		{ E3,  HLF  }, { B3f,  HLF }, { A3,  HLF  },
+		{ E3,  HLF  }, { B2,  QRT },
+		{ E3,  QRT  },
+
+		{ 0,  0 }
+	}
+};
+
+
+const Track birthday_track_4 = {
+	255,
+	6,
+	&sine,
+	{
+		{ 0,   HLFD },
+		{ 0,   HLFD },
+		{ D3,  HLFD },
+		{ 0,   HLFD },
+		{ G3,  HLFD },
+		{ G3,  HLF  }, { G3,  HLF }, { C4,  HLF  },
+		{ G3,  HLF  }, { D3,  QRT },
+		{ G3,  QRT  },
+
+		{ 0,  0 }
+	}
+};
+
+const Track anthem_track_1 = {
+	255,
+	6,
+	&saw,
+	{
+		{ C4,  QRT  }, { B3,  QRT  }, { C4,  QRT  }, { G3,  QRT  },
+		{ E4,  QRT  }, { E4,  EGH  }, { D4,  EGH  }, { C4,  HLF  },
+		{ A3,  QRT  }, { F4,  QRT  }, { G3,  QRT  }, { E4,  QRT  },
+		{ D4,  EGH  }, { C4,  EGH  }, { B3,  EGH  }, { A3,  EGH  }, { G3,  HLF },
+		{ C4,  QRT  }, { G3,  QRT  }, { A3,  QRT  }, { B3,  QRT  },
+		{ C4,  QRT  }, { D4,  QRT  }, { E4,  HLF  },
+		{ E4,  QRT  }, { C4,  QRT  }, { A3,  QRT  }, { D4,  QRT  },
+		{ C4,  QRT  }, { B3,  QRT  }, { C4,  HLF  },
+
+		{ G4,  QRT  }, { G4,  QRT  }, { C4,  QRT  }, { E4,  QRT  },
+		{ G4,  QRT  }, { G4,  EGH  }, { A4,  EGH  }, { G4,  HLF  },
+		{ D4,  QRT  }, { E4,  QRT  }, { F4,  EGH  }, { E4,  EGH  }, { D4,  EGH  }, { C4,  EGH },
+		{ B3,  EGH  }, { C4,  EGH  }, { B3,  EGH  }, { A3,  EGH  }, { G3,  HLF  },
+		{ C4,  QRT  }, { G3,  QRT  }, { A3,  QRT  }, { B3,  QRT  },
+		{ C4,  QRT  }, { D4,  QRT  }, { G4,  HLF  },
+
+		{ G4,  QRT  }, { F4,  QRT  }, { E4,  QRT  }, { F4,  QRT  },
+		{ E4,  HLF  }, { D4,  HLF  },
+		{ C4,  EGH  }, { C4,  EGH + HLFD },
+
+		{ 0,   0    }
+	}
+};
+
+const Track anthem_track_2 = {
+	255,
+	6,
+	&sine,
+	{
+		{ C3,  WHL  }, { C3,  WHL  }, { F3,  HLF  }, { E3,  HLF  }, { D3,  HLF  }, { G3,  EGH  }, { F3,  EGH  }, { E3,  EGH  }, { D3,  EGH  },
+		{ C3,  WHL  }, { C3,  HLF  }, { E3,  HLF  }, { C3,  HLF  }, { F3,  HLF  }, { G3,  HLF  }, { C4,  HLF  },
+
+		{ C3,  WHL  }, { E3,  WHL  }, { A2,  HLF  }, { F3,  HLF  }, { D3,  HLF  }, { G3,  EGH  }, { F3,  EGH  }, { E3,  EGH  }, { D3,  EGH  },
+		{ C3,  WHL  }, { C3,  HLF  }, { G3,  HLF  }, { E3,  HLF  }, { F3,  HLF  }, { C3,  HLF  }, { G3,  HLF  }, { C3,  HLF  },
+
+		{ 0,   0    }
+	}
+};
+
+const Track anthem_track_3 = {
+	255,
+	6,
+	&sine,
+	{
+		{ E3,  WHL  }, { E3,  WHL  }, { A3,  HLF  }, { G3,  HLF  }, { F3s, HLF  }, { B3,  HLF },
+		{ E3,  WHL  }, { E3,  HLF  }, { G3,  HLF  }, { B2f, HLF  }, { A3,  HLF  }, { B3,  HLF  }, { E3,  HLF },
+
+		{ E3,  WHL  }, { G3,  WHL  }, { C3,  HLF  }, { A3,  HLF  }, { F3s, HLF  }, { B3,  HLF },
+		{ E3,  WHL  }, { E3,  HLF  }, { B3,  HLF  }, { G3,  HLF  }, { A3,  HLF  }, { E3,  HLF  }, { B3,  HLF }, { E3,  HLF },
+
+		{ 0,   0    }
+	}
+};
+
+const Track anthem_track_4 = {
+	255,
+	6,
+	&sine,
+	{
+		{ G3,  WHL  }, { G3,  WHL  }, { C4,  HLF  }, { E3,  HLF  }, { A3,  HLF  }, { D4,  HLF  },
+		{ G3,  WHL  }, { G3,  HLF  }, { B3,  HLF  }, { G3,  HLF  }, { F3,  HLF  }, { D4,  HLF  }, { C4,  HLF  },
+
+		{ G3,  WHL  }, { B3,  WHL  }, { E3,  HLF  }, { C4,  HLF  }, { A3,  HLF  }, { D4,  HLF  },
+		{ G3,  WHL  }, { G3,  HLF  }, { D4,  HLF  }, { B3,  HLF  }, { C4,  HLF  }, { G3,  HLF  }, { G3,  HLF  }, { D4,  HLF },
+
+		{ 0,   0    }
 	}
 };
 
@@ -411,6 +540,12 @@ const Song gravity = {
 
 const Song birthday = {
 	165,
-	{ (PTrack)&birthday_track_1, NULL },
+	{ (PTrack)&birthday_track_1, (PTrack)&birthday_track_2, (PTrack)&birthday_track_3, (PTrack)&birthday_track_4 },
+	{ 0, 0, 0, 0 }
+};
+
+const Song anthem = {
+	165,
+	{ (PTrack)&anthem_track_1, (PTrack)&anthem_track_2, (PTrack)&anthem_track_3, (PTrack)&anthem_track_4 },
 	{ 0, 0, 0, 0 }
 };
