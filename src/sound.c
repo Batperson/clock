@@ -120,7 +120,7 @@ void InitSound()
 
 	TIM_TimeBaseStructInit(&timb);
 
-	// Note: TIM_Period is not theoretically correct.
+	// Note: TIM_Period is not correct if the timer is clocked at half system clock.
 	// But sound appears to be 2* correct frequency if I don't do this.
 	timb.TIM_Prescaler 			= 0;
 	timb.TIM_CounterMode 		= TIM_CounterMode_Up;

@@ -254,7 +254,7 @@ const Track bbshark_track_4 = {
 const Track gravity_track_1 = {
 	255,
 	6,
-	&sine,
+	&saw,
 	{
 		{ F3,  EGH }, { D3,  EGH }, { A2,  EGH }, { D3,  EGH }, { F3,  EGH }, { D3,  EGH }, { A2,  EGH }, { D3,  EGH },
 		{ F3,  EGH }, { C3,  EGH }, { A2,  EGH }, { C3,  EGH }, { F3,  EGH }, { C3,  EGH }, { A2,  EGH }, { C3,  EGH },
@@ -297,7 +297,7 @@ const Track gravity_track_1 = {
 const Track gravity_track_2 = {
 	255,
 	6,
-	&sine,
+	&saw,
 	{
 		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
 		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
@@ -317,7 +317,7 @@ const Track gravity_track_2 = {
 const Track gravity_track_3 = {
 	255,
 	6,
-	&sine,
+	&saw,
 	{
 		{ 0,   WHL  }, { 0,   WHL  }, { 0,   WHL  }, { 0,   WHL  },
 		{ D4,  HLFD }, { E4,  QRT },
@@ -351,7 +351,7 @@ const Track gravity_track_3 = {
 const Track gravity_track_4 = {
 	255,
 	6,
-	&sine,
+	&saw,
 	{
 		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
 		{ 0,  WHL }, { 0,  WHL }, { 0,  WHL }, { 0,  WHL },
@@ -375,11 +375,11 @@ const Track birthday_track_1 = {
 		{ A3,  QRT  }, { G3,  QRT  }, { C4,  QRT  },
 		{ B3,  HLF  }, { G3,  EGHD }, { G3,  SXT  },
 		{ A3,  QRT  }, { G3,  QRT  }, { D4,  QRT  },
-		{ C4,  HLF  }, { G3,  QRTD }, { G3,  EGH  },
+		{ C4,  HLF  }, { G3,  EGHD }, { G3,  SXT  },
 		{ G4,  QRT  }, { E4,  QRT  }, { C4,  QRT  },
 		{ B3,  QRT  }, { A3,  QRT  }, { F4,  EGHD }, { F4,  SXT  },
 		{ E4,  QRT  }, { C4,  QRT  }, { D4,  QRT  },
-		{ C4,  QRT  },
+		{ C4,  QRT  }, { 0,   HLF  },
 
 		{ 0,  0 }
 	}
@@ -390,14 +390,14 @@ const Track birthday_track_2 = {
 	6,
 	&sine,
 	{
+		{ 0,   QRT  },
 		{ 0,   HLFD },
+		{ G3,  HLFD },
 		{ 0,   HLFD },
-		{ G2,  HLFD },
-		{ 0,   HLFD },
-		{ C3,  HLFD },
-		{ C3,  HLF  }, { C3,  HLF }, { F3,  HLF  },
-		{ C3,  HLF  }, { G2,  QRT },
-		{ C3,  QRT  },
+		{ C4,  HLFD },
+		{ C4,  HLF  }, { C4,  HLF }, { F4,  HLF  },
+		{ C4,  HLF  }, { G3,  QRT },
+		{ C4,  QRT  },
 
 		{ 0,  0 }
 	}
@@ -408,14 +408,14 @@ const Track birthday_track_3 = {
 	6,
 	&sine,
 	{
+		{ 0,   QRT  },
 		{ 0,   HLFD },
+		{ B3,  HLFD },
 		{ 0,   HLFD },
-		{ B2,  HLFD },
-		{ 0,   HLFD },
-		{ E3,  HLFD },
-		{ E3,  HLF  }, { B3f,  HLF }, { A3,  HLF  },
-		{ E3,  HLF  }, { B2,  QRT },
-		{ E3,  QRT  },
+		{ E4,  HLFD },
+		{ E4,  HLF  }, { B4f,  HLF }, { A4,  HLF  },
+		{ E4,  HLF  }, { B3,  QRT },
+		{ E4,  QRT  },
 
 		{ 0,  0 }
 	}
@@ -427,14 +427,14 @@ const Track birthday_track_4 = {
 	6,
 	&sine,
 	{
+		{ 0,   QRT  },
 		{ 0,   HLFD },
+		{ D4,  HLFD },
 		{ 0,   HLFD },
-		{ D3,  HLFD },
-		{ 0,   HLFD },
-		{ G3,  HLFD },
-		{ G3,  HLF  }, { G3,  HLF }, { C4,  HLF  },
-		{ G3,  HLF  }, { D3,  QRT },
-		{ G3,  QRT  },
+		{ G4,  HLFD },
+		{ G4,  HLF  }, { G4,  HLF }, { C5,  HLF  },
+		{ G4,  HLF  }, { D4,  QRT },
+		{ G4,  QRT  },
 
 		{ 0,  0 }
 	}
@@ -463,7 +463,7 @@ const Track anthem_track_1 = {
 
 		{ G4,  QRT  }, { F4,  QRT  }, { E4,  QRT  }, { F4,  QRT  },
 		{ E4,  HLF  }, { D4,  HLF  },
-		{ C4,  EGH  }, { C4,  EGH + HLFD },
+		{ C4,  EGH  }, { C4,  EGH + QRT },
 
 		{ 0,   0    }
 	}
@@ -539,13 +539,13 @@ const Song gravity = {
 };
 
 const Song birthday = {
-	165,
+	140,
 	{ (PTrack)&birthday_track_1, (PTrack)&birthday_track_2, (PTrack)&birthday_track_3, (PTrack)&birthday_track_4 },
 	{ 0, 0, 0, 0 }
 };
 
 const Song anthem = {
-	165,
+	125,
 	{ (PTrack)&anthem_track_1, (PTrack)&anthem_track_2, (PTrack)&anthem_track_3, (PTrack)&anthem_track_4 },
 	{ 0, 0, 0, 0 }
 };
