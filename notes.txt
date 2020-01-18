@@ -98,3 +98,8 @@ the alarm ring menu.
 11/01/2019
 Fixed the double-playback of alarm rings when previewing in the menu.
 Added new ring: Baby Shark.
+
+19/01/2019
+Added a few new songs, for use as easter eggs.
+Implemented an audio amplifier + speaker, using the TPA2005D1 audio amplifier IC from Texas Instruments. Amplifier shutdown now controlled from pin A2. Unfortunately this creates pop
+so it's not possible to switch the amp on and off before playing sounds.

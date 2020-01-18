@@ -70,7 +70,6 @@ const InitStruct is[] =
 		{ 0x00, 0, 0, 	{ 0 } }
 };
 
-#define BL_PIN			GPIO_Pin_2
 #define DC_PIN			GPIO_Pin_6
 #define CS_PIN			GPIO_Pin_4
 #define RS_PIN			GPIO_Pin_3
@@ -168,7 +167,7 @@ void InitDisplay()
 	// DC  = PA6 (data/command)
 	// BL  = PA2 (backlight)
 	gpio.GPIO_Mode				= GPIO_Mode_Out_PP;
-	gpio.GPIO_Pin				= CS_PIN | DC_PIN | RS_PIN | BL_PIN;
+	gpio.GPIO_Pin				= CS_PIN | DC_PIN | RS_PIN;
 	GPIO_Init(GPIOA, &gpio);
 
 	// Reset sequence
@@ -192,14 +191,7 @@ void InitDisplay()
 			sleep(ps->delay);
 	}
 
-	SetBacklight(On);
-
 	printf("Display initialized\n");
-}
-
-void SetBacklight(enum Mode bl)
-{
-	GPIO_WriteBit(GPIOA, BL_PIN, bl);
 }
 
 void SetSleepMode(enum Mode sl)

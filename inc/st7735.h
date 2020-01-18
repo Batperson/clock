@@ -16,7 +16,6 @@ enum Mode
 	On	= 0x01
 };
 
-void SetBacklight(enum Mode bl);
 void SetSleepMode(enum Mode sl);
 void SetInversionMode(enum Mode in);
 void SetDisplayMode(enum Mode ds);

@@ -12,6 +12,7 @@
 #include "sound.h"
 #include "song.h"
 
+#define FLAGS_PLAYING	0x80
 #define INTERVAL_TO_TICKS(intv) (uint16_t)((TICKS_PER_BEAT * 4) / intv)
 
 typedef enum
@@ -60,6 +61,8 @@ void InitSong()
 	nvic.NVIC_IRQChannelSubPriority 		= 0;
 	nvic.NVIC_IRQChannelCmd 				= ENABLE;
 	NVIC_Init(&nvic);
+
+	memset((SongState*)&state, 0, sizeof(SongState));
 
 	printf("Song player initialized\n");
 }
@@ -110,7 +113,7 @@ void SelectSong(PSong song)
 
 void PlaySong(PlayFlags flags)
 {
-	state.flags		= flags;
+	state.flags		= flags | FLAGS_PLAYING;
 
 	TIM_Cmd(TIM3, ENABLE);
 }
@@ -135,13 +138,18 @@ void WEAKREF OnTrackEnd(int track)
 
 void EndSong()
 {
-	TIM_Cmd(TIM3, DISABLE);
-	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+	if(state.flags & FLAGS_PLAYING)
+	{
+		TIM_Cmd(TIM3, DISABLE);
+		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 
-	if(state.song != NULL)
-		InitTracks();
+		state.flags &= ~FLAGS_PLAYING;
 
-	OnSongEnd();
+		if(state.song != NULL)
+			InitTracks();
+
+		OnSongEnd();
+	}
 }
 
 void INTERRUPT TIM3_IRQHandler()

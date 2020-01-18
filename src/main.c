@@ -101,7 +101,7 @@ uint8_t			alarmLockIndex		= 0;
 //	A5				Screen (SCK)
 //	A4				Screen (Slave select)
 //	A3				Screen (Reset)
-// 	A2				Screen (Backlight)
+// 	A2				Amplifier Shutdown
 //	A1				Button (Down)
 //	A0				Button (Up)
 
@@ -167,6 +167,7 @@ int main(void)
 	SetCurrentMenu(mainMenu);
 	ChangeState(Normal);
 	LoadConfiguration();
+	AudioOn();
 
 	while(1)
 	{

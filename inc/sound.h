@@ -28,6 +28,8 @@ typedef struct
 } Voice, *PVoice;
 
 void InitSound();
+void AudioOn();
+void AudioOff();
 void SelectVoice(uint8_t channel, uint8_t vol, PVoice pv);
 void SoundOn(uint8_t channel, uint32_t hz);
 void SoundOff(uint8_t channel);

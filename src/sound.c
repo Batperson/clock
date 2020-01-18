@@ -11,6 +11,10 @@
 #include "system.h"
 #include "sound.h"
 
+// Set pin A8 as audio output, A2 as amplifier shutdown
+#define				PIN_AUDIO	GPIO_Pin_8
+#define				PIN_AMPSD	GPIO_Pin_2
+
 extern Voice sine;
 
 typedef enum {
@@ -85,16 +89,24 @@ void InitSound()
 
 	DMA_Cmd(DMA1_Channel2, ENABLE);
 
-	// TIM1 OC1 will be the analog output
-	// TIM2 will be the sample clock, driving DMA to set TIM1 C1's OC.
-
+	GPIO_ResetBits(GPIOA, PIN_AMPSD);
 	GPIO_StructInit(&gpio);
 
-	// Use pin PA8 for TIM1 OC1
+	// Use pin for TIM1 OC1
 	gpio.GPIO_Mode				= GPIO_Mode_AF_PP;
 	gpio.GPIO_Speed				= GPIO_Speed_50MHz;
-	gpio.GPIO_Pin				= GPIO_Pin_8;
+	gpio.GPIO_Pin				= PIN_AUDIO;
 	GPIO_Init(GPIOA, &gpio);
+
+	// Use pin for amplifier shutdown
+	gpio.GPIO_Mode				= GPIO_Mode_Out_PP;
+	gpio.GPIO_Speed				= GPIO_Speed_2MHz;
+	gpio.GPIO_Pin				= PIN_AMPSD;
+
+	GPIO_Init(GPIOA, &gpio);
+
+	// TIM1 OC1 will be the analog output
+	// TIM2 will be the sample clock, driving DMA to set TIM1 C1's OC.
 
 	TIM_TimeBaseStructInit(&timb);
 	TIM_OCStructInit(&ocnt);
@@ -133,6 +145,18 @@ void InitSound()
 	TIM_Cmd(TIM2, ENABLE);
 
 	printf("Sound initialized\n");
+}
+
+void AudioOn()
+{
+	//if(++ampRefCount > 0)
+		GPIO_SetBits(GPIOA, PIN_AMPSD);
+}
+
+void AudioOff()
+{
+	//if(--ampRefCount == 0)
+		GPIO_ResetBits(GPIOA, PIN_AMPSD);
 }
 
 void LoadSoundBuffer(uint16_t bufhalf)
