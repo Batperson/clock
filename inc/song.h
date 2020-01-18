@@ -8,7 +8,7 @@
 #define SONG_H_
 
 // Tick = basic unit of time, 1 quarter note = 48 ticks
-#define TICKS_PER_BEAT			48
+#define TICKS_PER_BEAT			((uint32_t)48)
 
 // Note intervals
 #define		QRT					TICKS_PER_BEAT		// Quarter note	= crotchet
@@ -126,7 +126,7 @@
 typedef struct
 {
 	uint32_t pitch;		// Note pitch in hertz * 100. Use defined notes (C4, D4, E4 etc).
-	uint8_t interval;	// Number of ticks. Use defined intervals from above (QRT, WHL, EGH etc).
+	uint16_t interval;	// Number of ticks. Use defined intervals from above (QRT, WHL, EGH etc).
 } Note, *PNote;
 
 typedef struct

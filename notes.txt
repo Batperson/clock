@@ -103,3 +103,5 @@ Added new ring: Baby Shark.
 Added a few new songs, for use as easter eggs.
 Implemented an audio amplifier + speaker, using the TPA2005D1 audio amplifier IC from Texas Instruments. Amplifier shutdown now controlled from pin A2. Unfortunately this creates pop
 so it's not possible to switch the amp on and off before playing sounds.
+Note intervals now 16 bits long for tied semibreves.
+New clipped sine voice, sounds better than boring pure sine tone.

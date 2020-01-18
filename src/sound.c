@@ -10,12 +10,11 @@
 #include "macros.h"
 #include "system.h"
 #include "sound.h"
+#include "voices.h"
 
 // Set pin A8 as audio output, A2 as amplifier shutdown
 #define				PIN_AUDIO	GPIO_Pin_8
 #define				PIN_AMPSD	GPIO_Pin_2
-
-extern Voice sine;
 
 typedef enum {
 	Sustain		= 0,

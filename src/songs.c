@@ -8,9 +8,7 @@
 #include "stm32f10x.h"
 #include "sound.h"
 #include "song.h"
-
-extern Voice sine;
-extern Voice saw;
+#include "voices.h"
 
 const Track arpeg_track_1 = {
 	255,
@@ -40,15 +38,15 @@ const Track arpeg_track_1 = {
 const Track arpeg_track_2 = {
 	255,
 	0,
-	&sine,
+	&clipped,
 	{
-		{ C5s, WHL  }, { C5s, WHL  },
-		{ D5,  WHL  }, { D5,  WHL  },
-		{ C5s, WHL  }, { C5s, WHL  },
-		{ D5,  WHL  }, { D5,  WHL  },
-		{ C5s, WHL  }, { C5s, WHL  },
-		{ B4,  WHL  }, { B4,  WHL  },
-		{ A4,  WHL  }, { A4,  WHL  },
+		{ C5s, WHL + WHL  },
+		{ D5,  WHL + WHL  },
+		{ C5s, WHL + WHL  },
+		{ D5,  WHL + WHL  },
+		{ C5s, WHL + WHL  },
+		{ B4,  WHL + WHL  },
+		{ A4,  WHL + WHL  },
 		{ E4,  WHL  },
 		{ A3,  HLF  },
 		{ 0, 0 }
@@ -58,15 +56,15 @@ const Track arpeg_track_2 = {
 const Track arpeg_track_3 = {
 	255,
 	0,
-	&sine,
+	&clipped,
 	{
-		{ A4,  WHL  }, { A4,  WHL  },
-		{ A4,  WHL  }, { A4,  WHL  },
-		{ A4,  WHL  }, { A4,  WHL  },
-		{ A4,  WHL  }, { A4,  WHL  },
-		{ A4,  WHL  }, { A4,  WHL  },
-		{ B4,  WHL  }, { B4,  WHL  },
-		{ A4,  WHL  }, { A4,  WHL  },
+		{ A4,  WHL + WHL  },
+		{ A4,  WHL + WHL  },
+		{ A4,  WHL + WHL  },
+		{ A4,  WHL + WHL  },
+		{ A4,  WHL + WHL  },
+		{ B4,  WHL + WHL  },
+		{ A4,  WHL + WHL  },
 		{ A4,  WHL  },
 		{ A4,  HLF  },
 		{ 0, 0 }
@@ -158,7 +156,7 @@ const Track bbshark_track_1 = {
 const Track bbshark_track_2 = {
 	255,
 	6,
-	&sine,
+	&clipped,
 	{
 		{  0, HLF },
 		{ D4, WHL },
@@ -200,12 +198,12 @@ const Track bbshark_track_2 = {
 const Track bbshark_track_3 = {
 	255,
 	6,
-	&sine,
+	&clipped,
 	{
 		{  0, HLF },
 		{ G4, WHL },
 		{ G4, WHL },
-		{ C5 /*B4*/, WHL },
+		{ C5, WHL },
 		{ A4, HLF },
 
 		{  0, HLF },
@@ -227,7 +225,7 @@ const Track bbshark_track_3 = {
 const Track bbshark_track_4 = {
 	255,
 	6,
-	&sine,
+	&clipped,
 	{
 		{  0, HLF },
 		{ B4, WHL },
