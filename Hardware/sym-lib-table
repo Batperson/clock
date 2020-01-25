@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name tpa2005d1)(type Legacy)(uri ${KIPRJMOD}/Lib/tpa2005d1.lib)(options "")(descr ""))
+  (lib (name tft)(type Legacy)(uri ${KIPRJMOD}/Lib/tft.lib)(options "")(descr ""))
 )
