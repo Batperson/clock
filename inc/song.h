@@ -23,6 +23,8 @@
 
 #define		EGHT				QRT / 3				// triplet quaver
 #define		EGHX				EGHT * 2			// double triplet quaver
+#define		EGHP				QRTD / 2			// duplet quaver
+#define     SXTT				EGH / 3				// triplet semiquaver
 
 // Note frequencies, Equal Temperament
 #define		C1					3270

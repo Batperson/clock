@@ -14,5 +14,6 @@ extern Song gravity;
 extern Song birthday;
 extern Song anthem;
 extern Song starwars;
+extern Song unknown;
 
 #endif /* SONGS_H_ */

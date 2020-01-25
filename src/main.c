@@ -51,6 +51,7 @@ const PSong alarmRings[] = {
 	&arpeggiator,
 	&bbshark,
 	&starwars,
+	&unknown,
 };
 
 MenuItem mainMenu[];
@@ -61,6 +62,7 @@ MenuItem alarmMenu[] = {
 	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
 	{ "RING: BABY SHARK", 			SetAlarmRing, 		2 },
 	{ "RING: STAR WARS", 			SetAlarmRing, 		3 },
+	{ "RING: INTO THE UNKNOWN",		SetAlarmRing, 		4 },
 
 	{ "RANDOM RING", 				SetAlarmRing,		0xFF },
 	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },

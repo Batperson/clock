@@ -529,14 +529,14 @@ const Track starwars_track_1 = {
 		{ C5,  EGHT }, { B4,  EGHT }, { C5,  EGHT }, { A4,   HLF }, { 0,   QRT },
 
 		{ E4,  QRTD }, { E4,   EGH }, { C5,   EGH }, { B4,   EGH }, { A4,  EGH }, { G4,   EGH },
-		{ G4,  EGHT }, { A4,  EGHT }, { B4,  EGHT }, { A4,   EGH }, { E4,  EGH }, { F4s,  QRT }, { 0,   QRT },
+		{ G4,  EGHT }, { A4,  EGHT }, { B4,  EGHT }, { A4,  EGHD }, { E4,  SXT }, { F4s,  QRT }, { 0,   QRT },
 		{ E4,  QRTD }, { E4,   EGH }, { C5,   EGH }, { B4,   EGH }, { A4,  EGH }, { G4,   EGH },
 		{ D5,   QRT }, { A4,   HLF }, { 0,    QRT },
 
-		{ E4,  QRTD }, { E4,   EGH }, { C5,   EGH }, { B4,   EGH }, { A4,  EGH }, { G4,   EGH },
-		{ G4,  EGHT }, { A4,  EGHT }, { B4,  EGHT }, { A4,   EGH }, { E4,  EGH }, { F4s,  QRT }, { D5,   EGH }, { D5,   EGH },
+		{ E4,  QRTD }, { E4,   EGH }, { C5,   EGH }, { B4,   EGH }, { A4, EGHD }, { G4,   SXT },
+		{ G4,  EGHT }, { A4,  EGHT }, { B4,  EGHT }, { A4,  EGHD }, { E4,  SXT }, { F4s,  QRT }, { D5,  EGHD }, { D5,   SXT },
 		{ G5,   EGH }, { F5,   EGH }, { E5f, EGHD }, { D5,   SXT }, { C5,  EGH }, { B4f,  EGH }, { A4,  EGHD }, { G4,   SXT },
-		{ D5,  HLFD }, { 0,  QRT },
+		{ D5,  HLFD }, /*{ 0,  QRT },*/
 
 
 		{ 0,   0    }
@@ -567,7 +567,7 @@ const Track starwars_track_2 = {
 		{ G3,   QRT }, { G3,   HLF }, { G3,    QRT },
 		{ G3,   QRT }, { A4,   HLF }, { 0,     QRT },
 		{ E3f,  HLF }, { G4,   HLF },
-		{ D4,   QRT }, { D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT }, { D4,   QRT }, { D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT },
+		{ D4,   QRT }, { D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT }, { D4,   QRT }, /* { D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT }, */
 
 		{ 0,   0    }
 	}
@@ -597,7 +597,7 @@ const Track starwars_track_3 = {
 		{ A3,   QRT }, { A3,   HLF }, { A3,   QRT },
 		{ A3,   HLF }, { D4,   QRT }, { 0,    QRT },
 		{ G3,   HLF }, { C4,   HLF },
-		{ F4s,  HLF }, {  0,   HLF },
+		{ F4s,  HLF }, {  0,   QRT /*HLF*/ },
 
 
 
@@ -612,12 +612,52 @@ const Track starwars_track_4 = {
 	&saw,
 	{
 		{ 0,    QRT },
+		{ D4,   QRT }, { D4,   HLF }, { D4,   QRT },
+		{ E4,   HLF }, { D4,   HLF },
+		{ E4,   HLF }, { D4,   HLF },
+		{ C4,   QRT }, { D4,  QRTD }, { E5,   SXT }, { F5s,  SXT }, { G5,   SXT }, { A5,   SXT }, { B5,   SXT }, { C6,   SXT }, { D6,   SXTT }, { E6,  SXTT }, { F6s, SXTT },
+
+		{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ G6,   EGH }, { A6,   SXT }, { G6,   SXT }, { 0,    EGH }, { F6s,  SXT }, { G6,   SXT }, { A6,   QRT }, { 0,    QRT },
+
 		{ 0,    WHL * 4 },
 
-		{ 0,    EGH }, { G6,  SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
-		{ 0,    EGH }, { G6,  SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
-		{ 0,    EGH }, { G6,  SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
-		{ 0,    QRT }, /*{ 0,   SXT }, { A6,   SXT }, { G6,   SXT }, { F6s,  SXT }, { G6,   SXT }, { A6,  EGHD }, */
+		{ 0,    WHL * 3 },
+		{ A4,   HLF }, {  0,   QRT /*HLF*/ },
+
+		{ 0,    0   }
+	}
+};
+
+const Track unknown_track_1 = {
+	255,
+	6,
+	&saw,
+	{
+		{ 0,    EGH },
+		{ 0,   QRTD }, { G4f,  QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH
+			 + WHL + HLF }, // oh oh
+		{ 0,   QRTD }, { G4f,  QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH
+			 + QRTD }, { D4f,  QRT }, { C4,   EGH },  { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { B4f, EGH // into the unknown
+             + WHL + HLF
+
+             + QRTD }, { 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { C4, EGH // into the unknown
+             + QRT  }, { B4f, WHL + QRT + QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { E5f, EGH // into the unknown
+             + QRTD + QRT }, { D5,   HLF }, { E5f,  QRT }, { C5, EGH
+             + WHL + HLF },
+		 { 0,  QRTD },  { G4f,   QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH // oh oh
+			 + HLFD },  { 0,     HLF }, { E4f,  EGH }, { E4f,  EGH }, // I can
+		 { F4,   QRT }, { E4f,   HLF }, { 0,    HLF }, { C4,   EGH }, { E4f,  EGH }, // hear you but I
+		 { E4f,  QRT }, { 0,    HLFD }, { G4f, QRTD }, { F4,   EGH }, { E4f,  EGH }, // won't, some look for
+		 { F4,   EGH }, { E4f,   QRT }, { 0, HLF + EGH }, { C4,  QRT }, { D5, EGH }, { E4f,  EGH }, //trouble while others
+		 { C4,   QRT }, { 0,   HLFD + HLF }, { E4f,  EGH }, { E4f,  EGH }, // don't. There's a
+		 { B4f, EGHP }, { G4f, EGHP }, { F4,  EGHP }, { E4f,  EGHP + QRTD }, {0,   EGH }, { F4,   EGH }, { E4f,  EGH }, // thousand reasons I should
+		 { F4,   EGH }, { E4f,  EGH }, { F4,   EGH }, { G4f,  QRT }, { E4f,  HLF }, { 0,    EGH }, { E4f,  EGH }, { E4f,  EGH }, // go about my day and ig-
+		 { B4f, EGHP }, { G4f, EGHP }, { F4,  EGHP }, { E4f,  EGHP + QRTD }, {0,   EGH }, { F4,   EGH }, { E4f,  EGH }, // nore your whispers which I
+		 { F4,   QRT }, { E4f,  EGH }, { F4,   EGH }, { G4f,  EGH }, { A4,  EGH + QRTD + EGH }, { G4f,  EGH }, { F4,   EGH }, // wish would go away oh oh
+		 { E4,   EGH }, { 0,    EGH + HLF + HLFD }, // oh
 
 		{ 0,    0   }
 	}
@@ -662,5 +702,11 @@ const Song anthem = {
 const Song starwars = {
 	125,
 	{ (PTrack)&starwars_track_1, (PTrack)&starwars_track_2, (PTrack)&starwars_track_3, (PTrack)&starwars_track_4 },
+	{ 0, 0, 0, 0 }
+};
+
+const Song unknown = {
+	125,
+	{ (PTrack)&unknown_track_1, (PTrack)NULL, (PTrack)NULL, (PTrack)NULL, },
 	{ 0, 0, 0, 0 }
 };
