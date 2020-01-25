@@ -107,7 +107,7 @@ void RenderNormal()
 		SetFont(lcdFont);
 
 		PBitmap bm = bellSlash;
-		if(alarmState & AlarmSnoozed)
+		if(alarmState & AlarmStateSnoozed)
 			bm = bellSnooze;
 		else if(mode & ModeAlarm)
 			bm = bell;

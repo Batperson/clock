@@ -13,6 +13,8 @@ typedef enum {
 	ClockSet,
 	AlarmSet,
 	DateSet,
+	RtcTrimSet,
+	SnoozeMinutesSet,
 	AlarmRing,
 	About
 } ClockState;
@@ -23,7 +25,9 @@ typedef enum {
 	Second,
 	Year,
 	Month,
-	Day
+	Day,
+	SnoozeMinutes,
+	RtcTrim
 } ClockSetField;
 
 typedef enum {
@@ -34,7 +38,7 @@ typedef enum {
 
 typedef enum {
 	AlarmStateNone		= 0x00,
-	AlarmSnoozed		= 0x01,
+	AlarmStateSnoozed	= 0x01,
 } AlarmState;
 
 typedef enum {

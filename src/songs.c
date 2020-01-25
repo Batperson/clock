@@ -468,9 +468,9 @@ const Track anthem_track_1 = {
 };
 
 const Track anthem_track_2 = {
-	255,
+	180,
 	6,
-	&sine,
+	&clipped,
 	{
 		{ C3,  WHL  }, { C3,  WHL  }, { F3,  HLF  }, { E3,  HLF  }, { D3,  HLF  }, { G3,  EGH  }, { F3,  EGH  }, { E3,  EGH  }, { D3,  EGH  },
 		{ C3,  WHL  }, { C3,  HLF  }, { E3,  HLF  }, { C3,  HLF  }, { F3,  HLF  }, { G3,  HLF  }, { C4,  HLF  },
@@ -483,9 +483,9 @@ const Track anthem_track_2 = {
 };
 
 const Track anthem_track_3 = {
-	255,
+	180,
 	6,
-	&sine,
+	&clipped,
 	{
 		{ E3,  WHL  }, { E3,  WHL  }, { A3,  HLF  }, { G3,  HLF  }, { F3s, HLF  }, { B3,  HLF },
 		{ E3,  WHL  }, { E3,  HLF  }, { G3,  HLF  }, { B2f, HLF  }, { A3,  HLF  }, { B3,  HLF  }, { E3,  HLF },
@@ -498,9 +498,9 @@ const Track anthem_track_3 = {
 };
 
 const Track anthem_track_4 = {
-	255,
+	180,
 	6,
-	&sine,
+	&clipped,
 	{
 		{ G3,  WHL  }, { G3,  WHL  }, { C4,  HLF  }, { E3,  HLF  }, { A3,  HLF  }, { D4,  HLF  },
 		{ G3,  WHL  }, { G3,  HLF  }, { B3,  HLF  }, { G3,  HLF  }, { F3,  HLF  }, { D4,  HLF  }, { C4,  HLF  },
@@ -509,6 +509,117 @@ const Track anthem_track_4 = {
 		{ G3,  WHL  }, { G3,  HLF  }, { D4,  HLF  }, { B3,  HLF  }, { C4,  HLF  }, { G3,  HLF  }, { G3,  HLF  }, { D4,  HLF },
 
 		{ 0,   0    }
+	}
+};
+
+const Track starwars_track_1 = {
+	255,
+	6,
+	&saw,
+	{
+		{ 0,    QRT },
+		{ G4,   HLF }, { D5,   HLF },
+		{ C5,  EGHT }, { B4,  EGHT }, { A4,  EGHT }, { G5,   HLF }, { D5,   QRT },
+		{ C5,  EGHT }, { B4,  EGHT }, { A4,  EGHT }, { G5,   HLF }, { D5,   QRT },
+		{ C5,  EGHT }, { B4,  EGHT }, { C5,  EGHT }, { A4,   HLF }, { 0,    QRT },
+
+		{ G4,   HLF }, { D5,   HLF },
+		{ C5,  EGHT }, { B4,  EGHT }, { A4,  EGHT }, { G5,   HLF }, { D5,  QRT },
+		{ C5,  EGHT }, { B4,  EGHT }, { A4,  EGHT }, { G5,   HLF }, { D5,  QRT },
+		{ C5,  EGHT }, { B4,  EGHT }, { C5,  EGHT }, { A4,   HLF }, { 0,   QRT },
+
+		{ E4,  QRTD }, { E4,   EGH }, { C5,   EGH }, { B4,   EGH }, { A4,  EGH }, { G4,   EGH },
+		{ G4,  EGHT }, { A4,  EGHT }, { B4,  EGHT }, { A4,   EGH }, { E4,  EGH }, { F4s,  QRT }, { 0,   QRT },
+		{ E4,  QRTD }, { E4,   EGH }, { C5,   EGH }, { B4,   EGH }, { A4,  EGH }, { G4,   EGH },
+		{ D5,   QRT }, { A4,   HLF }, { 0,    QRT },
+
+		{ E4,  QRTD }, { E4,   EGH }, { C5,   EGH }, { B4,   EGH }, { A4,  EGH }, { G4,   EGH },
+		{ G4,  EGHT }, { A4,  EGHT }, { B4,  EGHT }, { A4,   EGH }, { E4,  EGH }, { F4s,  QRT }, { D5,   EGH }, { D5,   EGH },
+		{ G5,   EGH }, { F5,   EGH }, { E5f, EGHD }, { D5,   SXT }, { C5,  EGH }, { B4f,  EGH }, { A4,  EGHD }, { G4,   SXT },
+		{ D5,  HLFD }, { 0,  QRT },
+
+
+		{ 0,   0    }
+	}
+};
+
+const Track starwars_track_2 = {
+	255,
+	6,
+	&saw,
+	{
+		{ D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT },
+		{ G3,   QRT }, { G3,   HLF }, { G3,   QRT },
+		{ G3,   HLF }, { G3,   HLF },
+		{ G3,   HLF }, { G3,   HLF },
+		{ F4,   QRT }, { F4s,  HLF }, { D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT },
+
+		{ G3,   QRT }, { G3,   HLF }, { G3,   QRT },
+		{ G3,   HLF }, { G3,   HLF },
+		{ G3,   HLF }, { G3,   HLF },
+		{ F4,   QRT }, { F4s,  HLF }, { D4,   EGHD }, { D4,   SXT },
+
+		{ G3,   QRT }, { G3,   HLF }, { G3,   QRT },
+		{ G3,   QRT }, { A4,   HLF }, { D4,   EGHD }, { D4,   SXT },
+		{ G3,   QRT }, { G3,   HLF }, { G3,   QRT },
+		{ G3,   QRT }, { A4,   HLF }, { D4,   EGHD }, { D4,   SXT },
+
+		{ G3,   QRT }, { G3,   HLF }, { G3,    QRT },
+		{ G3,   QRT }, { A4,   HLF }, { 0,     QRT },
+		{ E3f,  HLF }, { G4,   HLF },
+		{ D4,   QRT }, { D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT }, { D4,   QRT }, { D4,  EGHT }, { D4,  EGHT }, { D4,  EGHT },
+
+		{ 0,   0    }
+	}
+};
+
+const Track starwars_track_3 = {
+	255,
+	6,
+	&saw,
+	{
+		{ 0,    QRT },
+		{ B3,   QRT }, { B3,   HLF }, { B3,   QRT },
+		{ C4,   HLF }, { B3,   HLF },
+		{ C4,   HLF }, { B3,   HLF },
+		{ A3,   QRT }, { A3,   HLF }, { 0,    QRT },
+
+		{ B3,   QRT }, { B3,   HLF }, { B3,   QRT },
+		{ C4,   HLF }, { B3,   HLF },
+		{ C4,   HLF }, { B3,   HLF },
+		{ A3,   QRT }, { A3,   HLF }, { 0,    QRT },
+
+		{ A3,   QRT }, { A3,   HLF }, { A3,   QRT },
+		{ A3,   QRT }, { A3,   HLF }, { 0,    QRT },
+		{ A3,   QRT }, { A3,   HLF }, { A3,   QRT },
+		{ D4,   QRT }, { D4,   HLF }, { 0,    QRT },
+
+		{ A3,   QRT }, { A3,   HLF }, { A3,   QRT },
+		{ A3,   HLF }, { D4,   QRT }, { 0,    QRT },
+		{ G3,   HLF }, { C4,   HLF },
+		{ F4s,  HLF }, {  0,   HLF },
+
+
+
+
+		{ 0,   0    }
+	}
+};
+
+const Track starwars_track_4 = {
+	255,
+	6,
+	&saw,
+	{
+		{ 0,    QRT },
+		{ 0,    WHL * 4 },
+
+		{ 0,    EGH }, { G6,  SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ 0,    EGH }, { G6,  SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ 0,    EGH }, { G6,  SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ 0,    QRT }, /*{ 0,   SXT }, { A6,   SXT }, { G6,   SXT }, { F6s,  SXT }, { G6,   SXT }, { A6,  EGHD }, */
+
+		{ 0,    0   }
 	}
 };
 
@@ -545,5 +656,11 @@ const Song birthday = {
 const Song anthem = {
 	125,
 	{ (PTrack)&anthem_track_1, (PTrack)&anthem_track_2, (PTrack)&anthem_track_3, (PTrack)&anthem_track_4 },
+	{ 0, 0, 0, 0 }
+};
+
+const Song starwars = {
+	125,
+	{ (PTrack)&starwars_track_1, (PTrack)&starwars_track_2, (PTrack)&starwars_track_3, (PTrack)&starwars_track_4 },
 	{ 0, 0, 0, 0 }
 };

@@ -49,7 +49,8 @@ const SpecialDay specialDays[] = {
 const PSong alarmRings[] = {
 	&reveille,
 	&arpeggiator,
-	&bbshark
+	&bbshark,
+	&starwars,
 };
 
 MenuItem mainMenu[];
@@ -59,6 +60,9 @@ MenuItem alarmMenu[] = {
 	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
 	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
 	{ "RING: BABY SHARK", 			SetAlarmRing, 		2 },
+	{ "RING: STAR WARS", 			SetAlarmRing, 		3 },
+
+	{ "RANDOM RING", 				SetAlarmRing,		0xFF },
 	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
 	{ NULL, NULL, 0 }
 };
@@ -72,6 +76,8 @@ MenuItem mainMenu[] = {
 	{ "ALARM SNOOZE",				SetModeFlags,		ModeAlarmSnooze },
 	{ "ALARM LOCK",					SetModeFlags, 		ModeAlarmLock },
 	{ "24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
+	{ "SET SNOOZE MINUTES",			ChangeState,		SnoozeMinutesSet },
+	{ "SET OSCILLATOR TRIM",		ChangeState,		RtcTrimSet },
 	{ "ABOUT THIS CLOCK", 			ChangeState, 		About },
 	{ "EXIT", 						ChangeState, 		Normal },
 	{ NULL, NULL, 0 }
@@ -79,7 +85,6 @@ MenuItem mainMenu[] = {
 
 const uint16_t alarmKeys[3] = { BTN_SELECT, BTN_UP, BTN_DOWN };
 
-PSong			alarmRing			= &reveille;
 ClockState 		clockState 			= Normal;
 ClockSetField 	clockSetField 		= Hour;
 ClockMode		mode				= ModeAlarmLock | ModeAlarmSnooze;
@@ -92,6 +97,7 @@ struct tm 		clockValues;
 struct tm		clockSetValues;
 uint8_t			alarmLock[4]		= { 0, 0, 0, 0 };
 uint8_t			alarmLockIndex		= 0;
+uint8_t			alarmRingIndex		= 0;
 
 // 	Pins
 //	A9				Button (Select)
@@ -118,8 +124,8 @@ void UpdateModeUIAndBehaviour()
 	mainMenu[7].flags		= (mode & Mode24HourDisplay) ? MenuSelected : MenuNone;
 	mainMenu[7].proc		= (mode & Mode24HourDisplay) ? ClearModeFlags : SetModeFlags;
 
-	for(int i=0; i < sizeof(alarmRings) / sizeof(PSong); i++)
-		alarmMenu[i].flags = (alarmRings[i] == alarmRing) ? MenuSelected : MenuNone;
+	for(int i=0; i < sizeof(alarmMenu) / sizeof(alarmMenu[0]); i++)
+		alarmMenu[i].flags = (alarmMenu[i].proc == SetAlarmRing && alarmMenu[i].arg == alarmRingIndex) ? MenuSelected : MenuNone;
 
 	TriggerRender();
 }
@@ -139,9 +145,11 @@ void LoadConfiguration()
 
 	UpdateModeUIAndBehaviour();
 
-	uint16_t ari	= BKP_ReadBackupRegister(BREG_ALARM_RING);
-	if(ari < sizeof(alarmRings) / sizeof(alarmRings[0]))
-		alarmRing		= alarmRings[ari];
+	alarmRingIndex	= BKP_ReadBackupRegister(BREG_ALARM_RING);
+
+	// Protection against out of bounds error in case this value somehow gets set incorrectly
+	if(alarmRingIndex >= sizeof(alarmRings) / sizeof(alarmRings[0]) && alarmRingIndex != 0xFF)
+		alarmRingIndex = 0;
 
 	printf("Config read from backup domain\n");
 }
@@ -168,6 +176,8 @@ int main(void)
 	ChangeState(Normal);
 	LoadConfiguration();
 	AudioOn();
+	SelectSong(&starwars);
+	PlaySong(PlayLoop);
 
 	while(1)
 	{
@@ -435,7 +445,7 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 	}
 
 	void stopAlarm() {
-		alarmState 		&= ~AlarmSnoozed;
+		alarmState 		= AlarmStateNone;
 		alarmLockIndex 	= 0;
 		ChangeState(Normal);
 	}
@@ -445,102 +455,118 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 		TriggerRender();
 	}
 
-	if((mode & ModeAlarmSnooze) && !(alarmState & AlarmSnoozed))
+	if(et == ButtonLongPress)
 	{
-		alarmState |= AlarmSnoozed;
-		SnoozeAlarm(snoozeMinutes);
-	}
-
-	if(mode & ModeAlarmLock)
-	{
-		if(et == ButtonShortPress && getAlarmKeyIndex(btn) == alarmLock[alarmLockIndex])
+		if((mode & ModeAlarmSnooze) && !(alarmState & AlarmStateSnoozed))
 		{
-			if(alarmLockIndex++ == 3)
-				stopAlarm();
+			alarmState |= AlarmStateSnoozed;
+			SnoozeAlarm(snoozeMinutes);
+		}
+	}
+	else if(et == ButtonShortPress)
+	{
+		if(mode & ModeAlarmLock)
+		{
+			if(getAlarmKeyIndex(btn) == alarmLock[alarmLockIndex])
+			{
+				if(alarmLockIndex++ == 3)
+					stopAlarm();
 
-			TriggerRender();
+				TriggerRender();
+			}
+			else
+			{
+				resetLock();
+			}
 		}
 		else
 		{
-			resetLock();
-		}
-	}
-	else
-	{
-		if(et == ButtonLongDown)
 			stopAlarm();
+		}
 	}
 }
 
 void ChangeState(ClockState state)
 {
-	clockState = state;
-
-	DeregisterButtonCallbacks();
-	EndSong();
-
-	switch(clockState)
+	if(clockState != state)
 	{
-	case About:
-		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonAny, AboutHandler);
-		break;
+		clockState = state;
 
-	case Menu:
-		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress, MenuHandler);
-		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, MenuLongPressHandler);
-		break;
+		DeregisterButtonCallbacks();
+		EndSong();
 
-	case AlarmRing:
-		RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, (mode & ModeAlarmLock) ? ButtonShortPress : ButtonLongDown, AlarmButtonHandler);
-		//RegisterTimeoutCallback(TriggerRender, 300, CallbackRepeat);
-		SetAlarmLock();
-		SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRing);
-		PlaySong(PlayLoop);
-		break;
+		switch(clockState)
+		{
+		case About:
+			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonAny, AboutHandler);
+			break;
 
-	case ClockSet:
-		clockSetField = Hour;
-		GetTime(&clockSetValues);
-		RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
-		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-		break;
+		case Menu:
+			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress, MenuHandler);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, MenuLongPressHandler);
+			break;
 
-	case DateSet:
-		clockSetField = Year;
-		GetTime(&clockSetValues);
-		RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
-		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-		break;
+		case AlarmRing:
+			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonLongDown | ButtonShortPress, AlarmButtonHandler);
+			SetAlarmLock();
+			break;
 
-	case AlarmSet:
-		clockSetField = Hour;
-		GetAlarmTime(&clockSetValues);
-		RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
-		RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-		break;
+		case ClockSet:
+			clockSetField = Hour;
+			GetTime(&clockSetValues);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
+			break;
 
-	case Normal:
-	default:
-		RegisterButtonCallback(BTN_SELECT, ButtonLongDown, ShowMenuHandler);
-		break;
+		case SnoozeMinutesSet:
+			clockSetField = SnoozeMinutes;
+			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
+			break;
+
+		case RtcTrimSet:
+			clockSetField = RtcTrim;
+			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
+			break;
+
+		case DateSet:
+			clockSetField = Year;
+			GetTime(&clockSetValues);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
+			break;
+
+		case AlarmSet:
+			clockSetField = Hour;
+			GetAlarmTime(&clockSetValues);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
+			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
+			break;
+
+		case Normal:
+		default:
+			RegisterButtonCallback(BTN_SELECT, ButtonLongDown, ShowMenuHandler);
+			break;
+		}
+
+		ClearScreen();
+		TriggerRender();
 	}
-
-	ClearScreen();
-	TriggerRender();
 }
 
 void SetAlarmRing(uint32_t index)
 {
-	if(index < (sizeof(alarmRings) / sizeof(PSong)))
+	if(index < (sizeof(alarmRings) / sizeof(PSong)) && index != 0xFF)
 	{
-		alarmRing = alarmRings[index];
+		alarmRingIndex = index;
 
 		BKP_WriteBackupRegister(BREG_ALARM_RING, index);
 
 		TriggerRender();
 
-		for(int i=0; i < sizeof(alarmRings) / sizeof(PSong); i++)
-			alarmMenu[i].flags = (i == index) ? MenuSelected : MenuNone;
+		for(int i=0; i < sizeof(alarmMenu) / sizeof(alarmMenu[0]); i++)
+			alarmMenu[i].flags = (alarmMenu[i].proc == SetAlarmRing && alarmMenu[i].arg == alarmRingIndex) ? MenuSelected : MenuNone;
 	}
 }
 
@@ -592,7 +618,17 @@ void OnRtcAlarm()
 {
 	// Ignore an alarm if the user is busy with the menu
 	if(clockState != Menu)
+	{
+		if(clockState != AlarmRing || alarmState & AlarmStateSnoozed)
+		{
+			alarmState = AlarmStateNone;
+
+			SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRings[(alarmRingIndex == 0xFF) ? rand() % (sizeof(alarmRings) / sizeof(alarmRings[0])) : alarmRingIndex]);
+			PlaySong(PlayLoop);
+		}
+
 		ChangeState(AlarmRing);
+	}
 }
 
 void OnButtonEvent(uint32_t btn, ButtonEventType eventType)

@@ -105,3 +105,15 @@ Implemented an audio amplifier + speaker, using the TPA2005D1 audio amplifier IC
 so it's not possible to switch the amp on and off before playing sounds.
 Note intervals now 16 bits long for tied semibreves.
 New clipped sine voice, sounds better than boring pure sine tone.
+
+22/01/2019
+Next tasks:
+* Revamp alarm behaviour. Do not leave alarm mode when snoozing. Make the time flash random coloured stripes and show a ringing bell.
+  Long-press any button to snooze.
+  Short-press any button to exit alarm mode if alarm lock not set. If set, user must short-press the displayed sequence.
+* New menu option: random alarm ring.
+* New menu option: adjust the RTC oscillator trim register in case clock is slow or fast.
+* New menu option: select display colour.
+* New menu option: master volume for alarm ring
+* Implement the About screen.   
+* Add some more songs. Include Into The Unknown and Star Wars.
