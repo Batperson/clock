@@ -634,7 +634,7 @@ const Track starwars_track_4 = {
 const Track unknown_track_1 = {
 	255,
 	6,
-	&clipped,
+	&saw,
 	{
 		{ 0,    EGH },
 		{ 0,   QRTD }, { G4f,  QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH
@@ -668,25 +668,49 @@ const Track unknown_track_2 = {
 	6,
 	&saw,
 	{
-		{ G2,   EGH },
-		{ A2f,  (QRT * 9) + QRTD }, { 0,    QRT }, { G2,   EGH },
+		{ G3,   EGH },
+		{ A3f,  (QRT * 9) + QRTD }, { 0,    QRT }, { G3,   EGH },
+		{ A3f,  (QRT * 12) },
+		{ E3f,  (QRT * 12) },
 		{ A2f,  (QRT * 12) },
-		{ E2f,  (QRT * 12) },
-		{ A1f,  (QRT * 12) },
-		{ C2,   QRT }, { C2,   EGH }, { 0,    EGH }, { C2,   EGH }, { C2,   EGH }, { C2,   QRT }, { C2,   EGH }, { 0,    EGH }, { C2,   EGH }, { C2,   EGH },
-		{ C2,   QRT }, { C2,   EGH }, { 0,    EGH }, { C2,   EGH }, { C2,   EGH }, { C2,   QRT }, { C2,   EGH }, { 0,    EGH }, { C2,   EGH }, { C2,   EGH },
-		{ A1f,  (QRT * 12) },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
-		{ E2f, QRTD }, { E2f, QRTD }, { E2f, QRTD }, { E2f, QRTD },
+		{ C3,   QRT }, { C3,   EGH }, { 0,    EGH }, { C3,   EGH }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { 0,    EGH }, { C3,   EGH }, { C3,   EGH },
+		{ C3,   QRT }, { C3,   EGH }, { 0,    EGH }, { C3,   EGH }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { 0,    EGH }, { C3,   EGH }, { C3,   EGH },
+		{ A2f,  (QRT * 12) },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E3f, QRTD }, { E3f, QRTD }, { E3f, QRTD }, { E3f, QRTD },
 
 		{ 0,    0   }
+	}
+};
+
+const Track unknown_track_3 = {
+	255,
+	6,
+	&saw,
+	{
+		{ 0,    EGH },
+		{ E4f,  (QRT * 9) + QRTD }, { 0,    QRT }, { D4,   EGH },
+		{ E4f,  (QRT * 12) },
+		{ B4f,  (QRT * 12) },
+		{ A3f,  (QRT * 12) },
+		{ 0,    (QRT * 12)  },
+		{ A3f,  (QRT * 12) },
+		{ B3f,  (QRT * 12) }, // hear you
+		{ A3f,  (QRT * 12) }, // trouble
+		{ G3f,  (QRT * 6) },  // thousand reasons
+		{ D4,   (QRT * 6) },  // go about my day, and ig-
+		{ G3f,  (QRT * 6) },  // nore your whispers which I
+		{ D4,   (QRT * 6) },  // wish would go away
+		{ E4f,  (QRT * 6) },
+
+		{ 0,    0    }
 	}
 };
 
