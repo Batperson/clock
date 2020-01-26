@@ -178,7 +178,7 @@ int main(void)
 	ChangeState(Normal);
 	LoadConfiguration();
 	AudioOn();
-	SelectSong(&starwars);
+	SelectSong(&unknown);
 	PlaySong(PlayLoop);
 
 	while(1)

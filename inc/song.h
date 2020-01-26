@@ -75,7 +75,7 @@
 #define		G3s					20765
 #define		A3f					G3s
 #define		A3					22000
-#define		A3s					22308
+#define		A3s					23308
 #define		B3f					A3s
 #define		B3					24694
 #define		C4					26163		// Middle C
