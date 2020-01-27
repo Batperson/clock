@@ -87,7 +87,7 @@ MenuItem mainMenu[] = {
 
 const uint16_t alarmKeys[3] = { BTN_SELECT, BTN_UP, BTN_DOWN };
 
-ClockState 		clockState 			= Normal;
+ClockState 		clockState 			= BootStrap;
 ClockSetField 	clockSetField 		= Hour;
 ClockMode		mode				= ModeAlarmLock | ModeAlarmSnooze;
 AlarmState		alarmState			= AlarmStateNone;
@@ -457,7 +457,7 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 		TriggerRender();
 	}
 
-	if(et == ButtonLongPress)
+	if(et == ButtonLongDown)
 	{
 		if((mode & ModeAlarmSnooze) && !(alarmState & AlarmStateSnoozed))
 		{

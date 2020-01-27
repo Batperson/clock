@@ -640,24 +640,51 @@ const Track unknown_track_1 = {
 		{ 0,   QRTD }, { G4f,  QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH
 			 + WHL + HLF }, // oh oh
 		{ 0,   QRTD }, { G4f,  QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH
-			 + QRTD }, { 0, QRT + EGH }, /*{ D4f,  QRT }, { C4,   EGH },*/  { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { B4f, EGH // into the unknown
+			 + QRTD }, { 0, QRT + EGH }, /*{ D4f,  QRT }, { C4,   EGH },*/  { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { B4f, EGH 	// into the unknown
              + WHL + HLF
 
-             + QRTD }, { 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { C5, EGH // into the unknown
-             + QRT  }, { B4f, WHL + QRT + QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { E5f, EGH // into the unknown
+             + QRTD }, { 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { C5, EGH 											// into the unknown
+             + QRT  }, { B4f, WHL + QRT + QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { E5f, EGH 							// into the unknown
              + QRTD + QRT }, { D5,   HLF }, { E5f,  QRT }, { C5, EGH
              + WHL + HLF },
-		 { 0,  QRTD },  { G4f,   QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH // oh oh
-			 + HLFD },  { 0,     HLF }, { E4f,  EGH }, { E4f,  EGH }, // I can
-		 { F4,   QRT }, { E4f,   HLF }, { 0,    HLF }, { C4,   EGH }, { E4f,  EGH }, // hear you but I
-		 { E4f,  QRT }, { 0,    HLFD }, { G4f, QRTD }, { F4,   EGH }, { E4f,  EGH }, // won't, some look for
-		 { F4,   EGH }, { E4f,   QRT }, { 0, HLF + EGH }, { C4,  QRT }, { D4, EGH }, { E4f,  EGH }, //trouble while others
-		 { C4,   QRT }, { 0,   HLFD + HLF }, { E4f,  EGH }, { E4f,  EGH }, // don't. There's a
-		 { B4f, EGHP }, { G4f, EGHP }, { F4,  EGHP }, { E4f,  EGHP + QRTD }, {0,   EGH }, { F4,   EGH }, { E4f,  EGH }, // thousand reasons I should
-		 { F4,   EGH }, { E4f,  EGH }, { F4,   EGH }, { G4f,  QRT }, { E4f,  HLF }, { 0,    EGH }, { E4f,  EGH }, { E4f,  EGH }, // go about my day and ig-
-		 { B4f, EGHP }, { G4f, EGHP }, { F4,  EGHP }, { E4f,  EGHP + QRTD }, {0,   EGH }, { F4,   EGH }, { E4f,  EGH }, // nore your whispers which I
-		 { F4,   QRT }, { E4f,  EGH }, { F4,   EGH }, { G4f,  EGH }, { A4f, EGH + QRTD + EGH }, { G4f,  EGH }, { F4,   EGH }, // wish would go away oh oh
-		 { E4f,   EGH }, { 0,    EGH + HLF + HLFD }, // oh
+		 { 0,  QRTD },  { G4f,   QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH 													// oh oh
+			 + HLFD },  { 0,     HLF }, { E4f,  EGH }, { E4f,  EGH }, 																				// I can
+		 { F4,   QRT }, { E4f,   HLF }, { 0,    HLF }, { C4,   EGH }, { E4f,  EGH }, 																// hear you but I
+		 { E4f,  QRT }, { 0,    HLFD }, { G4f, QRTD }, { F4,   EGH }, { E4f,  EGH }, 																// won't, some look for
+		 { F4,   EGH }, { E4f,   QRT }, { 0, HLF + EGH }, { C4,  QRT }, { D4, EGH }, { E4f,  EGH }, 												// trouble while others
+		 { C4,   QRT }, { 0,   HLFD + HLF }, { E4f,  EGH }, { E4f,  EGH }, 																			// don't. There's a
+		 { B4f, EGHP }, { G4f, EGHP }, { F4,  EGHP }, { E4f,  EGHP + QRTD }, {0,   EGH }, { F4,   EGH }, { E4f,  EGH }, 							// thousand reasons I should
+		 { F4,   EGH }, { E4f,  EGH }, { F4,   EGH }, { G4f,  QRT }, { E4f,  HLF }, { 0,    EGH }, { E4f,  EGH }, { E4f,  EGH }, 					// go about my day and ig-
+		 { B4f, EGHP }, { G4f, EGHP }, { F4,  EGHP }, { E4f,  EGHP + QRTD }, {0,   EGH }, { F4,   EGH }, { E4f,  EGH }, 							// nore your whispers which I
+		 { F4,   QRT }, { E4f,  EGH }, { F4,   EGH }, { G4f,  EGH }, { A4f, EGH + QRTD + EGH }, { G4f,  EGH }, { F4,   EGH }, 						// wish would go away oh oh
+		 { E4f,   EGH }, { 0,    EGH + HLF + HLFD }, 																																														// oh
+
+		 { 0, WHL + EGH }, { C4,   EGH }, { D4f,  EGH }, { C4,   EGH + QRT },
+		 { 0, QRT * 5   },
+		 { 0, QRT * 4   }, { F4,   QRT }, { F4,   EGH }, { E4f,  EGH },																				// You're not a
+		 { E4f, QRTD }, { 0, QRT + QRTD }, { C4,   EGH }, { C4,   EGH }, { C4,   EGH }, 															// voice you're just a
+		 { E4f,  EGH }, { C4,   EGH }, { C4,   EGH }, { C4,   QRT }, { C4,  QRTD }, { G4f, QRTD }, { F4,   EGH }, { E4f,  EGH },					// ringing in my ear, and if I
+		 { E4f,  QRT }, { E4f,  EGH }, { 0,    EGH }, { E4f,  EGH }, { E4f,  EGH }, { E4f, QRTD }, { 0,    QRT }, { C4,   EGH },					// heard you (which I don't) I'm
+		 { E4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { 0,    EGH }, { F4,   QRT }, { C4,  QRTD }, { 0,   QRTD },									// spoken for I fear,
+		 { B4f,  QRT }, { D5f,  EGH }, { A4f,  QRT }, { G4f,  EGH }, { A4f,  QRT }, { B4f,  EGH }, { G4f,  QRT }, { E4f,  EGH }, 					// everyone I've ever loved is
+		 { F4,   QRT }, { E4f,  EGH }, { F4,   EGH }, { G4f,  EGH }, { E4f,  HLF }, { 0,    QRT }, { E4f,  EGH },									// hear within these walls, I'm
+		 { B4f,  QRT }, { D5f,  EGH }, { A4f,  QRT }, { G4f,  EGH }, { A4f,  QRT }, { B4f,  EGH }, { G4f,  QRT }, { E4f,  EGH },					// sorry secret siren but I'm
+		 { F4,   EGH }, { E4f,  EGH }, { F4,   EGH }, { G4f,  QRT }, { A4f,  EGH }, { A4f, QRTD }, { 0,    QRT }, { B4f,  EGH },					// blocking out your calls, I've
+		 { C5,  QRTD }, { C4,   EGH }, { B3f,  EGH }, { C4,   QRT }, { C4,   QRT }, { 0,    QRT }, { C4,   EGH },									// had my adventure
+		 { E4f,  EGH }, { C4,   EGH }, { C4,   EGH }, { C4,   EGH }, { F4,   QRT + QRTD }, { C4,   QRT }, { C4,   EGH }, 							// I dont need something new, I'm a-
+		 { G4,   QRT }, { C4,   EGH }, { C4,   QRT }, { C4,   EGH }, { A4f,  QRT }, { C4,   EGH }, { C4,   QRT }, { C4,   EGH },					// fraid of what I'm risking if I
+		 { B4f, QRTD }, { A4f,  EGH }, { G4,  QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { B4f,  EGH 						// follow you into the unknown -
+		     + WHL + HLF
+			 + QRTD }, { 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { C5, EGH 									// Into the unknown -
+			 + QRT }, { B4f, WHL + QRT
+			 + QRTD },	{ 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { E5f, EGH 									// Into the unknown -
+			 + QRTD + QRT },	{ D5,  QRTD + QRT }, { E5f, QRT }, { C5,   EGH
+			 + WHL + HLF
+			 + QRTD},   { G5f,  QRT }, { F5,   HLF }, { G5f,  EGH }, { F5,   EGH }, { E5f,  EGH
+			 + WHL + HLF },
+
+
+
 
 		{ 0,    0   }
 	}

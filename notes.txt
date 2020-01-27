@@ -117,3 +117,6 @@ Next tasks:
 * New menu option: master volume for alarm ring
 * Implement the About screen.   
 * Add some more songs. Include Into The Unknown and Star Wars.
+
+27/01/2019
+After a song has been stopped, PlaySong does not start a new song playing.

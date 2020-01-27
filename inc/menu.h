@@ -29,5 +29,6 @@ void MenuDown();
 void MenuSelect();
 void RenderMenu();
 void SetCurrentMenu(PMenuItem);
+void GetMenuState(uint8_t* menuIndex, uint8_t* menuLength, PMenuItem* currentMenu);
 
 #endif /* MENU_H_ */

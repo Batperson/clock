@@ -16,7 +16,9 @@ typedef enum {
 	RtcTrimSet,
 	SnoozeMinutesSet,
 	AlarmRing,
-	About
+	About,
+
+	BootStrap	= 0xFF
 } ClockState;
 
 typedef enum {
