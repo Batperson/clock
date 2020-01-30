@@ -58,10 +58,17 @@ typedef enum
 	FillMargin		= 0x1000
 } DrawFlags;
 
+typedef enum
+{
+	Horizontal,
+	Vertical
+} Orientation;
+
 void InitDisplay();
 void ClearScreen();
 void SetForegroundColour(Colour fg);
 void SetBackgroundColour(Colour bg);
+void SetStripeBrush(Colour* stripes, uint16_t cnt, uint16_t thickness, Orientation type);
 void SetFont(PFont pf);
 void SetPixel(uint16_t l, uint16_t t, DrawFlags flags);
 void SetTextRangeColour(uint16_t st, uint16_t len, Colour fg);

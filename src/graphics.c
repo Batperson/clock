@@ -14,6 +14,19 @@
 
 uint32_t default_brush(uint16_t l, uint16_t t);
 
+typedef struct {
+	Colour* 	clrs;
+	uint16_t	cnt;
+	uint16_t	thk;
+	Orientation	typ;
+} StripeBrushData;
+
+typedef union {
+	StripeBrushData 	strp;
+} BrushData;
+
+static BrushData		brush;
+
 static DrawOp op = {
 	0, 0, 0, 0,
 	NULL,
@@ -31,9 +44,25 @@ uint32_t default_brush(uint16_t l, uint16_t t)
 	return (fg << 16) | bg;
 }
 
+uint32_t stripe_brush(uint16_t l, uint16_t t)
+{
+	uint16_t ix = (((brush.strp.typ == Horizontal) ? l : t) / brush.strp.thk) % brush.strp.cnt;
+
+	return (brush.strp.clrs[ix] << 16) | bg;
+}
+
 void SetForegroundColour(Colour f) { fg = f; }
 void SetBackgroundColour(Colour b) { bg = b; }
 void SetFont(PFont f) {  op.ft = f; }
+
+void SetStripeBrush(Colour* stripes, uint16_t cnt, uint16_t thickness, Orientation type)
+{
+	brush.strp.clrs			= stripes;
+	brush.strp.cnt			= cnt;
+	brush.strp.thk			= thickness;
+	brush.strp.typ			= type;
+	op.pbr					= stripe_brush;
+}
 
 Colour Gradient(double ratio)
 {
