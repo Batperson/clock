@@ -631,6 +631,7 @@ const Track starwars_track_4 = {
 	}
 };
 
+// vocal / melody
 const Track unknown_track_1 = {
 	255,
 	6,
@@ -640,7 +641,7 @@ const Track unknown_track_1 = {
 		{ 0,   QRTD }, { G4f,  QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH
 			 + WHL + HLF }, // oh oh
 		{ 0,   QRTD }, { G4f,  QRT }, { F4,   HLF }, { G4f,  EGH }, { F4,   EGH }, { E4f,  EGH
-			 + QRTD }, { 0, QRT + EGH }, /*{ D4f,  QRT }, { C4,   EGH },*/  { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { B4f, EGH 	// into the unknown
+			 + QRTD }, { 0, QRT + EGH }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { B4f, EGH 	// into the unknown
              + WHL + HLF
 
              + QRTD }, { 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f, QRT }, { C5, EGH 											// into the unknown
@@ -675,9 +676,9 @@ const Track unknown_track_1 = {
 		 { G4,   QRT }, { C4,   EGH }, { C4,   QRT }, { C4,   EGH }, { A4f,  QRT }, { C4,   EGH }, { C4,   QRT }, { C4,   EGH },					// fraid of what I'm risking if I
 		 { B4f, QRTD }, { A4f,  EGH }, { G4,  QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { B4f,  EGH 						// follow you into the unknown -
 		     + WHL + HLF
-			 + QRTD }, { 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { C5, EGH 									// Into the unknown -
+			 + QRTD }, { 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { C5, EGH 										// Into the unknown -
 			 + QRT }, { B4f, WHL + QRT
-			 + QRTD },	{ 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { E5f, EGH 									// Into the unknown -
+			 + QRTD },	{ 0,   QRTD }, { E4f,  EGH }, { E4f,  EGH }, { E4f,  EGH }, { B3f,  QRT }, { E5f, EGH 										// Into the unknown -
 			 + QRTD + QRT },	{ D5,  QRTD + QRT }, { E5f, QRT }, { C5,   EGH
 			 + WHL + HLF
 			 + QRTD},   { G5f,  QRT }, { F5,   HLF }, { G5f,  EGH }, { F5,   EGH }, { E5f,  EGH
@@ -690,6 +691,7 @@ const Track unknown_track_1 = {
 	}
 };
 
+// bass accompaniment 1
 const Track unknown_track_2 = {
 	255,
 	6,
@@ -710,13 +712,41 @@ const Track unknown_track_2 = {
 		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
 		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
 		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
-		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH },
+		{ E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, { E4f,  QRT }, { E4f,  EGH }, 	// wish would go away
+		{ E3f, QRTD }, { E3f, QRTD }, { E3f, QRTD }, { E3f, QRTD }, 																// oh oh
 		{ E3f, QRTD }, { E3f, QRTD }, { E3f, QRTD }, { E3f, QRTD },
+		{ A2f, QRTD }, { A2f, QRTD }, { A2f, QRTD }, { A2f, QRTD },
+		{ A2f, QRTD }, { A2f, QRTD }, { A2f, QRTD }, { A2f, QRTD }, 																// you're not a
+		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },		// voice, you're just a
+		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, 	// ringing in my ear and if I
+		{ A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, 	// heard you (which I don't)
+		{ A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, 	// spoken for I fear.
+		{ G2f,  QRT }, { G2f,  EGH }, { G2f,  QRT }, { G2f,  EGH }, { G2f,  QRT }, { G2f,  EGH }, { G2f,  QRT }, { G2f,  EGH },		// Everything I've ever loved is
+		{ D3f,  QRT }, { E3f,  EGH }, { D3f,  QRT }, { D3f,  EGH }, { D3f,  QRT }, { D3f,  EGH }, { D3f,  QRT }, { D3f,  EGH }, 	// here within these walls.
+		{ A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH },		// I'm sorry secret siren but I'm
+		{ B2f,  QRT }, { B2f,  EGH }, { B2f,  QRT }, { B2f,  EGH }, { B2f,  QRT }, { B2f,  EGH }, { B2f,  QRT }, { B2f,  EGH }, 	// blocking out your calls.
+		{ C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH },		// I've had my adventure, I
+		{ C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, 	// don't need something new, I'm a-
+		{ A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, 	// fraid of what I'm risking if I
+
+		{ A2f, QRTD }, { 0,    WHL + EGH },																							// follow you, into the unknown -
+		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },		// into the unknown -
+		{ E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH }, { E3f,  QRT }, { E3f,  EGH },
+		{ A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH },
+		{ A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH }, { A2f,  QRT }, { A2f,  EGH },		// into the unknown -
+		{ C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH },		//
+		{ C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, { C3,   QRT }, { C3,   EGH }, 	// into the unknown -
+		{ A2f,  WHL + HLF
+			+ HLFD + QRTD }, { 0,    QRT }, { E3f,  EGH },
+		{ A2f,  WHL + HLF
+			+ WHL + HLF	},
+
 
 		{ 0,    0   }
 	}
 };
 
+// bass accompaniment 2
 const Track unknown_track_3 = {
 	255,
 	6,
@@ -734,10 +764,59 @@ const Track unknown_track_3 = {
 		{ G3f,  (QRT * 6) },  // thousand reasons
 		{ D4,   (QRT * 6) },  // go about my day, and ig-
 		{ G3f,  (QRT * 6) },  // nore your whispers which I
-		{ D4,   (QRT * 6) },  // wish would go away
-		{ E4f,  (QRT * 6) },
+		{ C4,   (QRT * 6) },  // wish would go away
+		{ E4f,  (QRT * 6)	  // oh oh
+		     + QRT }, { F4,   EGH }, { G4f,  QRT }, { A4f, QRTD }, { G4f,  HLF },	// Aurora's voice
+		{ A4f, (QRT * 6)
+			+ HLFD },   { 0,  HLFD },	 	// start treble accompaniment here
 
 		{ 0,    0    }
+	}
+};
+
+// treble accompaniment
+const Track unknown_track_4 = {
+	255,
+	6,
+	&saw,
+	{
+		{ 0,    EGH },
+		{ 0,  (QRT * 12) },
+		{ 0,  (QRT * 12) },
+		{ 0,  (QRT * 12) },
+		{ 0,  (QRT * 12) },
+		{ 0,  (QRT * 12) },
+		{ 0,  (QRT * 12) },
+		{ 0,  (QRT * 12) }, // hear you
+		{ 0,  (QRT * 12) }, // trouble
+		{ 0,  (QRT * 6) },  // thousand reasons
+		{ 0,  (QRT * 6) },  // go about my day, and ig-
+		{ 0,  (QRT * 6) },  // nore your whispers which I
+		{ 0,  (QRT * 6) },  // wish would go away
+		{ 0,  (QRT * 6)	}, // oh oh
+		{ 0,  (QRT * 6) },
+		{ 0,  (QRT * 6) },
+		{ 0,    HLFD }, { E4f,  HLF }, { D4f,  EGH }, { B3f,  EGH },  	// start treble accompaniment here
+		{ B3f,  QRTD }, { E4f,  QRT }, { F4,   HLF }, { G4f, QRTD },
+		{ A4f,  QRTD }, { G4f,  QRT }, { F4,   HLF }, { E4f, QRTD },
+		{ E4,   QRTD }, { E4,   QRT }, { F4,   HLF }, { G4f, QRTD },  	// heard you (which I don't)
+		{ A4f,  QRTD }, { G4f,  QRT }, { F4,   HLF }, { E4f, QRTD },
+		{ B3f,  QRTD }, { D4f,  QRT }, { E4f,  HLF }, { G4f, QRTD },
+		{ F4,   QRTD }, { E4f,  QRT }, { D4f, QRTD }, { B3f, QRTD }, { 0,    EGH },
+		{ C4,   QRTD }, { E4f,  QRT }, { F4,   HLF }, { G4f, QRTD },
+		{ F4,   QRTD }, { E4f,  QRT }, { B3f,  HLFD + EGH },
+		{ C4,   (QRT * 6) },											// had my adventure
+		{ D4,   HLFD }, { F4,  HLFD },
+		{ G4,   HLFD }, { A4f, HLFD },
+		{ C5,   QRTD }, { 0,   WHL + EGH },								// follow you into the unknown -
+		{ B3f,   EGH }, { E4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { D4,   QRT }, { E4f,  EGH }, { B4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { B4f,  EGH },
+		{ B3f,   EGH }, { E4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { D4,   QRT }, { E4f,  EGH }, { B4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { B4f,  EGH },	// into the unknown -
+		{ B3f,   EGH }, { E4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { D4,   QRT }, { E4f,  EGH }, { B4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { B4f,  EGH },
+		{ B3f,   EGH }, { E4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { D4,   QRT }, { E4f,  EGH }, { B4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { B4f,  EGH },	// into the unknown -
+		{ B3f,   EGH }, { E4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { D4,   QRT }, { E4f,  EGH }, { B4f,  EGH }, { C4,   EGH }, { E4f,  EGH }, { B4f,  EGH },
+		{ B3f,   EGH }, { E4f,  EGH }, { B4f,  EGH }, { C5,   EGH }, { E5f,  EGH }, { D5,   EGH }, { C5,   QRT }, { C5,   QRT }, { C5,   QRT },
+
+		{ 0,    0 }
 	}
 };
 
@@ -785,6 +864,6 @@ const Song starwars = {
 
 const Song unknown = {
 	170,
-	{ (PTrack)&unknown_track_1, (PTrack)&unknown_track_2, (PTrack)NULL, (PTrack)NULL, },
+	{ (PTrack)&unknown_track_1, (PTrack)&unknown_track_2, (PTrack)&unknown_track_3, (PTrack)&unknown_track_4, },
 	{ 0, 0, 0, 0 }
 };
