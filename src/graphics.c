@@ -12,16 +12,24 @@
 #include "graphics_impl.h"
 #include "fonts.h"
 
+uint32_t default_brush(uint16_t l, uint16_t t);
+
 static DrawOp op = {
 	0, 0, 0, 0,
 	NULL,
 	RGB(0, 255, 0),
 	RGB(0, 0, 0),
-	0, 0
+	0, 0,
+	default_brush
 };
 
 static Colour fg	= RGB(0, 255, 0);
 static Colour bg	= RGB(0, 0, 0);
+
+uint32_t default_brush(uint16_t l, uint16_t t)
+{
+	return (fg << 16) | bg;
+}
 
 void SetForegroundColour(Colour f) { fg = f; }
 void SetBackgroundColour(Colour b) { bg = b; }
@@ -221,7 +229,8 @@ void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, c
 		psz++;
 	}
 
-	DrawTextImpl(&op, psz);
+	// todo: test this for performance
+	DrawTextExImpl(&op, psz);
 }
 
 void DrawBitmap(uint16_t l, uint16_t t, DrawFlags flags, PBitmap bm)

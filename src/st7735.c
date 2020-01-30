@@ -5,6 +5,7 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "stm32f10x.h"
 #include "core_cmInstr.h"
 #include "macros.h"
@@ -136,7 +137,6 @@ void InitDisplay()
 	SPI_InitTypeDef spi;
 	GPIO_InitTypeDef gpio;
 
-	// TODO: Change to SPI1 on PB3-5
 	// Enable SPI1
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
 
@@ -268,10 +268,15 @@ void ALWAYS_INLINE FlushBuf()
 
 void BlitLine1BPP(uint8_t* psrc, uint16_t ofs, uint16_t cnt, uint32_t colours)
 {
-	uint8_t bcnt 	= 7;
-	uint8_t src 	= *psrc++;
+	uint8_t bcnt;
+	uint8_t src;
 	uint16_t f		= __REV16(colours >> 16);
 	uint16_t b 		= __REV16(colours & 0xFFFF);
+
+	div_t d			= div(ofs, 8);
+	bcnt			= 7 - d.rem;
+	psrc 			+= d.quot;
+	src				= *psrc++;
 
 	while(cnt--)
 	{
@@ -289,8 +294,40 @@ void BlitLine1BPP(uint8_t* psrc, uint16_t ofs, uint16_t cnt, uint32_t colours)
 	}
 }
 
+void BlitLineEx1BPP(uint8_t* psrc, uint32_t ofscnt, uint32_t lt, brushcallback_ptr pbr)
+{
+	uint8_t	bcnt;
+	uint8_t src;
+	uint16_t cnt	= ofscnt & 0xFFFF;
+	uint16_t l		= lt >> 16;
+	uint16_t t		= lt & 0xFFFF;
+
+	div_t d			= div(ofscnt >> 16, 8);
+	bcnt			= 7 - d.rem;
+	psrc 			+= d.quot;
+	src				= *psrc++;
+
+	while(cnt--)
+	{
+		uint32_t clrs	= pbr(l++, t);
+
+		buf[bufind++]	= (src & 0x80)	? __REV16(clrs >> 16) : __REV16(clrs & 0xFFFF);
+
+		if(bufind >= (sizeof(buf) / sizeof(Colour)))
+			FlushBuf();
+
+		src <<= 1;
+		if(bcnt-- == 0)
+		{
+			src = *psrc++;
+			bcnt = 7;
+		}
+	}
+}
+
 void BlitLine16BPP(uint16_t* psrc, uint16_t ofs, uint16_t cnt)
 {
+	psrc += ofs;
 	while(cnt--)
 	{
 		buf[bufind++]	= __REV16(*psrc++);
@@ -317,6 +354,32 @@ void DrawTextImpl(PDrawOp pd, const char* psz)
 			uint8_t* pfd	= pf->data + ((*p-pf->offset) * (pf->cellwidth * pf->height)) + (pf->cellwidth * ln);
 			BlitLine1BPP(pfd, loff, cnt, clr);
 
+			loff			= 0;
+			cnt				= (w -= cnt) > pf->width ? pf->width : w;
+		}
+
+		FlushBuf();
+	}
+}
+
+void DrawTextExImpl(PDrawOp pd, const char* psz)
+{
+	AddressSet(pd->l, pd->t, (pd->l + pd->w) - 1, (pd->t + pd->h) - 1);
+
+	PFont pf 			= pd->ft;
+	uint16_t w			= pd->w;
+
+	for(uint16_t ln = pd->toff; ln < pd->h; ln++)
+	{
+		uint16_t l		= pd->loff;
+		uint16_t loff 	= pd->loff;
+		uint16_t cnt	= pf->width - loff;
+		for(const char* p = psz; *p; p++)
+		{
+			uint8_t* pfd	= pf->data + ((*p-pf->offset) * (pf->cellwidth * pf->height)) + (pf->cellwidth * ln);
+			BlitLineEx1BPP(pfd, (loff << 16) | cnt, (l << 16) | ln, pd->pbr);
+
+			l				+= cnt;
 			loff			= 0;
 			cnt				= (w -= cnt) > pf->width ? pf->width : w;
 		}

@@ -7,17 +7,20 @@
 #ifndef GRAPHICS_IMPL_H_
 #define GRAPHICS_IMPL_H_
 
+typedef uint32_t (*brushcallback_ptr)(uint16_t l, uint16_t t);
+
 typedef struct
 {
-	uint16_t	l;
-	uint16_t	t;
-	uint16_t	w;
-	uint16_t	h;
-	PFont		ft;
-	Colour		fg;
-	Colour		bg;
-	uint16_t	loff;
-	uint16_t	toff;
+	uint16_t			l;
+	uint16_t			t;
+	uint16_t			w;
+	uint16_t			h;
+	PFont				ft;
+	Colour				fg;
+	Colour				bg;
+	uint16_t			loff;
+	uint16_t			toff;
+	brushcallback_ptr	pbr;
 } DrawOp, *PDrawOp;
 
 void SetPixelImpl(PDrawOp pd);
