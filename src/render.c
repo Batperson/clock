@@ -21,6 +21,8 @@
 #include "clock.h"
 #include "menu.h"
 
+extern Bitmap* about;
+
 typedef enum
 {
 	RenderNone				= 0x00,
@@ -32,6 +34,8 @@ typedef enum
 static RenderPart	renderPart			= RenderAll;
 
 static const char* szAlarmKeys[] 		= { "SEL", "UP", "DN" };
+
+static const Colour alarmStripes[]		= { RED, ORANGE, YELLOW, GREEN, CYAN, BLUE, MAGENTA };
 
 #define SPECIAL_DAY_TEXT_ROLL_SECS	6
 #define SPECIAL_DAY_FADE_MSECS		120
@@ -168,17 +172,14 @@ void RenderAlarm()
 		strcat(sz, (clockValues.tm_hour >= 12) ? "<" : ";");
 	}
 
-	uint8_t r		= 255; //rand() % 256;
-	uint8_t g		= 0; //rand() % 256;
-	uint8_t b		= 0; //rand() % 256;
+	static uint16_t stripeOffset = 0;
 
-	Colour fg		= RGB(r, g, b);
 	SetBackgroundColour(BLACK);
-	SetForegroundColour(fg);
+	SetStripeBrush(alarmStripes, sizeof(alarmStripes) / sizeof(alarmStripes[0]), stripeOffset++, 4, Horizontal);
 	SetFont(lcdFont);
-
 	DrawText(0, 36, 152, 36, AlignCentre, sz);
 
+	RemoveBrush();
 	SetForegroundColour(YELLOW);
 	SetFont(sysFont);
 	DrawText(0, 80, 152, 12, AlignCentre, "TO STOP ALARM PRESS:");
@@ -269,7 +270,12 @@ void RenderFieldSet()
 
 void RenderAbout()
 {
+	SetForegroundColour(WHITE);
+	SetBackgroundColour(BLACK);
+	DrawBitmap(0, 0, DrawNormal, about);
 
+	SetFont(sysFont);
+	DrawText(0, 118, 160, 12, AlignCentre, "FOR CHRISTOPHER");
 }
 
 void RenderMenu()

@@ -18,6 +18,8 @@ typedef uint16_t Colour;
 #define RED             0xF800
 #define MAGENTA         0xF81F
 #define YELLOW          0xFFE0
+#define PURPLE			0x8010
+#define ORANGE			0xFC08
 #define WHITE           0xFFFF
 
 typedef struct
@@ -68,7 +70,8 @@ void InitDisplay();
 void ClearScreen();
 void SetForegroundColour(Colour fg);
 void SetBackgroundColour(Colour bg);
-void SetStripeBrush(Colour* stripes, uint16_t cnt, uint16_t thickness, Orientation type);
+void RemoveBrush();
+void SetStripeBrush(const Colour* stripes, uint16_t cnt, uint16_t index, uint16_t thickness, Orientation type);
 void SetFont(PFont pf);
 void SetPixel(uint16_t l, uint16_t t, DrawFlags flags);
 void SetTextRangeColour(uint16_t st, uint16_t len, Colour fg);

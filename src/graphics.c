@@ -17,8 +17,8 @@ uint32_t default_brush(uint16_t l, uint16_t t);
 typedef struct {
 	Colour* 	clrs;
 	uint16_t	cnt;
+	uint16_t	ix;
 	uint16_t	thk;
-	Orientation	typ;
 } StripeBrushData;
 
 typedef union {
@@ -33,20 +33,22 @@ static DrawOp op = {
 	RGB(0, 255, 0),
 	RGB(0, 0, 0),
 	0, 0,
-	default_brush
+	NULL
 };
 
 static Colour fg	= RGB(0, 255, 0);
 static Colour bg	= RGB(0, 0, 0);
 
-uint32_t default_brush(uint16_t l, uint16_t t)
+uint32_t horz_stripe_brush(uint16_t l, uint16_t t)
 {
-	return (fg << 16) | bg;
+	uint16_t ix = (brush.strp.ix + (t / brush.strp.thk)) % brush.strp.cnt;
+
+	return (brush.strp.clrs[ix] << 16) | bg;
 }
 
-uint32_t stripe_brush(uint16_t l, uint16_t t)
+uint32_t vert_stripe_brush(uint16_t l, uint16_t t)
 {
-	uint16_t ix = (((brush.strp.typ == Horizontal) ? l : t) / brush.strp.thk) % brush.strp.cnt;
+	uint16_t ix = (brush.strp.ix + (l / brush.strp.thk)) % brush.strp.cnt;
 
 	return (brush.strp.clrs[ix] << 16) | bg;
 }
@@ -55,13 +57,18 @@ void SetForegroundColour(Colour f) { fg = f; }
 void SetBackgroundColour(Colour b) { bg = b; }
 void SetFont(PFont f) {  op.ft = f; }
 
-void SetStripeBrush(Colour* stripes, uint16_t cnt, uint16_t thickness, Orientation type)
+void RemoveBrush()
 {
-	brush.strp.clrs			= stripes;
+	op.pbr	= NULL;
+}
+
+void SetStripeBrush(const Colour* stripes, uint16_t cnt, uint16_t index, uint16_t thickness, Orientation type)
+{
+	brush.strp.clrs			= (Colour*)stripes;
 	brush.strp.cnt			= cnt;
+	brush.strp.ix			= index;
 	brush.strp.thk			= thickness;
-	brush.strp.typ			= type;
-	op.pbr					= stripe_brush;
+	op.pbr					= (type == Horizontal) ? horz_stripe_brush : vert_stripe_brush;
 }
 
 Colour Gradient(double ratio)
@@ -258,8 +265,10 @@ void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, c
 		psz++;
 	}
 
-	// todo: test this for performance
-	DrawTextExImpl(&op, psz);
+	if(op.pbr == NULL)
+		DrawTextImpl(&op, psz);
+	else
+		DrawTextExImpl(&op, psz);
 }
 
 void DrawBitmap(uint16_t l, uint16_t t, DrawFlags flags, PBitmap bm)

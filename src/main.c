@@ -175,11 +175,12 @@ int main(void)
 
 	ClearScreen();
 	SetCurrentMenu(mainMenu);
-	ChangeState(Normal);
 	LoadConfiguration();
 	AudioOn();
-	SelectSong(&unknown);
-	PlaySong(PlayLoop);
+	ChangeState(About);
+	//ChangeState(Normal);
+	//SelectSong(&unknown);
+	//PlaySong(PlayLoop);
 
 	while(1)
 	{
@@ -494,13 +495,17 @@ void ChangeState(ClockState state)
 	{
 		clockState = state;
 
+		DeregisterCallback(TriggerRender);
 		DeregisterButtonCallbacks();
 		EndSong();
 
 		switch(clockState)
 		{
 		case About:
+			SelectSong(&gravity);
+			PlaySong(PlayLoop);
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonAny, AboutHandler);
+			RegisterTimeoutCallback(TriggerRender, 800, CallbackRepeat);
 			break;
 
 		case Menu:
@@ -510,6 +515,7 @@ void ChangeState(ClockState state)
 
 		case AlarmRing:
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonLongDown | ButtonShortPress, AlarmButtonHandler);
+			RegisterTimeoutCallback(TriggerRender, 100, CallbackRepeat);
 			SetAlarmLock();
 			break;
 
@@ -582,6 +588,8 @@ void OnRtcSecond()
 	switch(clockState)
 	{
 	case Menu:
+	case About:
+	case AlarmRing:
 		break;
 	case ClockSet:
 		if(clockSetField == Second)

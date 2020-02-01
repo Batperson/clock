@@ -120,3 +120,7 @@ Next tasks:
 
 27/01/2019
 After a song has been stopped, PlaySong does not start a new song playing.
+
+02/02/2020
+Finally begun implementing the About screen, which will mostly display a bitmap with a brush effect.
+Bitmap is not currently rendering correctly, pixels are skewed.
