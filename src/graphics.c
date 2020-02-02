@@ -21,8 +21,16 @@ typedef struct {
 	uint16_t	thk;
 } StripeBrushData;
 
+typedef struct {
+	float		spr;
+	float		ofs;
+	uint16_t ct;
+	Colour cfg;
+} GradientBrushData;
+
 typedef union {
 	StripeBrushData 	strp;
+	GradientBrushData	grd;
 } BrushData;
 
 static BrushData		brush;
@@ -53,6 +61,22 @@ uint32_t vert_stripe_brush(uint16_t l, uint16_t t)
 	return (brush.strp.clrs[ix] << 16) | bg;
 }
 
+uint32_t horz_grad_brush(uint16_t l, uint16_t t)
+{
+	return (Gradient(((float)l + brush.grd.ofs) / brush.grd.spr) << 16) | bg;
+}
+
+uint32_t vert_grad_brush(uint16_t l, uint16_t t)
+{
+	if(t != brush.grd.ct)
+	{
+		brush.grd.cfg 	= Gradient(((float)t + brush.grd.ofs) / brush.grd.spr);
+		brush.grd.ct 	= t;
+	}
+
+	return (brush.grd.cfg << 16) | bg;
+}
+
 void SetForegroundColour(Colour f) { fg = f; }
 void SetBackgroundColour(Colour b) { bg = b; }
 void SetFont(PFont f) {  op.ft = f; }
@@ -60,6 +84,16 @@ void SetFont(PFont f) {  op.ft = f; }
 void RemoveBrush()
 {
 	op.pbr	= NULL;
+}
+
+void SetGradientBrush(uint16_t spread, uint16_t offset, Orientation type)
+{
+	brush.grd.spr			= (float)spread;
+	brush.grd.ofs			= (float)offset;
+	brush.grd.ct			= 0xFFFF;
+	brush.grd.cfg			= WHITE;
+
+	op.pbr					= (type == Horizontal) ? horz_grad_brush : vert_grad_brush;
 }
 
 void SetStripeBrush(const Colour* stripes, uint16_t cnt, uint16_t index, uint16_t thickness, Orientation type)
@@ -265,10 +299,7 @@ void DrawText(uint16_t l, uint16_t t, uint16_t w, uint16_t h, DrawFlags flags, c
 		psz++;
 	}
 
-	if(op.pbr == NULL)
-		DrawTextImpl(&op, psz);
-	else
-		DrawTextExImpl(&op, psz);
+	if(op.pbr == NULL) DrawTextImpl(&op, psz); else DrawTextExImpl(&op, psz);
 }
 
 void DrawBitmap(uint16_t l, uint16_t t, DrawFlags flags, PBitmap bm)
@@ -276,5 +307,5 @@ void DrawBitmap(uint16_t l, uint16_t t, DrawFlags flags, PBitmap bm)
 	op.fg			= (flags & DrawInverse) ? bg : fg;
 	op.bg			= (flags & DrawInverse) ? fg : bg;
 
-	DrawBitmapImpl(&op, l, t, bm);
+	if(op.pbr != NULL && bm->colour == Colour1Bpp) DrawBitmapExImpl(&op, l, t, bm); else DrawBitmapImpl(&op, l, t, bm);
 }

@@ -322,6 +322,8 @@ void Render()
 {
 	switch(clockState)
 	{
+	case BootStrap:
+		break;
 	case ClockSet:
 	case AlarmSet:
 	case DateSet:

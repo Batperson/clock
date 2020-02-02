@@ -120,7 +120,7 @@ const uint8_t bitmapData[] =
 };
 
 const Bitmap aboutB = {
-	130,
+	128,
 	103,
 	Colour1Bpp,
 	(void*)bitmapData

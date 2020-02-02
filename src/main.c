@@ -505,7 +505,7 @@ void ChangeState(ClockState state)
 			SelectSong(&gravity);
 			PlaySong(PlayLoop);
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonAny, AboutHandler);
-			RegisterTimeoutCallback(TriggerRender, 800, CallbackRepeat);
+			RegisterTimeoutCallback(TriggerRender, 100, CallbackRepeat);
 			break;
 
 		case Menu:

@@ -28,5 +28,6 @@ void DrawRectImpl(PDrawOp pd);
 void DrawTextImpl(PDrawOp pd, const char* psz);
 void DrawTextExImpl(PDrawOp pd, const char* psz);
 void DrawBitmapImpl(PDrawOp pd, uint16_t l, uint16_t t, PBitmap bm);
+void DrawBitmapExImpl(PDrawOp pd, uint16_t l, uint16_t t, PBitmap bm);
 
 #endif /* GRAPHICS_IMPL_H_ */
