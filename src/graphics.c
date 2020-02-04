@@ -118,7 +118,7 @@ Colour Gradient(double ratio)
 	uint32_t x = normalized % 256;
 
 	uint8_t red = 0, grn = 0, blu = 0;
-    switch(normalized / 256)
+    switch((normalized / 256) % 6)
     {
 		case 0: red = 255;      grn = x;        blu = 0;       break;	// red
 		case 1: red = 255 - x;  grn = 255;      blu = 0;       break;	// yellow

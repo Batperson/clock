@@ -425,10 +425,10 @@ void DrawBitmapExImpl(PDrawOp pd, uint16_t l, uint16_t t, PBitmap bm)
 {
 	AddressSet(l, t, (l + bm->width) - 1, (t + bm->height) - 1);
 
-	uint32_t ri = (bm->width >> 4) + (bm->width & 0x07) ? 1 : 0;
+	uint32_t ri = (bm->width >> 3) + ((bm->width & 0x07) ? 1 : 0);
 
 	for(uint16_t r = 0; r < bm->height; r++)
-		BlitLineEx1BPP(bm->data + (r * ri), 0, bm->width, pd->pbr);
+		BlitLineEx1BPP(bm->data + (r * ri), bm->width, r, pd->pbr);
 
 	FlushBuf();
 }

@@ -71,6 +71,7 @@ void ClearScreen();
 void SetForegroundColour(Colour fg);
 void SetBackgroundColour(Colour bg);
 void RemoveBrush();
+void SetGradientBrush(uint16_t spread, uint16_t offset, Orientation type);
 void SetStripeBrush(const Colour* stripes, uint16_t cnt, uint16_t index, uint16_t thickness, Orientation type);
 void SetFont(PFont pf);
 void SetPixel(uint16_t l, uint16_t t, DrawFlags flags);

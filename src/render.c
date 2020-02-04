@@ -106,6 +106,7 @@ void RenderNormal()
 			strcat(sz, (clockValues.tm_hour >= 12) ? "<" : ";");
 		}
 
+		RemoveBrush();
 		SetBackgroundColour(BLACK);
 		SetForegroundColour(CYAN);
 		SetFont(lcdFont);
@@ -129,12 +130,6 @@ void RenderNormal()
 		if(specialDay != NULL && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
 			RegisterTimeoutCallback(SpecialDayCallback, SPECIAL_DAY_FADE_MSECS, CallbackRepeat);
 	}
-
-	/*
-	uint16_t top 	= 40;
-	DrawRect(153, top, 8, clockValues.tm_sec, DrawNormal);
-	DrawGradientVertical(153, top + clockValues.tm_sec, 8, 60 - clockValues.tm_sec, clockValues.tm_sec);
-	*/
 
 	if(renderPart & RenderSpecialDayBanner && specialDay != NULL)
 	{
@@ -234,6 +229,7 @@ void RenderFieldSet()
 		break;
 	}
 
+	RemoveBrush();
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(CYAN);
 	SetFont(lcdFont);
@@ -270,18 +266,26 @@ void RenderFieldSet()
 
 void RenderAbout()
 {
+	static uint16_t offs = 300;
+
 	SetForegroundColour(WHITE);
 	SetBackgroundColour(BLACK);
-	DrawBitmap(0, 0, DrawNormal, about);
+	SetGradientBrush(300, offs--, Vertical);
+	DrawBitmap(10, 6, DrawNormal, about);
 
+	if(offs == 0)
+		offs = 300;
+
+	//RemoveBrush();
 	SetFont(sysFont);
-	DrawText(0, 118, 160, 12, AlignCentre, "FOR CHRISTOPHER");
+	DrawText(0, 120, 160, 12, AlignCentre, "FOR CHRISTOPHER");
 }
 
 void RenderMenu()
 {
 	uint16_t w, h, dw, dh;
 
+	RemoveBrush();
 	ClearScreen();
 	SetFont(sysFont);
 	MeasureChar(' ', &w, &h);

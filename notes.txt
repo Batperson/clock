@@ -124,3 +124,8 @@ After a song has been stopped, PlaySong does not start a new song playing.
 02/02/2020
 Finally begun implementing the About screen, which will mostly display a bitmap with a brush effect.
 Bitmap is not currently rendering correctly, pixels are skewed.
+
+04/02/2020
+About screen now displaying correctly, with a moving gradient brush.
+On startup, some random noise gets written to the left and right of the screen. Suspect this may be due to re-entrancy when the display init
+routine gets called while the bitmap is already rendering.
