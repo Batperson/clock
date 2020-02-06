@@ -225,6 +225,10 @@ void RenderFieldSet()
 	case Day:
 		strftime(sz, sizeof(sz), "%d", &clockSetValues);
 		break;
+	case SnoozeMinutes:
+	case RtcTrim:
+		sprintf(sz, "%d", clockSetValues.tm_yday);
+		break;
 	default:
 		break;
 	}
@@ -254,6 +258,12 @@ void RenderFieldSet()
 		break;
 	case Day:
 		strcpy(sz, "SET DAY");
+		break;
+	case SnoozeMinutes:
+		strcpy(sz, "SNOOZE MINS");
+		break;
+	case RtcTrim:
+		strcpy(sz, "OSC CALIB");
 		break;
 	default:
 		break;

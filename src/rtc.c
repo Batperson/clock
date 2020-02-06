@@ -60,9 +60,6 @@ void InitRTCOneTimeConfig(void)
 	/* Wait until last write operation on RTC registers has finished */
 	RTC_WaitForLastTask();
 
-	/* Wait until last write operation on RTC registers has finished */
-	RTC_WaitForLastTask();
-
 	/* Set RTC prescaler: set RTC period to 1sec */
 	RTC_SetPrescaler(32767); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */
 
@@ -251,6 +248,16 @@ void RTC_IRQHandler()
 
 		OnRtcAlarm();
 	}
+}
+
+void SetRtcCalibrationValue(uint8_t value)
+{
+	BKP_SetRTCCalibrationValue(value & BKP_RTCCR_CAL);
+}
+
+uint8_t GetRtcCalibrationValue()
+{
+	return BKP->RTCCR & BKP_RTCCR_CAL;
 }
 
 void WEAKREF OnRtcSecond()

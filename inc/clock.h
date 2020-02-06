@@ -7,6 +7,9 @@
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
+#define MIN_SNOOZE_MINUTES	5
+#define MAX_SNOOZE_MINUTES	15
+
 typedef enum {
 	Normal,
 	Menu,

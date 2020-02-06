@@ -25,6 +25,7 @@
 
 #define BREG_ALARM_RING				BKP_DR3
 #define BREG_CLOCK_MODE				BKP_DR4
+#define BREG_SNOOZE_MINS			BKP_DR5
 
 const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today.", NULL };
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
@@ -79,7 +80,7 @@ MenuItem mainMenu[] = {
 	{ "ALARM LOCK",					SetModeFlags, 		ModeAlarmLock },
 	{ "24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
 	{ "SET SNOOZE MINUTES",			ChangeState,		SnoozeMinutesSet },
-	{ "SET OSCILLATOR TRIM",		ChangeState,		RtcTrimSet },
+	{ "CALIBRATE CLOCK",			ChangeState,		RtcTrimSet },
 	{ "ABOUT THIS CLOCK", 			ChangeState, 		About },
 	{ "EXIT", 						ChangeState, 		Normal },
 	{ NULL, NULL, 0 }
@@ -139,6 +140,7 @@ void OnInitBackupDomain()
 
 	BKP_WriteBackupRegister(BREG_CLOCK_MODE, ModeAlarmLock | ModeAlarmSnooze);
 	BKP_WriteBackupRegister(BREG_ALARM_RING, 0);
+	BKP_WriteBackupRegister(BREG_SNOOZE_MINS, snoozeMinutes);
 }
 
 void LoadConfiguration()
@@ -148,6 +150,7 @@ void LoadConfiguration()
 	UpdateModeUIAndBehaviour();
 
 	alarmRingIndex	= BKP_ReadBackupRegister(BREG_ALARM_RING);
+	snoozeMinutes	= BKP_ReadBackupRegister(BREG_SNOOZE_MINS);
 
 	// Protection against out of bounds error in case this value somehow gets set incorrectly
 	if(alarmRingIndex >= sizeof(alarmRings) / sizeof(alarmRings[0]) && alarmRingIndex != 0xFF)
@@ -158,7 +161,7 @@ void LoadConfiguration()
 
 int main(void)
 {
-	printf("STM32F103 RTC Alarm Clock v0.01 by Weka Workshop\n");
+ 	printf("STM32F103 RTC Alarm Clock v0.01 by Weka Workshop\n");
 
 	// Use all priority bits for pre-emption priority. We want the DMA interrupt for waveform generation
 	// to be able to pre-empt everything else.
@@ -319,6 +322,11 @@ void FieldSetUp()
 	case Day:
 		if(clockSetValues.tm_mday-- == 1) clockSetValues.tm_mday = GetMaxDay(clockSetValues.tm_year, clockSetValues.tm_mon);
 		break;
+	case SnoozeMinutes:
+		if(clockSetValues.tm_yday-- == MIN_SNOOZE_MINUTES) clockSetValues.tm_yday = MAX_SNOOZE_MINUTES;
+		break;
+	case RtcTrim:
+		if(clockSetValues.tm_yday-- == 1) clockSetValues.tm_yday = MAX_RTC_TRIM;
 	default:
 		break;
 	}
@@ -347,6 +355,12 @@ void FieldSetDown()
 		break;
 	case Day:
 		if(clockSetValues.tm_mday++ == GetMaxDay(clockSetValues.tm_year, clockSetValues.tm_mon)) clockSetValues.tm_mday = 1;
+		break;
+	case SnoozeMinutes:
+		if(clockSetValues.tm_yday++ == MAX_SNOOZE_MINUTES) clockSetValues.tm_yday = MIN_SNOOZE_MINUTES;
+		break;
+	case RtcTrim:
+		if(clockSetValues.tm_yday++ == MAX_RTC_TRIM) clockSetValues.tm_yday = 0;
 		break;
 	default:
 		break;
@@ -384,7 +398,17 @@ void FieldMoveNext()
 			ChangeState(Normal);
 		}
 		break;
+	case SnoozeMinutes:
+		snoozeMinutes = clockSetValues.tm_yday;
+		BKP_WriteBackupRegister(BREG_SNOOZE_MINS, snoozeMinutes);
+		ChangeState(Normal);
+		break;
+	case RtcTrimSet:
+		SetRtcCalibrationValue(clockSetValues.tm_yday);
+		ChangeState(Normal);
+		break;
 	default:
+		ChangeState(Normal);
 		break;
 	}
 
@@ -528,12 +552,14 @@ void ChangeState(ClockState state)
 
 		case SnoozeMinutesSet:
 			clockSetField = SnoozeMinutes;
+			clockSetValues.tm_yday = snoozeMinutes;
 			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
 			break;
 
 		case RtcTrimSet:
 			clockSetField = RtcTrim;
+			clockSetValues.tm_yday	= GetRtcCalibrationValue();
 			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
 			break;

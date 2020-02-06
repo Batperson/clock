@@ -250,7 +250,7 @@ const Track bbshark_track_4 = {
 };
 
 const Track gravity_track_1 = {
-	255,
+	180,
 	6,
 	&saw,
 	{
@@ -293,7 +293,7 @@ const Track gravity_track_1 = {
 };
 
 const Track gravity_track_2 = {
-	255,
+	160,
 	6,
 	&saw,
 	{
@@ -315,7 +315,7 @@ const Track gravity_track_2 = {
 const Track gravity_track_3 = {
 	255,
 	6,
-	&saw,
+	&clipped,
 	{
 		{ 0,   WHL  }, { 0,   WHL  }, { 0,   WHL  }, { 0,   WHL  },
 		{ D4,  HLFD }, { E4,  QRT },
@@ -347,7 +347,7 @@ const Track gravity_track_3 = {
 };
 
 const Track gravity_track_4 = {
-	255,
+	160,
 	6,
 	&saw,
 	{
