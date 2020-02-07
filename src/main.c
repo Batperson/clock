@@ -180,8 +180,7 @@ int main(void)
 	SetCurrentMenu(mainMenu);
 	LoadConfiguration();
 	AudioOn();
-	ChangeState(About);
-	//ChangeState(Normal);
+	ChangeState(Normal);
 	//SelectSong(&unknown);
 	//PlaySong(PlayLoop);
 
@@ -326,7 +325,7 @@ void FieldSetUp()
 		if(clockSetValues.tm_yday-- == MIN_SNOOZE_MINUTES) clockSetValues.tm_yday = MAX_SNOOZE_MINUTES;
 		break;
 	case RtcTrim:
-		if(clockSetValues.tm_yday-- == 1) clockSetValues.tm_yday = MAX_RTC_TRIM;
+		if(clockSetValues.tm_yday-- == 0) clockSetValues.tm_yday = MAX_RTC_TRIM;
 	default:
 		break;
 	}
