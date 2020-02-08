@@ -47,26 +47,26 @@ static DrawOp op = {
 static Colour fg	= RGB(0, 255, 0);
 static Colour bg	= RGB(0, 0, 0);
 
-uint32_t horz_stripe_brush(uint16_t l, uint16_t t)
+Colours horz_stripe_brush(uint16_t l, uint16_t t)
 {
 	uint16_t ix = (brush.strp.ix + (t / brush.strp.thk)) % brush.strp.cnt;
 
-	return (brush.strp.clrs[ix] << 16) | bg;
+	return (Colours) { brush.strp.clrs[ix], bg };
 }
 
-uint32_t vert_stripe_brush(uint16_t l, uint16_t t)
+Colours vert_stripe_brush(uint16_t l, uint16_t t)
 {
 	uint16_t ix = (brush.strp.ix + (l / brush.strp.thk)) % brush.strp.cnt;
 
-	return (brush.strp.clrs[ix] << 16) | bg;
+	return (Colours) { brush.strp.clrs[ix], bg };
 }
 
-uint32_t horz_grad_brush(uint16_t l, uint16_t t)
+Colours horz_grad_brush(uint16_t l, uint16_t t)
 {
-	return (Gradient(((float)l + brush.grd.ofs) / brush.grd.spr) << 16) | bg;
+	return (Colours) { Gradient(((float)l + brush.grd.ofs) / brush.grd.spr), bg };
 }
 
-uint32_t vert_grad_brush(uint16_t l, uint16_t t)
+Colours vert_grad_brush(uint16_t l, uint16_t t)
 {
 	if(t != brush.grd.ct)
 	{
@@ -74,7 +74,7 @@ uint32_t vert_grad_brush(uint16_t l, uint16_t t)
 		brush.grd.ct 	= t;
 	}
 
-	return (brush.grd.cfg << 16) | bg;
+	return (Colours) { brush.grd.cfg, bg };
 }
 
 void SetForegroundColour(Colour f) { fg = f; }

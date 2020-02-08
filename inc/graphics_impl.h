@@ -7,7 +7,13 @@
 #ifndef GRAPHICS_IMPL_H_
 #define GRAPHICS_IMPL_H_
 
-typedef uint32_t (*brushcallback_ptr)(uint16_t l, uint16_t t);
+typedef struct
+{
+	Colour fore;
+	Colour back;
+} Colours;
+
+typedef Colours (*brushcallback_ptr)(uint16_t l, uint16_t t);
 
 typedef struct
 {

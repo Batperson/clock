@@ -309,9 +309,9 @@ void BlitLineEx1BPP(uint8_t* psrc, uint32_t ofscnt, uint32_t lt, brushcallback_p
 
 	while(cnt--)
 	{
-		uint32_t clrs	= pbr(l++, t);
+		Colours clrs	= pbr(l++, t);
 
-		buf[bufind++]	= (src & 0x80)	? __REV16(clrs >> 16) : __REV16(clrs & 0xFFFF);
+		buf[bufind++]	= (src & 0x80)	? __REV16(clrs.fore) : __REV16(clrs.back);
 
 		if(bufind >= (sizeof(buf) / sizeof(Colour)))
 			FlushBuf();
