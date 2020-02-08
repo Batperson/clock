@@ -13,11 +13,7 @@
 typedef enum {
 	Normal,
 	Menu,
-	ClockSet,
-	AlarmSet,
-	DateSet,
-	RtcTrimSet,
-	SnoozeMinutesSet,
+	FieldSet,
 	AlarmRing,
 	About,
 
@@ -25,9 +21,11 @@ typedef enum {
 } ClockState;
 
 typedef enum {
-	Hour,
-	Minute,
-	Second,
+	AlarmHour,
+	AlarmMinute,
+	ClockHour,
+	ClockMinute,
+	ClockSecond,
 	Year,
 	Month,
 	Day,
@@ -77,5 +75,6 @@ void SetAlarmRing(uint32_t index);
 void SetModeFlags(ClockMode mode);
 void ClearModeFlags(ClockMode mode);
 void ChangeState(ClockState state);
+void SetField(ClockSetField field);
 
 #endif /* CLOCK_H_ */

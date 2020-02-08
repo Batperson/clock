@@ -129,3 +129,7 @@ Bitmap is not currently rendering correctly, pixels are skewed.
 About screen now displaying correctly, with a moving gradient brush.
 On startup, some random noise gets written to the left and right of the screen. Suspect this may be due to re-entrancy when the display init
 routine gets called while the bitmap is already rendering.
+
+08/02/2020
+Only one mode now used to set all fields including date, clock, alarm and calibration.
+Noticed that switching out of About mode leaves some garbage on the screen.

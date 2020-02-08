@@ -71,16 +71,16 @@ MenuItem alarmMenu[] = {
 };
 
 MenuItem mainMenu[] = {
-	{ "SET TIME", 					ChangeState, 		ClockSet },
-	{ "SET DATE", 					ChangeState, 		DateSet },
-	{ "SET ALARM TIME", 			ChangeState, 		AlarmSet  },
+	{ "SET TIME", 					SetField, 			ClockHour },
+	{ "SET DATE", 					SetField, 			Year },
+	{ "SET ALARM TIME", 			SetField, 			AlarmHour  },
 	{ "SELECT ALARM RING", 			SetCurrentMenu,		(uint32_t)alarmMenu },
 	{ "ALARM ACTIVE", 				SetModeFlags, 		ModeAlarm },
 	{ "ALARM SNOOZE",				SetModeFlags,		ModeAlarmSnooze },
 	{ "ALARM LOCK",					SetModeFlags, 		ModeAlarmLock },
 	{ "24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
-	{ "SET SNOOZE MINUTES",			ChangeState,		SnoozeMinutesSet },
-	{ "CALIBRATE CLOCK",			ChangeState,		RtcTrimSet },
+	{ "SET SNOOZE MINUTES",			SetField,			SnoozeMinutes },
+	{ "CALIBRATE CLOCK",			SetField,			RtcTrim },
 	{ "ABOUT THIS CLOCK", 			ChangeState, 		About },
 	{ "EXIT", 						ChangeState, 		Normal },
 	{ NULL, NULL, 0 }
@@ -89,7 +89,7 @@ MenuItem mainMenu[] = {
 const uint16_t alarmKeys[3] = { BTN_SELECT, BTN_UP, BTN_DOWN };
 
 ClockState 		clockState 			= BootStrap;
-ClockSetField 	clockSetField 		= Hour;
+ClockSetField 	clockSetField 		= ClockHour;
 ClockMode		mode				= ModeAlarmLock | ModeAlarmSnooze;
 AlarmState		alarmState			= AlarmStateNone;
 PSpecialDay		specialDay			= NULL;
@@ -181,8 +181,8 @@ int main(void)
 	LoadConfiguration();
 	AudioOn();
 	ChangeState(Normal);
-	//SelectSong(&unknown);
-	//PlaySong(PlayLoop);
+	SelectSong(&unknown);
+	PlaySong(PlayLoop);
 
 	while(1)
 	{
@@ -303,13 +303,15 @@ void FieldSetUp()
 {
 	switch(clockSetField)
 	{
-	case Hour:
+	case ClockHour:
+	case AlarmHour:
 		if(clockSetValues.tm_hour-- == 0) clockSetValues.tm_hour = 23;
 		break;
-	case Minute:
+	case ClockMinute:
+	case AlarmMinute:
 		if(clockSetValues.tm_min-- == 0) clockSetValues.tm_min = 59;
 		break;
-	case Second:
+	case ClockSecond:
 		clockSetValues.tm_sec = 0;
 		break;
 	case Year:
@@ -337,13 +339,15 @@ void FieldSetDown()
 {
 	switch(clockSetField)
 	{
-	case Hour:
+	case ClockHour:
+	case AlarmHour:
 		if(clockSetValues.tm_hour++ == 23) clockSetValues.tm_hour = 0;
 		break;
-	case Minute:
+	case ClockMinute:
+	case AlarmMinute:
 		if(clockSetValues.tm_min++ == 59) clockSetValues.tm_min = 0;
 		break;
-	case Second:
+	case ClockSecond:
 		clockSetValues.tm_sec = 0;
 		break;
 	case Year:
@@ -370,39 +374,45 @@ void FieldSetDown()
 
 void FieldMoveNext()
 {
-	switch(clockState)
+	switch(clockSetField)
 	{
-	case ClockSet:
-		if(clockSetField++ >= Second)
-		{
-			SetTime(&clockSetValues);
-			memcpy(&clockValues, &clockSetValues, sizeof(struct tm));
-
-			ChangeState(Normal);
-		}
+	case ClockHour:
+		clockSetField++;
 		break;
-	case DateSet:
-		if(clockSetField++ >= Day)
-		{
-			SetTime(&clockSetValues);
-			memcpy(&clockValues, &clockSetValues, sizeof(struct tm));
-
-			ChangeState(Normal);
-		}
+	case ClockMinute:
+		clockSetField++;
 		break;
-	case AlarmSet:
-		if(clockSetField++ >= Minute)
-		{
-			SetAlarmTime(&clockSetValues);
-			ChangeState(Normal);
-		}
+	case ClockSecond:
+		SetTime(&clockSetValues);
+		memcpy(&clockValues, &clockSetValues, sizeof(struct tm));
+
+		ChangeState(Normal);
+		break;
+	case Year:
+		clockSetField++;
+		break;
+	case Month:
+		clockSetField++;
+		break;
+	case Day:
+		SetTime(&clockSetValues);
+		memcpy(&clockValues, &clockSetValues, sizeof(struct tm));
+
+		ChangeState(Normal);
+		break;
+	case AlarmHour:
+		clockSetField++;
+		break;
+	case AlarmMinute:
+		SetAlarmTime(&clockSetValues);
+		ChangeState(Normal);
 		break;
 	case SnoozeMinutes:
 		snoozeMinutes = clockSetValues.tm_yday;
 		BKP_WriteBackupRegister(BREG_SNOOZE_MINS, snoozeMinutes);
 		ChangeState(Normal);
 		break;
-	case RtcTrimSet:
+	case RtcTrim:
 		SetRtcCalibrationValue(clockSetValues.tm_yday);
 		ChangeState(Normal);
 		break;
@@ -512,6 +522,30 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 	}
 }
 
+void SetField(ClockSetField field)
+{
+	clockSetField = field;
+
+	switch(clockSetField)
+	{
+	case AlarmHour:
+	case AlarmMinute:
+		GetAlarmTime(&clockSetValues);
+		break;
+	case RtcTrim:
+		clockSetValues.tm_yday	= GetRtcCalibrationValue();
+		break;
+	case SnoozeMinutes:
+		clockSetValues.tm_yday = snoozeMinutes;
+		break;
+	default:
+		GetTime(&clockSetValues);
+		break;
+	}
+
+	ChangeState(FieldSet);
+}
+
 void ChangeState(ClockState state)
 {
 	if(clockState != state)
@@ -542,37 +576,7 @@ void ChangeState(ClockState state)
 			SetAlarmLock();
 			break;
 
-		case ClockSet:
-			clockSetField = Hour;
-			GetTime(&clockSetValues);
-			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
-			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-			break;
-
-		case SnoozeMinutesSet:
-			clockSetField = SnoozeMinutes;
-			clockSetValues.tm_yday = snoozeMinutes;
-			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
-			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-			break;
-
-		case RtcTrimSet:
-			clockSetField = RtcTrim;
-			clockSetValues.tm_yday	= GetRtcCalibrationValue();
-			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
-			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-			break;
-
-		case DateSet:
-			clockSetField = Year;
-			GetTime(&clockSetValues);
-			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
-			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-			break;
-
-		case AlarmSet:
-			clockSetField = Hour;
-			GetAlarmTime(&clockSetValues);
+		case FieldSet:
 			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
 			break;
@@ -616,11 +620,9 @@ void OnRtcSecond()
 	case About:
 	case AlarmRing:
 		break;
-	case ClockSet:
-		if(clockSetField == Second)
-			TriggerRender();
+	case FieldSet:
+		if(clockSetField == ClockSecond) TriggerRender();
 		break;
-
 	default:
 		TriggerRender();
 		break;

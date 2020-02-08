@@ -615,12 +615,12 @@ const Track starwars_track_4 = {
 		{ D4,   QRT }, { D4,   HLF }, { D4,   QRT },
 		{ E4,   HLF }, { D4,   HLF },
 		{ E4,   HLF }, { D4,   HLF },
-		{ C4,   QRT }, { D4,   EGH }, { E5,   SXT }, { F5s,  SXT }, { G5,   SXT }, { A5,   SXT }, { B5,   SXT }, { C6,   SXT }, { D6,   SXTT }, { E6,  SXTT }, { F6s, SXTT },
+		{ C4,   QRT }, { D4,   HLF }, { 0,    QRT },	// { D4,   EGH }, { E5,   SXT }, { F5s,  SXT }, { G5,   SXT }, { A5,   SXT }, { B5,   SXT }, { C6,   SXT }, { D6,   SXTT }, { E6,  SXTT }, { F6s, SXTT },
 
-		{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
-		{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
-		{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
-		{ G6,   EGH }, { A6,   SXT }, { G6,   SXT }, { 0,    EGH }, { F6s,  SXT }, { G6,   SXT }, { A6,   QRT }, { 0,    QRT },
+		{ D4,   QRT }, { D4,   HLF }, { D4,   QRT },	//{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ E4,   HLF }, { D4,   HLF },					//{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ E4,   HLF }, { D4,   HLF },					//{ G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,  SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT }, { G6,   EGH }, { G6,   SXT }, { F6s,   SXT },
+		{ C4,   QRT }, { D4,   HLF }, { 0,    QRT },	//{ G6,   EGH }, { A6,   SXT }, { G6,   SXT }, { 0,    EGH }, { F6s,  SXT }, { G6,   SXT }, { A6,   QRT }, { 0,    QRT },
 
 		{ 0,    WHL * 4 },
 

@@ -199,7 +199,8 @@ void RenderFieldSet()
 
 	switch(clockSetField)
 	{
-	case Hour:
+	case ClockHour:
+	case AlarmHour:
 		if(mode & Mode24HourDisplay)
 		{
 			strftime(sz, sizeof(sz), "%H", &clockSetValues);
@@ -210,10 +211,11 @@ void RenderFieldSet()
 			strcat(sz, (clockSetValues.tm_hour >= 12) ? "<" : ";");
 		}
 		break;
-	case Minute:
+	case ClockMinute:
+	case AlarmMinute:
 		strftime(sz, sizeof(sz), "%M", &clockSetValues);
 		break;
-	case Second:
+	case ClockSecond:
 		strftime(sz, sizeof(sz), "%S", &clockSetValues);
 		break;
 	case Year:
@@ -243,13 +245,15 @@ void RenderFieldSet()
 
 	switch(clockSetField)
 	{
-	case Hour:
+	case ClockHour:
+	case AlarmHour:
 		strcpy(sz, "SET HOUR");
 		break;
-	case Minute:
+	case ClockMinute:
+	case AlarmMinute:
 		strcpy(sz, "SET MINUTE");
 		break;
-	case Second:
+	case ClockSecond:
 		strcpy(sz, "SET SECOND");
 		break;
 	case Year:
@@ -340,11 +344,7 @@ void Render()
 	{
 	case BootStrap:
 		break;
-	case ClockSet:
-	case AlarmSet:
-	case DateSet:
-	case SnoozeMinutesSet:
-	case RtcTrimSet:
+	case FieldSet:
 		RenderFieldSet();
 		break;
 	case Menu:
