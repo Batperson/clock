@@ -59,13 +59,13 @@ MenuItem mainMenu[];
 
 // Max 20 chars per menu item text
 MenuItem alarmMenu[] = {
-	{ "RING: REVEILLE", 			SetAlarmRing, 		0  },
-	{ "RING: ARPEGGIATOR", 			SetAlarmRing, 		1 },
-	{ "RING: BABY SHARK", 			SetAlarmRing, 		2 },
-	{ "RING: STAR WARS", 			SetAlarmRing, 		3 },
-	{ "RING: INTO THE UNKNOWN",		SetAlarmRing, 		4 },
+	{ "REVEILLE", 					SetAlarmRing, 		0  },
+	{ "ARPEGGIATOR", 				SetAlarmRing, 		1 },
+	{ "BABY SHARK", 				SetAlarmRing, 		2 },
+	{ "STAR WARS", 					SetAlarmRing, 		3 },
+	{ "INTO THE UNKNOWN",			SetAlarmRing, 		4 },
 
-	{ "RANDOM RING", 				SetAlarmRing,		0xFF },
+	{ "RANDOM SONG", 				SetAlarmRing,		0xFF },
 	{ "BACK", 						SetCurrentMenu, 	(uint32_t)mainMenu  },
 	{ NULL, NULL, 0 }
 };
