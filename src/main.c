@@ -103,6 +103,8 @@ uint8_t			alarmLockIndex		= 0;
 uint8_t			alarmRingIndex		= 0;
 
 // 	Pins
+//  A12				* USB DP
+//  A11				* USB DM
 //	A9				Button (Select)
 //	A8				Audio
 //	A7				Screen (MOSI)
@@ -113,6 +115,7 @@ uint8_t			alarmRingIndex		= 0;
 // 	A2				Amplifier Shutdown
 //	A1				Button (Down)
 //	A0				Button (Up)
+//  B6				Backlight PWM
 
 void UpdateModeUIAndBehaviour()
 {

@@ -133,3 +133,15 @@ routine gets called while the bitmap is already rendering.
 08/02/2020
 Only one mode now used to set all fields including date, clock, alarm and calibration.
 Noticed that switching out of About mode leaves some garbage on the screen.
+
+11/02/2020
+Measured current draw. It was 70-80mA with the menu open, and 90 - 120mA with a song playing.
+
+15/02/2020
+Ordered cases + laptop speakers, these are on the way.
+I wish to control the backlight brightness by PWM. According to this post: https://forum.arduino.cc/index.php?topic=490421.0 this has been done by
+using an NPN transistor 2N3904 with a 1k base resistor to ground the cathode of the backlight LEDs.
+Or consider using a MOSFET.
+
+16/02/2020
+Implemented PWM for backlight using a supposed BS170 N-channel enhancement MOSFET. It is working.

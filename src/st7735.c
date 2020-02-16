@@ -76,6 +76,7 @@ const InitStruct is[] =
 #define RS_PIN			GPIO_Pin_3
 #define CL_PIN			GPIO_Pin_5
 #define SD_PIN			GPIO_Pin_7
+#define BL_PIN			GPIO_Pin_6
 
 void WriteBuffer(enum DataCmd dc, void* pdata, uint16_t len)
 {
@@ -134,8 +135,42 @@ static ALWAYS_INLINE void WriteShort(enum DataCmd dc, uint16_t data)
 
 void InitDisplay()
 {
-	SPI_InitTypeDef spi;
-	GPIO_InitTypeDef gpio;
+	SPI_InitTypeDef 			spi;
+	GPIO_InitTypeDef 			gpio;
+	TIM_TimeBaseInitTypeDef		timb;
+	TIM_OCInitTypeDef			ocnt;
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+
+	GPIO_StructInit(&gpio);
+
+	// Use pin for backlight PWM, TIM4 OC1
+	gpio.GPIO_Mode				= GPIO_Mode_AF_PP;
+	gpio.GPIO_Speed				= GPIO_Speed_50MHz;
+	gpio.GPIO_Pin				= BL_PIN;
+	GPIO_Init(GPIOB, &gpio);
+
+	// Init timer for backlight PWM
+	TIM_TimeBaseStructInit(&timb);
+	TIM_OCStructInit(&ocnt);
+
+	timb.TIM_Prescaler 			= (((SystemCoreClock /* / 2 */) / BACKLIGHT_PWM_HZ) - 1);
+	timb.TIM_CounterMode 		= TIM_CounterMode_Up;
+	timb.TIM_Period 			= 255;
+	timb.TIM_ClockDivision 		= TIM_CKD_DIV1;
+	timb.TIM_RepetitionCounter 	= 0;
+	TIM_TimeBaseInit(TIM4, &timb);
+
+	ocnt.TIM_OCMode 			= TIM_OCMode_PWM1;
+	ocnt.TIM_Pulse 				= 100;
+	ocnt.TIM_OutputState 		= TIM_OutputState_Enable;
+	ocnt.TIM_OCPolarity 		= TIM_OCPolarity_High;
+	ocnt.TIM_OCIdleState 		= TIM_OCIdleState_Reset;
+	TIM_OC1Init(TIM4, &ocnt);
+	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
+	TIM_CtrlPWMOutputs(TIM4, ENABLE);
+	TIM_Cmd(TIM4, ENABLE);
 
 	// Enable SPI1
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
@@ -155,6 +190,8 @@ void InitDisplay()
 	// NSS must be set to '1' due to NSS_Soft settings (otherwise it will be Multimaster mode).
 	SPI_NSSInternalSoftwareConfig(SPI1, SPI_NSSInternalSoft_Set);
 	SPI_Cmd(SPI1, ENABLE);
+
+	GPIO_StructInit(&gpio);
 
 	// SCK = PA05, MOSI (SDA) = PA07
 	gpio.GPIO_Mode				= GPIO_Mode_AF_PP;
@@ -213,6 +250,11 @@ void SetDisplayMode(enum Mode ds)
 void SetIdleMode(enum Mode id)
 {
 	WriteByte(Cmd, (id == On) ? 0x39 : 0x38);
+}
+
+void SetBacklightLevel(uint8_t level)
+{
+	TIM4->CCR1 = level;
 }
 
 void AddressSet(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
