@@ -9,6 +9,9 @@
 
 #define MIN_SNOOZE_MINUTES	5
 #define MAX_SNOOZE_MINUTES	15
+#define MAX_BRIGHTNESS_REAL	255
+#define MAX_BRIGHTNESS		50
+#define MIN_BRIGHTNESS		8
 
 typedef enum {
 	Normal,
@@ -30,7 +33,11 @@ typedef enum {
 	Month,
 	Day,
 	SnoozeMinutes,
-	RtcTrim
+	RtcTrim,
+	DaytimeBrightness,
+	NighttimeBrightness,
+	NighttimeHoursStart,
+	NighttimeHoursEnd,
 } ClockSetField;
 
 typedef enum {
@@ -49,7 +56,8 @@ typedef enum {
 	ModeAlarm			= 0x01,
 	ModeAlarmLock		= 0x02,
 	ModeAlarmSnooze		= 0x04,
-	Mode24HourDisplay	= 0x10
+	Mode24HourDisplay	= 0x10,
+	ModeNightDimDisplay	= 0x20
 } ClockMode;
 
 typedef struct {
@@ -58,6 +66,20 @@ typedef struct {
 	const char** 	texts;
 } SpecialDay, *PSpecialDay;
 
+typedef union {
+	struct {
+		uint8_t			nightHoursStart;
+		uint8_t			nightHoursEnd;
+		uint8_t			nighttimeBrightness;
+		uint8_t			daytimeBrightness;
+	} bs;
+	struct {
+		uint16_t		hours;
+		uint16_t		levels;
+	} rg;
+} BrtStruct;
+
+extern BrtStruct		brightnessSettings;
 extern PSpecialDay		specialDay;
 extern int16_t			specialDayTextIndex;
 extern uint16_t			specialDayYears;

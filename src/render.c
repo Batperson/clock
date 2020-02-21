@@ -201,6 +201,8 @@ void RenderFieldSet()
 	{
 	case ClockHour:
 	case AlarmHour:
+	case NighttimeHoursStart:
+	case NighttimeHoursEnd:
 		if(mode & Mode24HourDisplay)
 		{
 			strftime(sz, sizeof(sz), "%H", &clockSetValues);
@@ -232,6 +234,12 @@ void RenderFieldSet()
 		break;
 	case RtcTrim:
 		sprintf(sz, "%03d", clockSetValues.tm_yday);
+		break;
+	case DaytimeBrightness:
+		sprintf(sz, "%02d", brightnessSettings.bs.daytimeBrightness);
+		break;
+	case NighttimeBrightness:
+		sprintf(sz, "%02d", brightnessSettings.bs.nighttimeBrightness);
 		break;
 	default:
 		break;
@@ -270,6 +278,18 @@ void RenderFieldSet()
 		break;
 	case RtcTrim:
 		strcpy(sz, "SET OSC CALIB VALUE");
+		break;
+	case DaytimeBrightness:
+		strcpy(sz, "SET DAY BRIGHTNESS");
+		break;
+	case NighttimeBrightness:
+		strcpy(sz, "SET NIGHT BRIGHTNESS");
+		break;
+	case NighttimeHoursStart:
+		strcpy(sz, "SET NIGHT START");
+		break;
+	case NighttimeHoursEnd:
+		strcpy(sz, "SET NIGHT END");
 		break;
 	default:
 		break;

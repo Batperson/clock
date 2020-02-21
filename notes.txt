@@ -145,3 +145,6 @@ Or consider using a MOSFET.
 
 16/02/2020
 Implemented PWM for backlight using a supposed BS170 N-channel enhancement MOSFET. It is working.
+
+22/02/2020
+Clock can now dim its display during night hours, and menu items exist to set night hours, brightness levels and whether or not to dim.

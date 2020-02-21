@@ -48,5 +48,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;/&gt;&#13;&#10;"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.cdt.dsf.gdb.GdbProcessFactory"/>
-<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="buf,*buf,buf[0],pdata,pfd,*pfd,pf-&gt;data,TIM1-&gt;CCR1,TIM1,&amp;TIM1,showMenuHandler,0x20004f7d"/>
+<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="pfd,*pfd,pf-&gt;data,TIM1-&gt;CCR1,TIM1,&amp;TIM1,showMenuHandler,0x20004f7d,brightnessSettings,&amp;brightnessSettings,&amp;brightnessSettings.uint,&amp;brightnessSettings.bs.nightHoursStart,&amp;brightnessSettings.bs.nightHoursEnd,&amp;brightnessSettings.bs.nighttimeBrightness,&amp;brightnessSettings.bs.daytimeBrightness"/>
 </launchConfiguration>

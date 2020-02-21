@@ -26,6 +26,8 @@
 #define BREG_ALARM_RING				BKP_DR3
 #define BREG_CLOCK_MODE				BKP_DR4
 #define BREG_SNOOZE_MINS			BKP_DR5
+#define BREG_BRIGHTNESS_HOURS		BKP_DR6
+#define BREG_BRIGHTNESS_LEVELS		BKP_DR7
 
 const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today.", NULL };
 const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
@@ -80,6 +82,9 @@ MenuItem mainMenu[] = {
 	{ "ALARM LOCK",					SetModeFlags, 		ModeAlarmLock },
 	{ "24HOUR MODE",				SetModeFlags,		Mode24HourDisplay },
 	{ "SET SNOOZE MINUTES",			SetField,			SnoozeMinutes },
+	{ "DIM DISPLAY",				SetModeFlags,		ModeNightDimDisplay },
+	{ "SET DIM TIME",				SetField,			NighttimeHoursStart },
+	{ "SET BRIGHTNESS",				SetField,			DaytimeBrightness },
 	{ "CALIBRATE CLOCK",			SetField,			RtcTrim },
 	{ "ABOUT THIS CLOCK", 			ChangeState, 		About },
 	{ "EXIT", 						ChangeState, 		Normal },
@@ -90,7 +95,7 @@ const uint16_t alarmKeys[3] = { BTN_SELECT, BTN_UP, BTN_DOWN };
 
 ClockState 		clockState 			= BootStrap;
 ClockSetField 	clockSetField 		= ClockHour;
-ClockMode		mode				= ModeAlarmLock | ModeAlarmSnooze;
+ClockMode		mode				= ModeAlarmLock | ModeAlarmSnooze | ModeNightDimDisplay;
 AlarmState		alarmState			= AlarmStateNone;
 PSpecialDay		specialDay			= NULL;
 int16_t			specialDayTextIndex = -1;
@@ -98,6 +103,7 @@ uint16_t		specialDayYears		= 0;
 uint8_t			snoozeMinutes		= 5;
 struct tm 		clockValues;
 struct tm		clockSetValues;
+BrtStruct		brightnessSettings	= { { 20, 7, 20, 40 } };
 uint8_t			alarmLock[4]		= { 0, 0, 0, 0 };
 uint8_t			alarmLockIndex		= 0;
 uint8_t			alarmRingIndex		= 0;
@@ -129,6 +135,8 @@ void UpdateModeUIAndBehaviour()
 	mainMenu[6].proc		= (mode & ModeAlarmLock) ? ClearModeFlags : SetModeFlags;
 	mainMenu[7].flags		= (mode & Mode24HourDisplay) ? MenuSelected : MenuNone;
 	mainMenu[7].proc		= (mode & Mode24HourDisplay) ? ClearModeFlags : SetModeFlags;
+	mainMenu[9].flags		= (mode & ModeNightDimDisplay) ? MenuSelected : MenuNone;
+	mainMenu[9].proc		= (mode & ModeNightDimDisplay) ? ClearModeFlags : SetModeFlags;
 
 	for(int i=0; i < sizeof(alarmMenu) / sizeof(alarmMenu[0]); i++)
 		alarmMenu[i].flags = (alarmMenu[i].proc == SetAlarmRing && alarmMenu[i].arg == alarmRingIndex) ? MenuSelected : MenuNone;
@@ -141,19 +149,22 @@ void OnInitBackupDomain()
 	// Initialize stored settings. This will only be called when the clock is started for the first time,
 	// or if the backup battery goes flat and is replaced.
 
-	BKP_WriteBackupRegister(BREG_CLOCK_MODE, ModeAlarmLock | ModeAlarmSnooze);
-	BKP_WriteBackupRegister(BREG_ALARM_RING, 0);
+	BKP_WriteBackupRegister(BREG_CLOCK_MODE, mode);
+	BKP_WriteBackupRegister(BREG_ALARM_RING, alarmRingIndex);
 	BKP_WriteBackupRegister(BREG_SNOOZE_MINS, snoozeMinutes);
+	BKP_WriteBackupRegister(BREG_BRIGHTNESS_HOURS, brightnessSettings.rg.hours);
+	BKP_WriteBackupRegister(BREG_BRIGHTNESS_LEVELS, brightnessSettings.rg.levels);
 }
 
 void LoadConfiguration()
 {
-	mode			= BKP_ReadBackupRegister(BREG_CLOCK_MODE);
+	mode							= BKP_ReadBackupRegister(BREG_CLOCK_MODE);
+	alarmRingIndex					= BKP_ReadBackupRegister(BREG_ALARM_RING);
+	snoozeMinutes					= BKP_ReadBackupRegister(BREG_SNOOZE_MINS);
+	brightnessSettings.rg.hours		= BKP_ReadBackupRegister(BREG_BRIGHTNESS_HOURS);
+	brightnessSettings.rg.levels	= BKP_ReadBackupRegister(BREG_BRIGHTNESS_LEVELS);
 
 	UpdateModeUIAndBehaviour();
-
-	alarmRingIndex	= BKP_ReadBackupRegister(BREG_ALARM_RING);
-	snoozeMinutes	= BKP_ReadBackupRegister(BREG_SNOOZE_MINS);
 
 	// Protection against out of bounds error in case this value somehow gets set incorrectly
 	if(alarmRingIndex >= sizeof(alarmRings) / sizeof(alarmRings[0]) && alarmRingIndex != 0xFF)
@@ -308,6 +319,8 @@ void FieldSetUp()
 	{
 	case ClockHour:
 	case AlarmHour:
+	case NighttimeHoursStart:
+	case NighttimeHoursEnd:
 		if(clockSetValues.tm_hour-- == 0) clockSetValues.tm_hour = 23;
 		break;
 	case ClockMinute:
@@ -331,6 +344,14 @@ void FieldSetUp()
 		break;
 	case RtcTrim:
 		if(clockSetValues.tm_yday-- == 0) clockSetValues.tm_yday = MAX_RTC_TRIM;
+	case DaytimeBrightness:
+		if(brightnessSettings.bs.daytimeBrightness-- == MIN_BRIGHTNESS) brightnessSettings.bs.daytimeBrightness = MIN_BRIGHTNESS;
+		SetBacklightLevel(brightnessSettings.bs.daytimeBrightness);
+		break;
+	case NighttimeBrightness:
+		if(brightnessSettings.bs.nighttimeBrightness-- == MIN_BRIGHTNESS) brightnessSettings.bs.nighttimeBrightness = MIN_BRIGHTNESS;
+		SetBacklightLevel(brightnessSettings.bs.nighttimeBrightness);
+		break;
 	default:
 		break;
 	}
@@ -344,6 +365,8 @@ void FieldSetDown()
 	{
 	case ClockHour:
 	case AlarmHour:
+	case NighttimeHoursStart:
+	case NighttimeHoursEnd:
 		if(clockSetValues.tm_hour++ == 23) clockSetValues.tm_hour = 0;
 		break;
 	case ClockMinute:
@@ -368,6 +391,14 @@ void FieldSetDown()
 	case RtcTrim:
 		if(clockSetValues.tm_yday++ == MAX_RTC_TRIM) clockSetValues.tm_yday = 0;
 		break;
+	case DaytimeBrightness:
+		if(brightnessSettings.bs.daytimeBrightness++ == MAX_BRIGHTNESS) brightnessSettings.bs.daytimeBrightness = MAX_BRIGHTNESS;
+		SetBacklightLevel(brightnessSettings.bs.daytimeBrightness);
+		break;
+	case NighttimeBrightness:
+		if(brightnessSettings.bs.nighttimeBrightness++ == MAX_BRIGHTNESS) brightnessSettings.bs.nighttimeBrightness = MAX_BRIGHTNESS;
+		SetBacklightLevel(brightnessSettings.bs.nighttimeBrightness);
+		break;
 	default:
 		break;
 	}
@@ -380,9 +411,11 @@ void FieldMoveNext()
 	switch(clockSetField)
 	{
 	case ClockHour:
-		clockSetField++;
-		break;
 	case ClockMinute:
+	case Year:
+	case Month:
+	case AlarmHour:
+	case DaytimeBrightness:
 		clockSetField++;
 		break;
 	case ClockSecond:
@@ -391,20 +424,11 @@ void FieldMoveNext()
 
 		ChangeState(Normal);
 		break;
-	case Year:
-		clockSetField++;
-		break;
-	case Month:
-		clockSetField++;
-		break;
 	case Day:
 		SetTime(&clockSetValues);
 		memcpy(&clockValues, &clockSetValues, sizeof(struct tm));
 
 		ChangeState(Normal);
-		break;
-	case AlarmHour:
-		clockSetField++;
 		break;
 	case AlarmMinute:
 		SetAlarmTime(&clockSetValues);
@@ -417,6 +441,19 @@ void FieldMoveNext()
 		break;
 	case RtcTrim:
 		SetRtcCalibrationValue(clockSetValues.tm_yday);
+		ChangeState(Normal);
+		break;
+	case NighttimeHoursStart:
+		brightnessSettings.bs.nightHoursStart = clockSetValues.tm_hour;
+		clockSetField++;
+		break;
+	case NighttimeHoursEnd:
+		brightnessSettings.bs.nightHoursEnd = clockSetValues.tm_hour;
+		BKP_WriteBackupRegister(BREG_BRIGHTNESS_HOURS, brightnessSettings.rg.hours);
+		ChangeState(Normal);
+		break;
+	case NighttimeBrightness:
+		BKP_WriteBackupRegister(BREG_BRIGHTNESS_LEVELS, brightnessSettings.rg.levels);
 		ChangeState(Normal);
 		break;
 	default:
@@ -541,12 +578,23 @@ void SetField(ClockSetField field)
 	case SnoozeMinutes:
 		clockSetValues.tm_yday = snoozeMinutes;
 		break;
+	case NighttimeHoursStart:
+		clockSetValues.tm_hour = brightnessSettings.bs.nightHoursStart;
+		break;
+	case NighttimeHoursEnd:
+		clockSetValues.tm_hour = brightnessSettings.bs.nightHoursEnd;
+		break;
 	default:
 		GetTime(&clockSetValues);
 		break;
 	}
 
 	ChangeState(FieldSet);
+}
+
+uint8_t IsNightTime()
+{
+	return (clockValues.tm_hour >= brightnessSettings.bs.nightHoursStart || clockValues.tm_hour < brightnessSettings.bs.nightHoursEnd) ? 1 : 0;
 }
 
 void ChangeState(ClockState state)
@@ -566,26 +614,31 @@ void ChangeState(ClockState state)
 			PlaySong(PlayLoop);
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonAny, AboutHandler);
 			RegisterTimeoutCallback(TriggerRender, 100, CallbackRepeat);
+			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
 			break;
 
 		case Menu:
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress, MenuHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, MenuLongPressHandler);
+			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
 			break;
 
 		case AlarmRing:
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonLongDown | ButtonShortPress, AlarmButtonHandler);
 			RegisterTimeoutCallback(TriggerRender, 100, CallbackRepeat);
+			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
 			SetAlarmLock();
 			break;
 
 		case FieldSet:
 			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
+			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
 			break;
 
 		case Normal:
 		default:
+			SetBacklightLevel(IsNightTime() ? brightnessSettings.bs.nighttimeBrightness : brightnessSettings.bs.daytimeBrightness);
 			RegisterButtonCallback(BTN_SELECT, ButtonLongDown, ShowMenuHandler);
 			break;
 		}
@@ -651,6 +704,18 @@ void OnRtcSecond()
 				break;
 			}
 		}
+	}
+
+	static int hr = -1;
+	if(clockValues.tm_hour != hr)
+	{
+		hr				= clockValues.tm_hour;
+
+		if(clockState == Normal)
+			SetBacklightLevel(
+				IsNightTime() ?
+					brightnessSettings.bs.nighttimeBrightness :
+					brightnessSettings.bs.daytimeBrightness);
 	}
 }
 
