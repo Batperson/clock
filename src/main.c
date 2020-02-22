@@ -415,7 +415,6 @@ void FieldMoveNext()
 	case Year:
 	case Month:
 	case AlarmHour:
-	case DaytimeBrightness:
 		clockSetField++;
 		break;
 	case ClockSecond:
@@ -451,6 +450,10 @@ void FieldMoveNext()
 		brightnessSettings.bs.nightHoursEnd = clockSetValues.tm_hour;
 		BKP_WriteBackupRegister(BREG_BRIGHTNESS_HOURS, brightnessSettings.rg.hours);
 		ChangeState(Normal);
+		break;
+	case DaytimeBrightness:
+		clockSetField++;
+		SetBacklightLevel(brightnessSettings.bs.nighttimeBrightness);
 		break;
 	case NighttimeBrightness:
 		BKP_WriteBackupRegister(BREG_BRIGHTNESS_LEVELS, brightnessSettings.rg.levels);
@@ -614,26 +617,38 @@ void ChangeState(ClockState state)
 			PlaySong(PlayLoop);
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonAny, AboutHandler);
 			RegisterTimeoutCallback(TriggerRender, 100, CallbackRepeat);
-			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
+			SetBacklightLevel(MAX_BRIGHTNESS);
 			break;
 
 		case Menu:
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress, MenuHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, MenuLongPressHandler);
-			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
+			SetBacklightLevel(MAX_BRIGHTNESS);
 			break;
 
 		case AlarmRing:
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonLongDown | ButtonShortPress, AlarmButtonHandler);
 			RegisterTimeoutCallback(TriggerRender, 100, CallbackRepeat);
-			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
+			SetBacklightLevel(MAX_BRIGHTNESS);
 			SetAlarmLock();
 			break;
 
 		case FieldSet:
 			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
-			SetBacklightLevel(MAX_BRIGHTNESS_REAL);
+			switch(clockSetField)
+			{
+			case DaytimeBrightness:
+				SetBacklightLevel(brightnessSettings.bs.daytimeBrightness);
+				break;
+			case NighttimeBrightness:
+				SetBacklightLevel(brightnessSettings.bs.nighttimeBrightness);
+				break;
+			default:
+				SetBacklightLevel(MAX_BRIGHTNESS);
+				break;
+			}
+
 			break;
 
 		case Normal:
