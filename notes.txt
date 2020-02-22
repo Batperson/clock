@@ -148,3 +148,8 @@ Implemented PWM for backlight using a supposed BS170 N-channel enhancement MOSFE
 
 22/02/2020
 Clock can now dim its display during night hours, and menu items exist to set night hours, brightness levels and whether or not to dim.
+
+23/02/2020
+Replaced the suspect BS170 I was using with a real 2N7000 MOSFET, and the backlight control works much better over the entire PWM range of 0 to 255.
+Made some fixes to reflect this and also ensure that the current brightness level is shown when setting the brightness.
+Clock is running slow: one clock second appears to be 2+ real seconds.

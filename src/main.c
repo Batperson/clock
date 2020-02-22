@@ -444,6 +444,7 @@ void FieldMoveNext()
 		break;
 	case NighttimeHoursStart:
 		brightnessSettings.bs.nightHoursStart = clockSetValues.tm_hour;
+		clockSetValues.tm_hour = brightnessSettings.bs.nightHoursEnd;
 		clockSetField++;
 		break;
 	case NighttimeHoursEnd:
