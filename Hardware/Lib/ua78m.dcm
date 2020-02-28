@@ -1,0 +1,27 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP UA78M05CDCY
+D LINEAR VOLT REGULATOR 5.0V SOT-223-4
+K Voltage Regulator 500mA Positive
+F https://www.ti.com/lit/ds/symlink/ua78m.pdf
+$ENDCMP
+#
+$CMP UA78M08CDCY
+D LINEAR VOLT REGULATOR 8.0V SOT-223-4
+K Voltage Regulator 500mA Positive
+F https://www.ti.com/lit/ds/symlink/ua78m.pdf
+$ENDCMP
+#
+$CMP UA78M10CDCY
+D LINEAR VOLT REGULATOR 10V SOT-223-4
+K Voltage Regulator 500mA Positive
+F https://www.ti.com/lit/ds/symlink/ua78m.pdf
+$ENDCMP
+#
+$CMP UA78M33CDCY
+D LINEAR VOLT REGULATOR 3.3V SOT-223-4
+K Voltage Regulator 500mA Positive
+F https://www.ti.com/lit/ds/symlink/ua78m.pdf
+$ENDCMP
+#
+#End Doc Library
