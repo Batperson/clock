@@ -155,4 +155,4 @@ Made some fixes to reflect this and also ensure that the current brightness leve
 Clock is running slow: one clock second appears to be 2+ real seconds.
 
 29/02/2020
-Schematic nearly finished. Need to check BOOT0, BOOT1 and also crystal capacitors. Check 3VB battery circuit.
+Schematic nearly finished. Need to check BOOT0, BOOT1 and also crystal capacitors. Check 3VB battery circuit. Battery_Holders:Keystone_3000_1x12mm-CoinCell
