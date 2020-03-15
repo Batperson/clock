@@ -1,4 +1,4 @@
 (fp_lib_table
-  (lib (name Foodprints)(type KiCad)(uri ${KIPRJMOD}/Footprints.pretty)(options "")(descr ""))
+  (lib (name Footprints)(type KiCad)(uri ${KIPRJMOD}/Footprints.pretty)(options "")(descr ""))
   (lib (name SPE_IM120905001_FPC)(type KiCad)(uri ${KIPRJMOD}/Footprints.pretty/SPE_IM120905001_FPC.pretty)(options "")(descr ""))
 )
