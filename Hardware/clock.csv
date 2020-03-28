@@ -1,0 +1,31 @@
+Reference,Value,Footprint,On Hand
+BT1,Battery_Cell,Battery:BatteryHolder_Keystone_3000_1x12mm,Y
+"C1, C11, C12, C15, C16, C18, C19, C3, C5, C6, C8",100n,Capacitor_SMD:C_0402_1005Metric,Y
+C10,330n,Capacitor_SMD:C_0402_1005Metric,
+"C13, C14",1u,Capacitor_SMD:C_0402_1005Metric,Y
+C17,10u,Capacitor_SMD:C_0402_1005Metric,Y
+"C2, C4",27p,Capacitor_SMD:C_0402_1005Metric,Y
+C20,220U,Capacitor_Tantalum_SMD:CP_EIA-7343-20_Kemet-V_Pad2.25x2.55mm_HandSolder,
+C21,33U,Capacitor_Tantalum_SMD:CP_EIA-3528-21_Kemet-B_Pad1.50x2.35mm_HandSolder,Y
+"C7, C9",15p,Capacitor_SMD:C_0402_1005Metric,
+"D1, D3",B0540W-7-F,Diode_SMD:D_SOD-123,
+D2,ESDA6V1BC6,Package_TO_SOT_SMD:SOT-23-6,Y
+"FB1, FB2",BLM18PG471SN1D,Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder,Y
+FL1,NFE61PT472C1H9L,Footprints:6816,Y
+J1,Conn_02x05_Counter_Clockwise,Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Vertical,Y
+J2,Conn_01x02_Male,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Horizontal,Y
+J3,USB_B_Micro,Connector_USB:USB_Micro-B_Molex_47346-0001,Y
+J4,Barrel_Jack,Footprints:DC-005-SMT,Y
+Q1,2N7002ET1G,Package_TO_SOT_SMD:SOT-23_Handsoldering,
+"R1, R5, R6, R7",10k,Resistor_SMD:R_0603_1608Metric,Y
+"R9, R10",150k,Resistor_SMD:R_0603_1608Metric,
+R11,100R,Resistor_SMD:R_0603_1608Metric,Y
+"R2, R3",33R,Resistor_SMD:R_0603_1608Metric,Y
+"R4, R8",1K,Resistor_SMD:R_0603_1608Metric,
+"SW1, SW2, SW3",SW_Push,Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm,Y
+TFT1,ST7735_128x160_SPI,SPE_IM120905001_FPC:TFT_160x120_14pin,Y
+U1,STM32F103C8Tx,Package_QFP:LQFP-48_7x7mm_P0.5mm,
+U2,UA78M33CDCY,Package_TO_SOT_SMD:SOT-223-3_TabPin2,Y
+U3,TPA2005D1DRB,Package_SO:MSOP-8-1EP_3x3mm_P0.65mm_EP1.73x1.85mm,Y
+Y1,8M0,Crystal:Crystal_HC49-U_Vertical,Y
+Y2,32k678,Crystal:Crystal_SMD_3215-2Pin_3.2x1.5mm,Y
