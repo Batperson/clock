@@ -633,7 +633,7 @@ const Track starwars_track_4 = {
 
 // vocal / melody
 const Track unknown_track_1 = {
-	255,
+	200,
 	6,
 	&saw,
 	{
@@ -693,7 +693,7 @@ const Track unknown_track_1 = {
 
 // bass accompaniment 1
 const Track unknown_track_2 = {
-	255,
+	127,
 	6,
 	&saw,
 	{
@@ -748,7 +748,7 @@ const Track unknown_track_2 = {
 
 // bass accompaniment 2
 const Track unknown_track_3 = {
-	255,
+	127,
 	6,
 	&saw,
 	{

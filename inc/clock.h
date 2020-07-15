@@ -10,7 +10,7 @@
 #define MIN_SNOOZE_MINUTES	5
 #define MAX_SNOOZE_MINUTES	15
 #define MAX_BRIGHTNESS		255
-#define MIN_BRIGHTNESS		8
+#define MIN_BRIGHTNESS		2
 
 typedef enum {
 	Normal,

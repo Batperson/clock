@@ -249,7 +249,7 @@ void RenderFieldSet()
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(CYAN);
 	SetFont(lcdFont);
-	DrawText(0, 36, 152, 36, AlignCentre, sz);
+	DrawText(0, 36, 152, 36, AlignCentre | FillMargin, sz);
 
 	switch(clockSetField)
 	{
@@ -297,7 +297,7 @@ void RenderFieldSet()
 
 	SetForegroundColour(MAGENTA);
 	SetFont(sysFont);
-	DrawText(0, 80, 152, 12, AlignCentre, sz);
+	DrawText(0, 80, 152, 12, AlignCentre | FillMargin, sz);
 }
 
 void RenderAbout()

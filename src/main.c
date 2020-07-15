@@ -195,8 +195,6 @@ int main(void)
 	LoadConfiguration();
 	AudioOn();
 	ChangeState(Normal);
-	SelectSong(&unknown);
-	PlaySong(PlayLoop);
 
 	while(1)
 	{
@@ -313,7 +311,7 @@ int GetMaxDay(uint32_t year, uint8_t month)
 	}
 }
 
-void FieldSetUp()
+void FieldSetDown()
 {
 	switch(clockSetField)
 	{
@@ -359,7 +357,7 @@ void FieldSetUp()
 	TriggerRender();
 }
 
-void FieldSetDown()
+void FieldSetUp()
 {
 	switch(clockSetField)
 	{

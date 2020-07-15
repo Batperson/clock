@@ -159,3 +159,9 @@ Schematic nearly finished. Need to check BOOT0, BOOT1 and also crystal capacitor
 
 18/03/2020
 Begun layout and routing. Replace the PJ-102 thru-hole barrel jack with SMT equivalent PJ-036AH-SMT-TR or similar.
+
+16/07/2020
+Populated 1 circuit board. It is working but had problems with the USB socket which has since peeled off the board. Possible loose connection 
+on the programming header pins or cable as sometimes loses power while plugged in. Barrel jacks have not arrived so no alternative power source at present.
+Some outstanding bugs: garbage on the screen after exiting the About screen. Seems to enter hard loop after setting date. May need to revisit volume levels for songs.
+Need a better New Year message. Need a special build for Rosie with her name on it.
