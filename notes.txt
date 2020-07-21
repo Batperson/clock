@@ -165,3 +165,10 @@ Populated 1 circuit board. It is working but had problems with the USB socket wh
 on the programming header pins or cable as sometimes loses power while plugged in. Barrel jacks have not arrived so no alternative power source at present.
 Some outstanding bugs: garbage on the screen after exiting the About screen. Seems to enter hard loop after setting date. May need to revisit volume levels for songs.
 Need a better New Year message. Need a special build for Rosie with her name on it.
+
+19/07/2020
+Populated second board. This one also working, despite the uC not being correctly aligned with the pads and some surgery needed to ensure everything connected with no bridges.
+Replaced the USB socket on the first board, both boards now capable of being powered by USB. Noticed some faint background noise from the loudspeaker.
+
+21/07/2020
+Implemented fix for special day issue, not tested yet.

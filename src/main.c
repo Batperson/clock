@@ -98,6 +98,7 @@ ClockSetField 	clockSetField 		= ClockHour;
 ClockMode		mode				= ModeAlarmLock | ModeAlarmSnooze | ModeNightDimDisplay;
 AlarmState		alarmState			= AlarmStateNone;
 PSpecialDay		specialDay			= NULL;
+SpecialDayState	specialDayState		= SpecialDayHide;
 int16_t			specialDayTextIndex = -1;
 uint16_t		specialDayYears		= 0;
 uint8_t			snoozeMinutes		= 5;
@@ -701,23 +702,27 @@ void OnRtcSecond()
 	static int yday = -1;
 	if(clockValues.tm_yday != yday)
 	{
-		yday 			= clockValues.tm_yday;
-		specialDay 		= NULL;
+		SpecialDayState tmpState 	= SpecialDayHide;
+		yday 						= clockValues.tm_yday;
 
 		// Clear the text banner area
 		DrawRect(0, 94, 162, 12, DrawNormal);
 
 		for(int i=0; i<sizeof(specialDays) / sizeof(SpecialDay); i++)
 		{
-			struct tm* ptm = localtime(&specialDays[i].time);
+			struct tm* ptm 				= localtime(&specialDays[i].time);
+
 			if(ptm->tm_mday == clockValues.tm_mday && ptm->tm_mon == clockValues.tm_mon)
 			{
 				specialDay 			= (PSpecialDay)&specialDays[i];
 				specialDayTextIndex	= -1;
 				specialDayYears 	= clockValues.tm_year - ptm->tm_year;
+				tmpState			= SpecialDayShow;
 				break;
 			}
 		}
+
+		specialDayState = tmpState;
 	}
 
 	static int hr = -1;

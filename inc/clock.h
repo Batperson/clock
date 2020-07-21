@@ -65,6 +65,11 @@ typedef struct {
 	const char** 	texts;
 } SpecialDay, *PSpecialDay;
 
+typedef enum {
+	SpecialDayHide	 	= 0x00,
+	SpecialDayShow		= 0x01
+} SpecialDayState;
+
 typedef union {
 	struct {
 		uint8_t			nightHoursStart;
@@ -80,6 +85,7 @@ typedef union {
 
 extern BrtStruct		brightnessSettings;
 extern PSpecialDay		specialDay;
+extern SpecialDayState	specialDayState;
 extern int16_t			specialDayTextIndex;
 extern uint16_t			specialDayYears;
 extern char*			specialDayText;

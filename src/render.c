@@ -71,7 +71,7 @@ static char szBanner[64];
 
 void SpecialDayCallback()
 {
-	if(clockState == Normal)
+	if(clockState == Normal && specialDayState == SpecialDayShow)
 		TriggerRenderPart(RenderSpecialDayBanner);
 
 	if(callbackCnt++ == maxIntensity)
@@ -127,11 +127,11 @@ void RenderNormal()
 		SetFont(sysFont);
 		DrawText(0, 80, 160, 12, AlignCentre, sz);
 
-		if(specialDay != NULL && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
+		if(specialDayState == SpecialDayShow && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
 			RegisterTimeoutCallback(SpecialDayCallback, SPECIAL_DAY_FADE_MSECS, CallbackRepeat);
 	}
 
-	if(renderPart & RenderSpecialDayBanner && specialDay != NULL)
+	if(renderPart & RenderSpecialDayBanner && specialDayState == SpecialDayShow)
 	{
 		SetBackgroundColour(BLACK);
 		SetFont(sysFont);
