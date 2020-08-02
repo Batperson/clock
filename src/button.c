@@ -72,6 +72,8 @@ void PollButtonState()
 			ButtonEventType et	= (callback[i] & EVENT_MASK) >> EVENT_SHIFT;
 			button_callback cbk	= (button_callback)(callback[i] & CALLBACK_MASK);
 
+			printf("btn %i %d %d\n", i, btna, eta);
+
 			OnButtonEvent(btna, eta);
 
 			if((eta & et) == eta)

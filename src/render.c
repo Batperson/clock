@@ -117,8 +117,13 @@ void RenderNormal()
 		else if(mode & ModeAlarm)
 			bm = bell;
 
+#ifdef SCREEN_MISALIGNED
+		DrawBitmap(46, 12, DrawNormal, bm);
+		DrawText(10, 36, 150, 36, AlignCentre, sz);
+#else
 		DrawBitmap(36, 12, DrawNormal, bm);
 		DrawText(0, 36, 160, 36, AlignCentre, sz);
+#endif
 
 		strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
 		strupr(sz);
@@ -172,12 +177,22 @@ void RenderAlarm()
 	SetBackgroundColour(BLACK);
 	SetStripeBrush(alarmStripes, sizeof(alarmStripes) / sizeof(alarmStripes[0]), stripeOffset++, 4, Horizontal);
 	SetFont(lcdFont);
-	DrawText(0, 36, 152, 36, AlignCentre, sz);
+
+#ifdef SCREEN_MISALIGNED
+	DrawText(10, 36, 150, 36, AlignCentre, sz);
+#else
+	DrawText(0, 36, 160, 36, AlignCentre, sz);
+#endif
 
 	RemoveBrush();
 	SetForegroundColour(YELLOW);
 	SetFont(sysFont);
-	DrawText(0, 80, 152, 12, AlignCentre, "TO STOP ALARM PRESS:");
+
+#ifdef SCREEN_MISALIGNED
+	DrawText(10, 80, 150, 12, AlignCentre, "TO STOP ALARM PRESS:");
+#else
+	DrawText(0, 80, 160, 12, AlignCentre, "TO STOP ALARM PRESS:");
+#endif
 
 	if(mode & ModeAlarmLock)
 	{
@@ -249,7 +264,12 @@ void RenderFieldSet()
 	SetBackgroundColour(BLACK);
 	SetForegroundColour(CYAN);
 	SetFont(lcdFont);
+
+#ifdef SCREEN_MISALIGNED
+	DrawText(6, 36, 152, 36, AlignCentre | FillMargin, sz);
+#else
 	DrawText(0, 36, 152, 36, AlignCentre | FillMargin, sz);
+#endif
 
 	switch(clockSetField)
 	{
@@ -297,7 +317,12 @@ void RenderFieldSet()
 
 	SetForegroundColour(MAGENTA);
 	SetFont(sysFont);
+
+#ifdef SCREEN_MISALIGNED
+	DrawText(6, 80, 152, 12, AlignCentre | FillMargin, sz);
+#else
 	DrawText(0, 80, 152, 12, AlignCentre | FillMargin, sz);
+#endif
 }
 
 void RenderAbout()
@@ -307,14 +332,23 @@ void RenderAbout()
 	SetForegroundColour(WHITE);
 	SetBackgroundColour(BLACK);
 	SetGradientBrush(300, offs--, Vertical);
+
+#ifdef SCREEN_MISALIGNED
+	DrawBitmap(10, 0, DrawNormal, about);
+#else
 	DrawBitmap(10, 6, DrawNormal, about);
+#endif
 
 	if(offs == 0)
 		offs = 300;
 
 	//RemoveBrush();
 	SetFont(sysFont);
-	DrawText(0, 120, 160, 12, AlignCentre, "FOR CHRISTOPHER");
+#ifdef SCREEN_MISALIGNED
+	DrawText(0, 114, 160, 12, AlignCentre, "FOR CHRISTOPHER");
+#elif ROSIE_BUILD
+	DrawText(0, 120, 160, 12, AlignCentre, "FOR ROSIE");
+#endif
 }
 
 void RenderMenu()
@@ -327,7 +361,12 @@ void RenderMenu()
 	MeasureChar(' ', &w, &h);
 	MeasureDisplay(&dw, &dh);
 
+#ifdef SCREEN_MISALIGNED
+	uint16_t top	= 0;
+#else
 	uint16_t top	= h;
+#endif
+
 	uint16_t left	= w;
 	uint16_t width	= dw - (2 * w);
 	uint8_t start;

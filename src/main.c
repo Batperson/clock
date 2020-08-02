@@ -29,17 +29,28 @@
 #define BREG_BRIGHTNESS_HOURS		BKP_DR6
 #define BREG_BRIGHTNESS_LEVELS		BKP_DR7
 
-const char* birthdayChristopherTexts[] 	= { "Happy birthday Christopher!", "You are now %d years old!", "Hope you have a really nice day today.", NULL };
-const char* birthdayRosieTexts[]		= { "Today is Rosie's birthday!", "She is %d today!", "Be really nice to her on her special day!", NULL };
-const char* birthdayXiaTexts[]			= { "It's Mum's birthday!", "She is %d today.", "Do something nice for her!", NULL };
-const char* birthdayPeterTexts[]		= { "It's Dad's birthday!", "He is %d today.", "Give him a handshake!", NULL };
-const char* christmasTexts[]			= { "Around this day in Palestine", "Speaking very approximately", "A child was born", "And the world changed.", "Merry Christmas!", NULL };
-const char* newYearTexts[]				= { "HAPPY NEW YEAR!", "MAKE IT A GOOD ONE!", NULL };
-const char* waitangiDayTexts[]			= { "Today is Waitangi Day!", "Celebrate your freedoms", "And appreciate your country.", "Remember the past", "And look to the future.", NULL };
-const char* anzacDayTexts[]				= { "They shall not grow old", "As we that are left grow old", "Age shall not weary them", "Nor the years condemn.", "But at the going down of the sun", "And in the morning", "We will remember them.", NULL };
+
+#ifdef ROSIE
+const char* birthdayChristopherTexts[] 	= { "IT'S CHRISTOPHER'S BIRTHDAY!", "HE IS %d YEARS OLD!", "WISH HIM A HAPPY BIRTHDAY.", NULL };
+const char* birthdayRosieTexts[]		= { "TODAY IS YOUR BIRTHDAY!", "YOU ARE %d TODAY!", "HAPPY BIRTHDAY ROSIE!", "I LOVE YOU!", NULL };
+const char* birthdayGummyBearTexts[]	= { "TODAY IS GUMMY BEARS BIRTHDAY!", "SHE IS %d TODAY!", "HAPPY BIRTHDAY GUMMY BEAR!", NULL };
+#else
+const char* birthdayChristopherTexts[] 	= { "HAPPY BIRTHDAY CHRISTOPHER!", "YOUR ARE NOW %d YEARS OLD!", "HOPE YOU HAVE A REALLY NICE DAY.", NULL };
+const char* birthdayRosieTexts[]		= { "TODAY IS ROSIE'S BIRTHDAY!", "SHE IS %d TODAY!", "BE REALLY NICE TO HER!", NULL };
+#endif
+
+const char* birthdayXiaTexts[]			= { "IT'S MUM'S BIRTHDAY!", "SHE IS %d TODAY.", "DO SOMETHING NICE FOR HER!", NULL };
+const char* birthdayPeterTexts[]		= { "IT'S DAD'S BIRTHDAY!", "HE IS %d TODAY.", "GIVE HIM A HANDSHAKE!", NULL };
+const char* christmasTexts[]			= { "AROUND THIS DAY", "IN PALESTINE", "SPEAKING VERY APPROXIMATELY", "A CHILD WAS BORN", "AND THE WORLD CHANGED.", "MERRY CHRISTMAS!", NULL };
+const char* newYearTexts[]				= { "HAPPY NEW YEAR!", "IT'S A NEW START!", "MAKE SOME PLANS", "ENJOY YOUR YEAR.", NULL };
+const char* waitangiDayTexts[]			= { "TODAY IS WAITANGI DAY!", "CELEBRATE YOUR FREEDOMS", "AND APPRECIATE YOUR COUNTRY.", "REMEMBER THE PAST", "LOOK TO THE FUTURE.", NULL };
+const char* anzacDayTexts[]				= { "THEY SHALL NOT GROW OLD", "AS WE THAT ARE LEFT GROW OLD", "AGE SHALL NOT WEARY THEM", "NOR THE YEARS CONDEMN.", "BUT AT THE GOING DOWN OF THE SUN", "AND IN THE MORNING", "WE WILL REMEMBER THEM.", NULL };
 
 const SpecialDay specialDays[] = {
 	{ 1093392000, 	&birthday, 		birthdayChristopherTexts },
+#ifdef ROSIE
+	{ 1454284800,   NULL,           birthdayGummyBearTexts },
+#endif
 	{ 1398988800, 	NULL, 			birthdayRosieTexts },
 	{ 237427200, 	NULL, 			birthdayXiaTexts },
 	{ 184377600, 	NULL, 			birthdayPeterTexts },
@@ -126,7 +137,7 @@ uint8_t			alarmRingIndex		= 0;
 
 void UpdateModeUIAndBehaviour()
 {
-	if(mode & ModeAlarm) SetAlarmFlags(RecurNone); else SetAlarmFlags(RecurWeekend | RecurWeekday);
+	if(mode & ModeAlarm) SetAlarmFlags(RecurWeekend | RecurWeekday); else SetAlarmFlags(RecurNone);
 
 	mainMenu[4].flags		= (mode & ModeAlarm) ? MenuSelected : MenuNone;
 	mainMenu[4].proc		= (mode & ModeAlarm) ? ClearModeFlags : SetModeFlags;
@@ -194,7 +205,7 @@ int main(void)
 	ClearScreen();
 	SetCurrentMenu(mainMenu);
 	LoadConfiguration();
-	AudioOn();
+	//AudioOn();
 	ChangeState(Normal);
 
 	while(1)
@@ -228,11 +239,14 @@ void AboutHandler(uint16_t btn, ButtonEventType et)
 
 void ShowMenuHandler(uint16_t btn, ButtonEventType et)
 {
+	Beep(88000, 100, 90);
 	ChangeState(Menu);
 }
 
 void MenuHandler(uint16_t btn, ButtonEventType et)
 {
+	Beep(88000, 60, 90);
+
 	switch(btn)
 	{
 	case BTN_SELECT:
@@ -251,7 +265,6 @@ static uint16_t lngpress 	= 0;
 
 void MenuLongPressActive()
 {
-	Beep(88000, 30, 90);
 	MenuHandler(lngpress, ButtonShortPress);
 }
 
@@ -278,7 +291,7 @@ void OnMenuHighlight(PMenuItem item)
 
 void OnMenuTimeout(PMenuItem item)
 {
-	if(item->proc == SetAlarmRing)
+	if(item->proc == SetAlarmRing && item->arg < (sizeof(alarmRings) / sizeof(PSong)))
 	{
 		PSong song = alarmRings[item->arg];
 
@@ -470,6 +483,8 @@ void FieldMoveNext()
 
 void FieldPressHandler(uint16_t btn, ButtonEventType et)
 {
+	Beep(88000, 60, 90);
+
 	switch(btn)
 	{
 	case BTN_SELECT:
@@ -483,9 +498,9 @@ void FieldPressHandler(uint16_t btn, ButtonEventType et)
 		break;
 	}
 }
+
 void FieldLongPressActive()
 {
-	Beep(88000, 30, 90);
 	FieldPressHandler(lngpress, ButtonShortPress);
 }
 
@@ -752,25 +767,6 @@ void OnRtcAlarm()
 		}
 
 		ChangeState(AlarmRing);
-	}
-}
-
-void OnButtonEvent(uint32_t btn, ButtonEventType eventType)
-{
-	printf("btn: %d\t%d\n", (int)btn, eventType);
-
-	switch(eventType)
-	{
-	case ButtonShortPress:
-		Beep(88000, 60, 90);
-		break;
-
-	case ButtonLongDown:
-		Beep(88000, 100, 90);
-		break;
-
-	default:
-		break;
 	}
 }
 

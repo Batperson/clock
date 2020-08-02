@@ -36,6 +36,8 @@ volatile Channel channel[SOUND_CHANNELS];
 
 volatile uint16_t soundBuf[SOUND_BUFFER_LEN];
 
+volatile uint8_t ampRefCount = 0;
+
 void SoundCallback();
 
 void InitSound()
@@ -148,14 +150,22 @@ void InitSound()
 
 void AudioOn()
 {
-	//if(++ampRefCount > 0)
+	if(++ampRefCount > 0)
 		GPIO_SetBits(GPIOA, PIN_AMPSD);
+
+	if(ampRefCount > 1)
+	{
+		printf("here");
+	}
 }
 
 void AudioOff()
 {
-	//if(--ampRefCount == 0)
-		GPIO_ResetBits(GPIOA, PIN_AMPSD);
+	if(ampRefCount > 0)
+	{
+		if(--ampRefCount == 0)
+			GPIO_ResetBits(GPIOA, PIN_AMPSD);
+	}
 }
 
 void LoadSoundBuffer(uint16_t bufhalf)
@@ -252,6 +262,7 @@ void Beep(uint32_t hz, uint16_t ms, uint8_t vol)
 		oldVoice	= channel[BEEP_CHANNEL].voice;
 		oldVol		= channel[BEEP_CHANNEL].vol;
 
+		AudioOn();
 		SelectVoice(BEEP_CHANNEL, vol, &sine);
 		SoundOn(BEEP_CHANNEL, hz);
 
@@ -266,6 +277,7 @@ void SoundCallback()
 		if(--beepTicks == 0)
 		{
 			SoundOff(BEEP_CHANNEL);
+			AudioOff();
 
 			if(oldVoice)
 				SelectVoice(BEEP_CHANNEL, oldVol, oldVoice);

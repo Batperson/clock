@@ -113,6 +113,8 @@ void SelectSong(PSong song)
 
 void PlaySong(PlayFlags flags)
 {
+	AudioOn();
+
 	state.flags		= flags | FLAGS_PLAYING;
 
 	TIM_Cmd(TIM3, ENABLE);
@@ -120,6 +122,8 @@ void PlaySong(PlayFlags flags)
 
 void PauseSong()
 {
+	AudioOff();
+
 	TIM_Cmd(TIM3, DISABLE);
 
 	for(int i=0; i< SOUND_CHANNELS; i++)
@@ -149,6 +153,7 @@ void EndSong()
 			InitTracks();
 
 		OnSongEnd();
+		AudioOff();
 	}
 }
 
