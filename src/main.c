@@ -176,6 +176,7 @@ void LoadConfiguration()
 	brightnessSettings.rg.hours		= BKP_ReadBackupRegister(BREG_BRIGHTNESS_HOURS);
 	brightnessSettings.rg.levels	= BKP_ReadBackupRegister(BREG_BRIGHTNESS_LEVELS);
 
+	SetNextAlarm();
 	UpdateModeUIAndBehaviour();
 
 	// Protection against out of bounds error in case this value somehow gets set incorrectly
@@ -205,7 +206,6 @@ int main(void)
 	ClearScreen();
 	SetCurrentMenu(mainMenu);
 	LoadConfiguration();
-	//AudioOn();
 	ChangeState(Normal);
 
 	while(1)
@@ -541,6 +541,7 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 	void stopAlarm() {
 		alarmState 		= AlarmStateNone;
 		alarmLockIndex 	= 0;
+		SetNextAlarm();
 		ChangeState(Normal);
 	}
 
@@ -623,7 +624,6 @@ void ChangeState(ClockState state)
 
 		DeregisterCallback(TriggerRender);
 		DeregisterButtonCallbacks();
-		EndSong();
 
 		switch(clockState)
 		{
@@ -636,12 +636,15 @@ void ChangeState(ClockState state)
 			break;
 
 		case Menu:
+			EndSong();
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonShortPress, MenuHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, MenuLongPressHandler);
 			SetBacklightLevel(MAX_BRIGHTNESS);
 			break;
 
 		case AlarmRing:
+			SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRings[(alarmRingIndex == 0xFF) ? rand() % (sizeof(alarmRings) / sizeof(alarmRings[0])) : alarmRingIndex]);
+			PlaySong(PlayLoop);
 			RegisterButtonCallback(BTN_SELECT | BTN_UP | BTN_DOWN, ButtonLongDown | ButtonShortPress, AlarmButtonHandler);
 			RegisterTimeoutCallback(TriggerRender, 100, CallbackRepeat);
 			SetBacklightLevel(MAX_BRIGHTNESS);
@@ -649,6 +652,7 @@ void ChangeState(ClockState state)
 			break;
 
 		case FieldSet:
+			EndSong();
 			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, FieldPressHandler);
 			RegisterButtonCallback(BTN_UP | BTN_DOWN, ButtonLongDown | ButtonLongPress, FieldLongPressHandler);
 			switch(clockSetField)
@@ -668,6 +672,7 @@ void ChangeState(ClockState state)
 
 		case Normal:
 		default:
+			EndSong();
 			SetBacklightLevel(IsNightTime() ? brightnessSettings.bs.nighttimeBrightness : brightnessSettings.bs.daytimeBrightness);
 			RegisterButtonCallback(BTN_SELECT, ButtonLongDown, ShowMenuHandler);
 			break;
@@ -755,19 +760,14 @@ void OnRtcSecond()
 
 void OnRtcAlarm()
 {
-	// Ignore an alarm if the user is busy with the menu
-	if(clockState != Menu)
+	if(alarmState & AlarmStateSnoozed)
 	{
-		if(clockState != AlarmRing || alarmState & AlarmStateSnoozed)
-		{
-			alarmState = AlarmStateNone;
+		alarmState &= ~AlarmStateSnoozed;
 
-			SelectSong((specialDay != NULL && specialDay->specialSong != NULL) ? specialDay->specialSong : alarmRings[(alarmRingIndex == 0xFF) ? rand() % (sizeof(alarmRings) / sizeof(alarmRings[0])) : alarmRingIndex]);
-			PlaySong(PlayLoop);
-		}
-
-		ChangeState(AlarmRing);
+		PlaySong(PlayLoop);
 	}
+
+	ChangeState(AlarmRing);
 }
 
 

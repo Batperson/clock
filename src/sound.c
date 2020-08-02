@@ -150,13 +150,8 @@ void InitSound()
 
 void AudioOn()
 {
-	if(++ampRefCount > 0)
+	if(ampRefCount++ == 0)
 		GPIO_SetBits(GPIOA, PIN_AMPSD);
-
-	if(ampRefCount > 1)
-	{
-		printf("here");
-	}
 }
 
 void AudioOff()
