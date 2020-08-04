@@ -208,6 +208,17 @@ void RenderAlarm()
 	}
 }
 
+void RenderTextDemo()
+{
+	sprintf(szBanner, specialDay->texts[specialDayTextIndex], specialDayYears);
+
+	SetBackgroundColour(BLACK);
+	SetFont(sysFont);
+
+	SetForegroundColour(YELLOW);
+	DrawText(0, 94, 160, 12, AlignCentre | AlignVCentre, szBanner);
+}
+
 void RenderFieldSet()
 {
 	char sz[24];
@@ -414,6 +425,9 @@ void Render()
 		break;
 	case AlarmRing:
 		RenderAlarm();
+		break;
+	case TextDemo:
+		RenderTextDemo();
 		break;
 	case Normal:
 	default:

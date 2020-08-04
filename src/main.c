@@ -98,6 +98,9 @@ MenuItem mainMenu[] = {
 	{ "SET BRIGHTNESS",				SetField,			DaytimeBrightness },
 	{ "CALIBRATE CLOCK",			SetField,			RtcTrim },
 	{ "ABOUT THIS CLOCK", 			ChangeState, 		About },
+#ifdef DEBUG
+	{ "DEMO SPECIAL TEXTS",			ChangeState,		TextDemo },
+#endif
 	{ "EXIT", 						ChangeState, 		Normal },
 	{ NULL, NULL, 0 }
 };
@@ -499,6 +502,36 @@ void FieldPressHandler(uint16_t btn, ButtonEventType et)
 	}
 }
 
+void TextDemoHandler(uint16_t btn, ButtonEventType et)
+{
+	switch(btn)
+	{
+	case BTN_SELECT:
+		if(specialDay == &specialDay[sizeof(specialDays) / sizeof(SpecialDay)-1])
+		{
+			specialDay			= NULL;
+			specialDayTextIndex	= -1;
+			specialDayState		= SpecialDayHide;
+		}
+		else
+		{
+			specialDay++;
+		}
+		break;
+	case BTN_UP:
+		if(specialDayTextIndex > 0)
+			specialDayTextIndex--;
+		break;
+	case BTN_DOWN:
+		if(specialDay->texts[specialDayTextIndex+1] != NULL)
+			specialDayTextIndex++;
+		break;
+	}
+
+	Beep(88000, 60, 90);
+	TriggerRender();
+}
+
 void FieldLongPressActive()
 {
 	FieldPressHandler(lngpress, ButtonShortPress);
@@ -670,6 +703,14 @@ void ChangeState(ClockState state)
 
 			break;
 
+		case TextDemo:
+			specialDay 			= (PSpecialDay)specialDays;
+			specialDayTextIndex	= 0;
+			specialDayYears 	= 99;
+			specialDayState	 	= SpecialDayShow;
+			RegisterButtonCallback(BTN_UP | BTN_DOWN | BTN_SELECT, ButtonShortPress, TextDemoHandler);
+			break;
+
 		case Normal:
 		default:
 			EndSong();
@@ -710,6 +751,7 @@ void OnRtcSecond()
 	case Menu:
 	case About:
 	case AlarmRing:
+	case TextDemo:
 		break;
 	case FieldSet:
 		if(clockSetField == ClockSecond) TriggerRender();

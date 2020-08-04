@@ -18,6 +18,7 @@ typedef enum {
 	FieldSet,
 	AlarmRing,
 	About,
+	TextDemo,
 
 	BootStrap	= 0xFF
 } ClockState;
@@ -36,7 +37,7 @@ typedef enum {
 	DaytimeBrightness,
 	NighttimeBrightness,
 	NighttimeHoursStart,
-	NighttimeHoursEnd,
+	NighttimeHoursEnd
 } ClockSetField;
 
 typedef enum {
