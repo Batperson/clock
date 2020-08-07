@@ -188,11 +188,15 @@ void RenderAlarm()
 	SetForegroundColour(YELLOW);
 	SetFont(sysFont);
 
-#ifdef SCREEN_MISALIGNED
-	DrawText(10, 80, 150, 12, AlignCentre, "TO STOP ALARM PRESS:");
-#else
-	DrawText(0, 80, 160, 12, AlignCentre, "TO STOP ALARM PRESS:");
-#endif
+	if((mode & ModeAlarmSnooze) == ModeAlarmSnooze)
+		DrawText(4, 80, 160, 12, AlignCentre, "LONG PRESS TO SNOOZE");
+
+	if((mode & ModeAlarmLock) == ModeAlarmLock)
+		DrawText(4, 90, 150, 12, AlignCentre, "TO STOP ALARM PRESS:");
+	else if((mode & ModeAlarmSnooze) == ModeAlarmSnooze)
+		DrawText(4, 90, 150, 12, AlignCentre, "PRESS 3 X TO STOP ALARM");
+	else
+		DrawText(4, 90, 150, 12, AlignCentre, "PRESS ANY BTN TO STOP ALARM");
 
 	if(mode & ModeAlarmLock)
 	{
@@ -201,7 +205,7 @@ void RenderAlarm()
 		{
 			SetForegroundColour((i < alarmLockIndex) ? GREEN : RED);
 
-			DrawText(l, 94, 34, 12, DrawInverse | FillMargin | AlignCentre | AlignVCentre, szAlarmKeys[alarmLock[i]]);
+			DrawText(l, 104, 34, 12, DrawInverse | FillMargin | AlignCentre | AlignVCentre, szAlarmKeys[alarmLock[i]]);
 
 			l += 36;
 		}
@@ -353,7 +357,6 @@ void RenderAbout()
 	if(offs == 0)
 		offs = 300;
 
-	//RemoveBrush();
 	SetFont(sysFont);
 #ifdef SCREEN_MISALIGNED
 	DrawText(0, 114, 160, 12, AlignCentre, "FOR CHRISTOPHER");
@@ -367,7 +370,6 @@ void RenderMenu()
 	uint16_t w, h, dw, dh;
 
 	RemoveBrush();
-	ClearScreen();
 	SetFont(sysFont);
 	MeasureChar(' ', &w, &h);
 	MeasureDisplay(&dw, &dh);
@@ -438,5 +440,11 @@ void Render()
 
 void INTERRUPT PendSV_Handler()
 {
+	// While we are rendering, disable other interrupts as we don't want to be pre-empted while in the middle of a
+	// write to the TFT which will leave garbage on the screen or worse.
+	__disable_irq();
+
 	Render();
+
+	__enable_irq();
 }

@@ -172,3 +172,9 @@ Replaced the USB socket on the first board, both boards now capable of being pow
 
 21/07/2020
 Implemented fix for special day issue, not tested yet.
+
+08/08/2020
+Fixed the issue with garbage appearing on the screen after exiting About mode, by disabling interrupts during rendering. 
+Made it so that the screen doesn't flash when operating the menu.
+Change to the alarm snooze and lock functionality: if snooze is set then a long press of any button will snooze the alarm.
+If no lock is set but snooze mode is on then 3 taps on any button will reset the alarm.

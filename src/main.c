@@ -561,6 +561,11 @@ void SetAlarmLock()
 	alarmLockIndex	= 0;
 }
 
+void ResetLockIndex()
+{
+	alarmLockIndex = 0;
+}
+
 void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 {
 	uint8_t getAlarmKeyIndex(uint16_t btn) {
@@ -571,11 +576,18 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 		return 0;
 	}
 
-	void stopAlarm() {
+	void resetAlarm() {
 		alarmState 		= AlarmStateNone;
 		alarmLockIndex 	= 0;
 		SetNextAlarm();
 		ChangeState(Normal);
+	}
+
+	void snoozeAlarm() {
+		alarmState	|= AlarmStateSnoozed;
+		SnoozeAlarm(snoozeMinutes);
+		EndSong();
+		TriggerRender();
 	}
 
 	void resetLock() {
@@ -585,20 +597,19 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 
 	if(et == ButtonLongDown)
 	{
-		if((mode & ModeAlarmSnooze) && !(alarmState & AlarmStateSnoozed))
-		{
-			alarmState |= AlarmStateSnoozed;
-			SnoozeAlarm(snoozeMinutes);
-		}
+		// Long press snoozes the alarm, if we are in snooze mode
+		if((mode & ModeAlarmSnooze) == ModeAlarmSnooze)
+			snoozeAlarm();
 	}
 	else if(et == ButtonShortPress)
 	{
-		if(mode & ModeAlarmLock)
+		if((mode & ModeAlarmLock) == ModeAlarmLock)
 		{
+			// If we are in lock mode, then operate the lock and reset the alarm if the lock code has been entered.
 			if(getAlarmKeyIndex(btn) == alarmLock[alarmLockIndex])
 			{
 				if(alarmLockIndex++ == 3)
-					stopAlarm();
+					resetAlarm();
 
 				TriggerRender();
 			}
@@ -607,9 +618,19 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 				resetLock();
 			}
 		}
+		else if((mode & ModeAlarmSnooze) == ModeAlarmSnooze)
+		{
+			// If we are not in lock mode but are in snooze mode, then check whether 3 presses have occurred in quick succession.
+			if(alarmLockIndex++ >= 2)
+				resetAlarm();
+
+			DeregisterCallback(ResetLockIndex);
+			RegisterTimeoutCallback(ResetLockIndex, 200, CallbackNone);
+		}
 		else
 		{
-			stopAlarm();
+			// If we are not in either lock or snooze mode, then simply reset the alarm.
+			resetAlarm();
 		}
 	}
 }
@@ -654,6 +675,8 @@ void ChangeState(ClockState state)
 	if(clockState != state)
 	{
 		clockState = state;
+
+		printf("state %d\n", state);
 
 		DeregisterCallback(TriggerRender);
 		DeregisterButtonCallbacks();
