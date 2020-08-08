@@ -29,22 +29,22 @@
 #define BREG_BRIGHTNESS_HOURS		BKP_DR6
 #define BREG_BRIGHTNESS_LEVELS		BKP_DR7
 
+// Max length for special day texts 20 chars
 
 #ifdef ROSIE
-const char* birthdayChristopherTexts[] 	= { "IT'S CHRISTOPHER'S BIRTHDAY!", "HE IS %d YEARS OLD!", "WISH HIM A HAPPY BIRTHDAY.", NULL };
-const char* birthdayRosieTexts[]		= { "TODAY IS YOUR BIRTHDAY!", "YOU ARE %d TODAY!", "HAPPY BIRTHDAY ROSIE!", "I LOVE YOU!", NULL };
-const char* birthdayGummyBearTexts[]	= { "TODAY IS GUMMY BEARS BIRTHDAY!", "SHE IS %d TODAY!", "HAPPY BIRTHDAY GUMMY BEAR!", NULL };
+const char* birthdayChristopherTexts[] 	= { "IT'S", "CHRISTOPHER'S BIRTHDAY!", "HE IS %d TODAY!", "WISH HIM A", "HAPPY BIRTHDAY.", NULL };
+const char* birthdayRosieTexts[]		= { "TODAY IS", "YOUR BIRTHDAY!", "YOU ARE %d TODAY!", "HAPPY BIRTHDAY!", "I LOVE YOU!", NULL };
+const char* birthdayGummyBearTexts[]	= { "TODAY IS", "GUMMYBEARS BIRTHDAY!", "SHE IS %d TODAY!", "HAPPY BIRTHDAY", "GUMMY BEAR!", NULL };
 #else
-const char* birthdayChristopherTexts[] 	= { "HAPPY BIRTHDAY CHRISTOPHER!", "YOUR ARE NOW %d YEARS OLD!", "HOPE YOU HAVE A REALLY NICE DAY.", NULL };
-const char* birthdayRosieTexts[]		= { "TODAY IS ROSIE'S BIRTHDAY!", "SHE IS %d TODAY!", "BE REALLY NICE TO HER!", NULL };
+const char* birthdayChristopherTexts[] 	= { "HAPPY BIRTHDAY", "CHRISTOPHER!", "YOUR ARE NOW", "%d YEARS OLD!", "HOPE YOU HAVE A", "REALLY NICE DAY.", NULL };
+const char* birthdayRosieTexts[]		= { "TODAY IT IS", "ROSIE'S BIRTHDAY!", "SHE IS %d TODAY!", "BE REALLY", "NICE TO HER!", NULL };
 #endif
 
-const char* birthdayXiaTexts[]			= { "IT'S MUM'S BIRTHDAY!", "SHE IS %d TODAY.", "DO SOMETHING NICE FOR HER!", NULL };
-const char* birthdayPeterTexts[]		= { "IT'S DAD'S BIRTHDAY!", "HE IS %d TODAY.", "GIVE HIM A HANDSHAKE!", NULL };
-const char* christmasTexts[]			= { "AROUND THIS DAY", "IN PALESTINE", "SPEAKING VERY APPROXIMATELY", "A CHILD WAS BORN", "AND THE WORLD CHANGED.", "MERRY CHRISTMAS!", NULL };
-const char* newYearTexts[]				= { "HAPPY NEW YEAR!", "IT'S A NEW START!", "MAKE SOME PLANS", "ENJOY YOUR YEAR.", NULL };
-const char* waitangiDayTexts[]			= { "TODAY IS WAITANGI DAY!", "CELEBRATE YOUR FREEDOMS", "AND APPRECIATE YOUR COUNTRY.", "REMEMBER THE PAST", "LOOK TO THE FUTURE.", NULL };
-const char* anzacDayTexts[]				= { "THEY SHALL NOT GROW OLD", "AS WE THAT ARE LEFT GROW OLD", "AGE SHALL NOT WEARY THEM", "NOR THE YEARS CONDEMN.", "BUT AT THE GOING DOWN OF THE SUN", "AND IN THE MORNING", "WE WILL REMEMBER THEM.", NULL };
+const char* birthdayXiaTexts[]			= { "IT'S MUM'S BIRTHDAY!", "SHE IS %d TODAY.", "DO SOMETHING NICE", "FOR HER TODAY!", NULL };
+const char* birthdayPeterTexts[]		= { "IT'S DAD'S BIRTHDAY!", "HE IS %d TODAY.", "GIVE HIM A", "BIG HANDSHAKE!", NULL };
+const char* christmasTexts[]			= { "AROUND THIS DAY", "IN PALESTINE", "SPEAKING IN VERY", "APPROXIMATE TERMS", "A CHILD WAS BORN", "AND THE WORLD", "CHANGED.", "MERRY CHRISTMAS!", NULL };
+const char* waitangiDayTexts[]			= { "TODAY IS", "WAITANGI DAY!", "CELEBRATE YOUR", "FREEDOMS AND", "APPRECIATE YOUR", "HOME COUNTRY.", "REMEMBER THE PAST", "LOOK TO THE FUTURE.", NULL };
+//const char* anzacDayTexts[]				= { "THEY SHALL NOT GROW OLD", "AS WE THAT ARE LEFT GROW OLD", "AGE SHALL NOT WEARY THEM", "NOR THE YEARS CONDEMN.", "BUT AT THE GOING DOWN OF THE SUN", "AND IN THE MORNING", "WE WILL REMEMBER THEM.", NULL };
 
 const SpecialDay specialDays[] = {
 	{ 1093392000, 	&birthday, 		birthdayChristopherTexts },
@@ -55,9 +55,8 @@ const SpecialDay specialDays[] = {
 	{ 237427200, 	NULL, 			birthdayXiaTexts },
 	{ 184377600, 	NULL, 			birthdayPeterTexts },
 	{ 1010793600, 	NULL, 			christmasTexts },
-	{ 946684800, 	NULL, 			newYearTexts },
 	{ 959904000, 	&anthem,		waitangiDayTexts },
-	{ 1010102400, 	NULL,			anzacDayTexts }
+	//{ 1010102400, 	NULL,			anzacDayTexts }
 };
 
 const PSong alarmRings[] = {
@@ -480,8 +479,7 @@ void FieldMoveNext()
 		break;
 	}
 
-	ClearScreen();
-	TriggerRender();
+	TriggerRenderRefresh();
 }
 
 void FieldPressHandler(uint16_t btn, ButtonEventType et)
@@ -512,6 +510,8 @@ void TextDemoHandler(uint16_t btn, ButtonEventType et)
 			specialDay			= NULL;
 			specialDayTextIndex	= -1;
 			specialDayState		= SpecialDayHide;
+
+			ChangeState(Normal);
 		}
 		else
 		{
@@ -529,7 +529,7 @@ void TextDemoHandler(uint16_t btn, ButtonEventType et)
 	}
 
 	Beep(88000, 60, 90);
-	TriggerRender();
+	TriggerRenderRefresh();
 }
 
 void FieldLongPressActive()
@@ -625,7 +625,7 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 				resetAlarm();
 
 			DeregisterCallback(ResetLockIndex);
-			RegisterTimeoutCallback(ResetLockIndex, 200, CallbackNone);
+			RegisterTimeoutCallback(ResetLockIndex, 600, CallbackNone);
 		}
 		else
 		{
@@ -742,8 +742,7 @@ void ChangeState(ClockState state)
 			break;
 		}
 
-		ClearScreen();
-		TriggerRender();
+		TriggerRenderRefresh();
 	}
 }
 

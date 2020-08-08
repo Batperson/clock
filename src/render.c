@@ -25,10 +25,11 @@ extern Bitmap* about;
 
 typedef enum
 {
-	RenderNone				= 0x00,
-	RenderTimeDate			= 0x01,
-	RenderSpecialDayBanner	= 0x10,
-	RenderAll				= 0xFFFF
+	RenderNone				= 0x0000,
+	RenderTimeDate			= 0x0001,
+	RenderSpecialDayBanner	= 0x0010,
+	Refresh					= 0x8000,
+	RenderAll				= 0x7FFF
 } RenderPart;
 
 static RenderPart	renderPart			= RenderAll;
@@ -55,6 +56,12 @@ void InitRender()
 void TriggerRender()
 {
 	renderPart	= RenderAll;
+	SCB->ICSR |= SCB_ICSR_PENDSVSET;
+}
+
+void TriggerRenderRefresh()
+{
+	renderPart |= Refresh | RenderAll;
 	SCB->ICSR |= SCB_ICSR_PENDSVSET;
 }
 
@@ -128,7 +135,6 @@ void RenderNormal()
 		strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);	// %a = Sun, %A = Sunday, %b = Jan, %B = January
 		strupr(sz);
 
-		//SetForegroundColour(BLUE);
 		SetFont(sysFont);
 		DrawText(0, 80, 160, 12, AlignCentre, sz);
 
@@ -188,19 +194,24 @@ void RenderAlarm()
 	SetForegroundColour(YELLOW);
 	SetFont(sysFont);
 
-	if((mode & ModeAlarmSnooze) == ModeAlarmSnooze)
+	if(((mode & ModeAlarmSnooze) == ModeAlarmSnooze) && (alarmState & AlarmStateSnoozed) == AlarmStateNone)
 		DrawText(4, 80, 160, 12, AlignCentre, "LONG PRESS TO SNOOZE");
 
 	if((mode & ModeAlarmLock) == ModeAlarmLock)
-		DrawText(4, 90, 150, 12, AlignCentre, "TO STOP ALARM PRESS:");
+		DrawText(4, 90, 150, 12, AlignCentre, "TO RESET PRESS");
 	else if((mode & ModeAlarmSnooze) == ModeAlarmSnooze)
-		DrawText(4, 90, 150, 12, AlignCentre, "PRESS 3 X TO STOP ALARM");
+		DrawText(4, 90, 150, 12, AlignCentre, "PRESS 3X TO RESET");
 	else
-		DrawText(4, 90, 150, 12, AlignCentre, "PRESS ANY BTN TO STOP ALARM");
+		DrawText(4, 90, 150, 12, AlignCentre, "PRESS ANY TO RESET");
 
 	if(mode & ModeAlarmLock)
 	{
+#ifdef SCREEN_MISALIGNED
+		uint16_t l	= 10;
+#else
 		uint16_t l	= 4;
+#endif
+
 		for(int i=0; i<4; i++)
 		{
 			SetForegroundColour((i < alarmLockIndex) ? GREEN : RED);
@@ -412,6 +423,9 @@ void RenderMenu()
 
 void Render()
 {
+	if(renderPart & Refresh)
+		ClearScreen();
+
 	switch(clockState)
 	{
 	case BootStrap:
@@ -442,9 +456,9 @@ void INTERRUPT PendSV_Handler()
 {
 	// While we are rendering, disable other interrupts as we don't want to be pre-empted while in the middle of a
 	// write to the TFT which will leave garbage on the screen or worse.
-	__disable_irq();
+	//__disable_irq();
 
 	Render();
 
-	__enable_irq();
+	//__enable_irq();
 }

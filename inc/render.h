@@ -8,6 +8,7 @@
 #define RENDER_H_
 
 void InitRender();
+void TriggerRenderRefresh();
 void TriggerRender();
 
 #endif /* RENDER_H_ */
