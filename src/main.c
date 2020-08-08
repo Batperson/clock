@@ -586,8 +586,7 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 	void snoozeAlarm() {
 		alarmState	|= AlarmStateSnoozed;
 		SnoozeAlarm(snoozeMinutes);
-		EndSong();
-		TriggerRender();
+		ChangeState(Normal);
 	}
 
 	void resetLock() {
@@ -610,8 +609,6 @@ void AlarmButtonHandler(uint16_t btn, ButtonEventType et)
 			{
 				if(alarmLockIndex++ == 3)
 					resetAlarm();
-
-				TriggerRender();
 			}
 			else
 			{

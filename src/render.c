@@ -161,8 +161,6 @@ void RenderNormal()
 			DrawText(0, 94, 160, 12, AlignCentre | AlignVCentre, szBanner);
 		}
 	}
-
-	renderPart = RenderNone;
 }
 
 void RenderAlarm()
@@ -424,7 +422,10 @@ void RenderMenu()
 void Render()
 {
 	if(renderPart & Refresh)
+	{
+		renderPart &= ~Refresh;
 		ClearScreen();
+	}
 
 	switch(clockState)
 	{
@@ -450,6 +451,8 @@ void Render()
 		RenderNormal();
 		break;
 	}
+
+	renderPart |= RenderAll;
 }
 
 void INTERRUPT PendSV_Handler()
