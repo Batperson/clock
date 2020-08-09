@@ -47,16 +47,20 @@ const char* waitangiDayTexts[]			= { "TODAY IS", "WAITANGI DAY!", "CELEBRATE YOU
 //const char* anzacDayTexts[]				= { "THEY SHALL NOT GROW OLD", "AS WE THAT ARE LEFT GROW OLD", "AGE SHALL NOT WEARY THEM", "NOR THE YEARS CONDEMN.", "BUT AT THE GOING DOWN OF THE SUN", "AND IN THE MORNING", "WE WILL REMEMBER THEM.", NULL };
 
 const SpecialDay specialDays[] = {
-	{ 1093392000, 	&birthday, 		birthdayChristopherTexts },
+
 #ifdef ROSIE
-	{ 1454284800,   NULL,           birthdayGummyBearTexts },
+	{ 0x412bd680, 	NULL, 			birthdayChristopherTexts },
+	{ 0x52f02d80,   NULL,           birthdayGummyBearTexts },
+	{ 0x52f17f00, 	&birthday,		birthdayRosieTexts },
+#else
+	{ 0x412bd680, 	&birthday, 		birthdayChristopherTexts },
+	{ 0x52f17f00, 	NULL,			birthdayRosieTexts },
 #endif
-	{ 1398988800, 	NULL, 			birthdayRosieTexts },
-	{ 237427200, 	NULL, 			birthdayXiaTexts },
-	{ 184377600, 	NULL, 			birthdayPeterTexts },
-	{ 1010793600, 	NULL, 			christmasTexts },
-	{ 959904000, 	&anthem,		waitangiDayTexts },
-	//{ 1010102400, 	NULL,			anzacDayTexts }
+	{ 0xcf25b00, 	NULL, 			birthdayXiaTexts },
+	{ 0x8415480, 	NULL, 			birthdayPeterTexts },
+	{ 0x1d7f900, 	NULL, 			christmasTexts },
+	{ 0x2f7600, 	&anthem,		waitangiDayTexts },
+//	{ 0x9921c580, 	NULL,			anzacDayTexts }
 };
 
 const PSong alarmRings[] = {
@@ -195,6 +199,20 @@ int main(void)
 	// Use all priority bits for pre-emption priority. We want the DMA interrupt for waveform generation
 	// to be able to pre-empt everything else.
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
+	GetTime(&clockValues);
+	clockValues.tm_hour = 0;
+	clockValues.tm_min = 0;
+	clockValues.tm_sec = 0;
+	clockValues.tm_year = 76;
+	clockValues.tm_mon = 10;
+	clockValues.tm_mday = 19;
+
+	char sz[30];
+
+	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);
+	time_t t = mktime(&clockValues);
+	struct tm* pltm = localtime(&t);
 
 	InitClock();
 	srand(RTC_GetCounter());
@@ -796,7 +814,7 @@ void OnRtcSecond()
 			if(ptm->tm_mday == clockValues.tm_mday && ptm->tm_mon == clockValues.tm_mon)
 			{
 				specialDay 			= (PSpecialDay)&specialDays[i];
-				specialDayTextIndex	= -1;
+				specialDayTextIndex	= 0;
 				specialDayYears 	= clockValues.tm_year - ptm->tm_year;
 				tmpState			= SpecialDayShow;
 				break;

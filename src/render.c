@@ -38,10 +38,10 @@ static const char* szAlarmKeys[] 		= { "SEL", "UP", "DN" };
 
 static const Colour alarmStripes[]		= { RED, ORANGE, YELLOW, GREEN, CYAN, BLUE, MAGENTA };
 
-#define SPECIAL_DAY_TEXT_ROLL_SECS	6
-#define SPECIAL_DAY_FADE_MSECS		120
+int8_t fadeDirection					= 1;
 
-
+#define SPECIAL_DAY_TEXT_ROLL_SECS	10
+#define SPECIAL_DAY_FADE_MSECS		160
 
 void InitRender()
 {
@@ -71,31 +71,33 @@ static void ALWAYS_INLINE TriggerRenderPart(RenderPart part)
 	SCB->ICSR |= SCB_ICSR_PENDSVSET;
 }
 
-
-const uint8_t 	maxIntensity 	= 16;
-static uint8_t 	callbackCnt 	= 0;
-static char szBanner[64];
+const uint8_t 	maxIntensity 		= 16;
+static uint8_t 	bannerIntensity 	= 0;
+static char szBanner[24];
 
 void SpecialDayCallback()
 {
 	if(clockState == Normal && specialDayState == SpecialDayShow)
 		TriggerRenderPart(RenderSpecialDayBanner);
 
-	if(callbackCnt++ == maxIntensity)
+	if(bannerIntensity == 0)
 	{
-		specialDayTextIndex++;
+		sprintf(szBanner, specialDay->texts[specialDayTextIndex++], specialDayYears);
+
+		bannerIntensity = 1;
+		fadeDirection = 1;
+
 		if(specialDay->texts[specialDayTextIndex] == NULL)
 			specialDayTextIndex = 0;
-
-		sprintf(szBanner, specialDay->texts[specialDayTextIndex], specialDayYears);
 	}
-
-	if(callbackCnt >= (maxIntensity * 2))
+	else if((bannerIntensity += fadeDirection) >= maxIntensity)
 	{
-		callbackCnt = 0;
+		fadeDirection = -1;
 
 		DeregisterCallback(SpecialDayCallback);
 	}
+
+	printf("sdc %d %d\n", bannerIntensity, specialDayTextIndex);
 }
 
 void RenderNormal()
@@ -138,8 +140,11 @@ void RenderNormal()
 		SetFont(sysFont);
 		DrawText(0, 80, 160, 12, AlignCentre, sz);
 
-		if(specialDayState == SpecialDayShow && clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0)
+		if(specialDayState == SpecialDayShow && (clockValues.tm_sec % SPECIAL_DAY_TEXT_ROLL_SECS == 0))
+		{
+			printf("start %d\n", clockValues.tm_sec);
 			RegisterTimeoutCallback(SpecialDayCallback, SPECIAL_DAY_FADE_MSECS, CallbackRepeat);
+		}
 	}
 
 	if(renderPart & RenderSpecialDayBanner && specialDayState == SpecialDayShow)
@@ -147,19 +152,8 @@ void RenderNormal()
 		SetBackgroundColour(BLACK);
 		SetFont(sysFont);
 
-		if(callbackCnt <= maxIntensity)
-		{
-			if(specialDayTextIndex >= 0)
-			{
-				SetForegroundColour(FadeColour(YELLOW, (maxIntensity - callbackCnt)));
-				DrawText(0, 94, 160, 12, AlignCentre | AlignVCentre, szBanner);
-			}
-		}
-		else
-		{
-			SetForegroundColour(FadeColour(YELLOW, (callbackCnt - maxIntensity)));
-			DrawText(0, 94, 160, 12, AlignCentre | AlignVCentre, szBanner);
-		}
+		SetForegroundColour(FadeColour(YELLOW, bannerIntensity));
+		DrawText(0, 94, 160, 12, AlignCentre | AlignVCentre, szBanner);
 	}
 }
 
@@ -367,10 +361,11 @@ void RenderAbout()
 		offs = 300;
 
 	SetFont(sysFont);
-#ifdef SCREEN_MISALIGNED
-	DrawText(0, 114, 160, 12, AlignCentre, "FOR CHRISTOPHER");
-#elif ROSIE_BUILD
+
+#ifdef ROSIE
 	DrawText(0, 120, 160, 12, AlignCentre, "FOR ROSIE");
+#else
+	DrawText(0, 114, 160, 12, AlignCentre, "FOR CHRISTOPHER");
 #endif
 }
 
@@ -452,7 +447,7 @@ void Render()
 		break;
 	}
 
-	renderPart |= RenderAll;
+	renderPart &= ~RenderAll;
 }
 
 void INTERRUPT PendSV_Handler()
