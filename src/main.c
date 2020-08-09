@@ -200,20 +200,6 @@ int main(void)
 	// to be able to pre-empt everything else.
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	GetTime(&clockValues);
-	clockValues.tm_hour = 0;
-	clockValues.tm_min = 0;
-	clockValues.tm_sec = 0;
-	clockValues.tm_year = 76;
-	clockValues.tm_mon = 10;
-	clockValues.tm_mday = 19;
-
-	char sz[30];
-
-	strftime(sz, sizeof(sz), "%a %d %b %Y", &clockValues);
-	time_t t = mktime(&clockValues);
-	struct tm* pltm = localtime(&t);
-
 	InitClock();
 	srand(RTC_GetCounter());
 	InitSystem();
